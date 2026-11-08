@@ -164,10 +164,10 @@ def validate(raw, synthetic=False):
             raise ValidationError("invalid unmapped roles")
         provenance["unmapped_roles"] = [text(v, "source role", 100) for v in provenance["unmapped_roles"]]
     association = raw.get("association_evidence", {})
-    if not isinstance(association, dict) or set(association)-{"tier","work_languages","release_text_languages","release_ids","india_release_market"}:
+    if not isinstance(association, dict) or set(association)-{"tier","work_languages","release_text_languages","release_ids","india_release_market","primary_artist_id","primary_artist_area_id","geographic_evidence_ids","recording_work_evidence_ids"}:
         raise ValidationError("unsupported language association evidence")
     if association:
-        if source != "musicbrainz" or kind != "recording" or association.get("tier") not in {"work-language-associated","release-text-language"}:
+        if source != "musicbrainz" or kind != "recording" or association.get("tier") not in {"work-language-associated","release-text-language","india-primary-artist-area-with-explicit-musical-performance","work-language-musical-type"}:
             raise ValidationError("invalid association tier")
         if type(association.get("india_release_market")) is not bool:
             raise ValidationError("invalid market evidence")
@@ -175,6 +175,14 @@ def validate(raw, synthetic=False):
             values=association.get(key,[])
             if not isinstance(values,list) or len(values)>64 or any(v not in LANGUAGES for v in values):
                 raise ValidationError("unsupported association language code")
+        if association.get('primary_artist_id') and not valid_id('musicbrainz',association['primary_artist_id']):
+            raise ValidationError('invalid primary-artist evidence identity')
+        if association.get('primary_artist_area_id') and not valid_id('musicbrainz',association['primary_artist_area_id']):
+            raise ValidationError('invalid primary-artist area identity')
+        for key in ['geographic_evidence_ids','recording_work_evidence_ids']:
+            values=association.get(key,[])
+            if not isinstance(values,list) or len(values)>200 or any(not isinstance(v,str) or len(v)>200 or not v.startswith('mb-rel:') for v in values):
+                raise ValidationError('invalid source association relationship identities')
         ids=association.get("release_ids",[])
         if not isinstance(ids,list) or len(ids)>2000 or any(not valid_id("musicbrainz",v)for v in ids):
             raise ValidationError("invalid edition release identities")
@@ -257,6 +265,10 @@ CREATE TABLE IF NOT EXISTS artist_profiles(
  pk INTEGER PRIMARY KEY, id TEXT UNIQUE NOT NULL, name TEXT NOT NULL, payload TEXT NOT NULL);
 CREATE VIRTUAL TABLE IF NOT EXISTS profile_search USING fts5(profile_id UNINDEXED,body,
  tokenize="unicode61 remove_diacritics 0 categories 'L* N* M*'");
+CREATE TABLE IF NOT EXISTS lyric_pair_clearances(
+ recording_id TEXT PRIMARY KEY REFERENCES tracks(id), native_ref TEXT NOT NULL,
+ romanized_ref TEXT NOT NULL, rights_evidence TEXT NOT NULL,
+ review_state TEXT NOT NULL CHECK(review_state IN ('pending','cleared','restricted')));
 CREATE TABLE IF NOT EXISTS revisions(
  track_id TEXT NOT NULL, fingerprint TEXT NOT NULL, payload TEXT NOT NULL,
  archived_at TEXT NOT NULL, PRIMARY KEY(track_id,fingerprint));
@@ -407,8 +419,11 @@ def upsert(db, record):
     db.executemany("INSERT INTO work_recordings VALUES(?,?)", [(identity, "musicbrainz:work:" + v) for v in record["associated_work_ids"]])
     for key,basis in [("work_languages","work"),("release_text_languages","release_text")]:
         db.executemany("INSERT OR IGNORE INTO language_associations VALUES(?,?,?)",[(identity,v,basis)for v in record.get("association_evidence",{}).get(key,[])])
+    if db.execute("SELECT 1 FROM sqlite_master WHERE name='role_credit_proofs'").fetchone():
+        from .enrich_roles import restore_materialized
+        restore_materialized(db,identity,record['kind'])
     body = " ".join([record["title"], *record["aliases"], record["album"] or "",
-                     *(c["name"] or "" for c in record["credits"])])
+                     *(r[0] or "" for r in db.execute('SELECT name FROM credits WHERE track_id=?',(identity,)))])
     pk = db.execute("SELECT pk FROM tracks WHERE id=?", (identity,)).fetchone()[0]
     db.execute("INSERT INTO search(rowid,track_id,body) VALUES(?,?,?)", (pk, identity, normal(body)))
     return True
@@ -439,7 +454,17 @@ def coverage(db):
     count = lambda sql: db.execute(sql).fetchone()[0]
     lang = dict(db.execute("SELECT language,count(*) FROM languages GROUP BY language"))
     unknown = count("SELECT count(*) FROM tracks t WHERE NOT EXISTS(SELECT 1 FROM languages l WHERE l.track_id=t.id)")
-    return {"schema_version": 1, "mode": mode(db), "generation": int(db.execute("SELECT value FROM meta WHERE key='generation'").fetchone()[0]),
+    recordings = count("SELECT count(*) FROM tracks WHERE kind='recording'")
+    pairs = count("SELECT count(*) FROM lyric_pair_clearances p JOIN tracks t ON t.id=p.recording_id WHERE t.kind='recording' AND p.review_state='cleared' AND length(trim(p.native_ref))>0 AND length(trim(p.romanized_ref))>0 AND json_valid(p.rights_evidence) AND json_type(p.rights_evidence)='array' AND json_array_length(p.rights_evidence)>0")
+    target = 2000000
+    proof_table = db.execute("SELECT 1 FROM sqlite_master WHERE name='role_credit_proofs'").fetchone()
+    return {"recording_roles": dict(db.execute("SELECT role,count(DISTINCT c.track_id) FROM credits c JOIN tracks t ON t.id=c.track_id WHERE t.kind='recording' GROUP BY role")),
+            "role_proof_chains": count("SELECT count(*) FROM role_credit_proofs") if proof_table else 0,
+            "lyric_pair_coverage": {"real_recordings":recordings,"cleared_native_romanized_pairs":pairs,
+                "recordings_without_cleared_pair":recordings-pairs,"target":target,
+                "metadata_gap_to_target":max(0,target-recordings),"pair_gap_to_target":max(0,target-pairs),
+                "notice":"Romanization means native words in Latin letters, not English translation. Metadata permission is not lyric permission; demos and ancient verse do not count as matched recording pairs. No clearance importer is enabled."},
+            "schema_version": 1, "mode": mode(db), "generation": int(db.execute("SELECT value FROM meta WHERE key='generation'").fetchone()[0]),
             "tracks": total, "entity_kinds": dict(db.execute("SELECT kind,count(*) FROM tracks GROUP BY kind")),
             "language_associations": [dict(r) for r in db.execute("SELECT language,count(DISTINCT track_id) AS tracks FROM language_associations GROUP BY language")],
             "association_tiers": dict(db.execute("SELECT json_extract(payload,'$.association_evidence.tier'),count(*) FROM tracks WHERE json_extract(payload,'$.association_evidence.tier') IS NOT NULL GROUP BY 1")),
@@ -534,6 +559,10 @@ def search(db, params):
         item["lyrics_available"] = False
         item["linked_recordings"] = db.execute("SELECT count(*) FROM work_recordings WHERE work_id=?", (row["id"],)).fetchone()[0]
         item["credits"] = [dict(c) for c in db.execute("SELECT artist_id,name,role FROM credits WHERE track_id=? ORDER BY role,name", (row["id"],))]
+        if item['kind']=='recording':
+            item['associated_work_ids']=[r[0].split(':')[-1] for r in db.execute("SELECT work_id FROM work_recordings WHERE recording_id=? ORDER BY work_id",(row['id'],))]
+            if db.execute("SELECT 1 FROM sqlite_master WHERE name='role_credit_proofs'").fetchone():
+                item['role_proof_count']=db.execute("SELECT count(*) FROM role_credit_proofs WHERE recording_id=?",(row['id'],)).fetchone()[0]
         result.append(item)
     next_cursor = None
     if more:
@@ -573,10 +602,18 @@ def import_profiles(path, records):
             if not isinstance(aliases,list) or len(aliases)>40:
                 raise ValidationError("invalid profile aliases")
             for alias in aliases:text(alias,"profile alias")
+            raw={**raw,'aliases':aliases}
             payload = canonical(raw)
             if len(payload.encode()) > MAX_LINE:
                 raise ValidationError("profile too large")
             old = db.execute("SELECT pk,payload FROM artist_profiles WHERE id=?", (sid,)).fetchone()
+            if old:
+                previous=json.loads(old['payload'])
+                merged={**raw,**previous}
+                for field in ['aliases','roles','countries','provenance']:
+                    values={canonical(v):v for v in [*previous.get(field,[]),*raw.get(field,[])]}
+                    merged[field]=list(values.values())[:40] if field=='aliases' else list(values.values())
+                raw=merged; name=raw['name']; aliases=raw.get('aliases',[]); payload=canonical(raw)
             if old and old["payload"] == payload:
                 continue
             db.execute("INSERT INTO artist_profiles(id,name,payload) VALUES(?,?,?) ON CONFLICT(id) DO UPDATE SET name=excluded.name,payload=excluded.payload", (sid,name,payload))

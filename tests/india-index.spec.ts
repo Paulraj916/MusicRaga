@@ -96,7 +96,7 @@ test('real free static shards discover native metadata, artists and linked recor
   await page.goto('/');
   await page.getByRole('button', { name: 'Open India index', exact: true }).click();
   const dialog = page.getByRole('dialog', { name: 'The growing India index', exact: true });
-  await expect(dialog.getByText(/138,348 indexed entities/)).toBeVisible();
+  await expect(dialog.getByText(/148,372 indexed entities/)).toBeVisible();
   await expect(dialog.getByText(/Free static preview/)).toBeVisible();
   await dialog.getByRole('textbox', { name: 'Native title or artist' }).fill('எஞ்சாய்');
   await dialog.getByRole('button', { name: 'Search index', exact: true }).click();
@@ -136,7 +136,7 @@ test('preferred v2 metadata filters explicit vocals separately from generic cred
   await page.getByRole('button', { name: 'Open India index', exact: true }).click();
   const dialog = page.getByRole('dialog', { name: 'The growing India index', exact: true });
   await expect(
-    dialog.getByText(/10,956 recordings with explicit vocal relationships/),
+    dialog.getByText(/13,902 recordings with explicit vocal relationships/),
   ).toBeVisible();
   await dialog.getByRole('textbox', { name: 'Native title or artist' }).fill('Paarkadhe');
   await dialog.getByRole('button', { name: 'Search index', exact: true }).click();
@@ -154,4 +154,44 @@ test('preferred v2 metadata filters explicit vocals separately from generic cred
   ).toBeVisible();
   await expect(dialog.getByText(/Language unknown/).first()).toBeVisible();
   expect(await dialog.evaluate((el) => el.scrollWidth <= el.clientWidth + 1)).toBe(true);
+});
+
+test('actual v3 composer proofs and truthful recording-linked lyric-pair progress', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Open India index', exact: true }).click();
+  const dialog = page.getByRole('dialog', { name: 'The growing India index', exact: true });
+  await expect(dialog.getByTestId('recording-coverage')).toHaveText('127,064');
+  await expect(dialog.getByTestId('pair-coverage')).toHaveText('0');
+  await expect(dialog.getByTestId('metadata-gap')).toHaveText('1,872,936');
+  await expect(dialog.getByTestId('pair-gap')).toHaveText('2,000,000');
+  await expect(dialog.getByText('not English translation', { exact: true })).toBeVisible();
+  await dialog
+    .locator('.coverage-panel')
+    .screenshot({ path: `artifacts/v3-coverage-counters-${test.info().project.name}.png` });
+  await dialog.getByRole('textbox', { name: 'Native title or artist' }).fill('Hengaithe');
+  await dialog.getByRole('button', { name: 'Search index', exact: true }).click();
+  await dialog
+    .getByRole('combobox', { name: 'Entity type', exact: true })
+    .selectOption('recording');
+  await dialog
+    .getByRole('combobox', { name: 'Contributor role', exact: true })
+    .selectOption('composer');
+  const article = dialog
+    .locator('article')
+    .filter({ has: page.getByRole('heading', { name: 'Hengaithe Maige', exact: true }) })
+    .first();
+  await expect(article).toBeVisible();
+  await article.getByText('Provenance and availability', { exact: true }).click();
+  await article.getByRole('button', { name: 'View credit evidence', exact: true }).click();
+  await expect(article.getByRole('status')).toContainText('source proof chains');
+  await expect(article.getByText(/composer: Brodha V/).first()).toBeVisible();
+  expect(await dialog.evaluate((el) => el.scrollWidth <= el.clientWidth + 1)).toBe(true);
+  const axe = await new AxeBuilder({ page })
+    .include('.dialog')
+    .withTags(['wcag2a', 'wcag2aa', 'wcag21aa'])
+    .analyze();
+  expect(axe.violations).toEqual([]);
+  await page.screenshot({ path: `artifacts/v3-coverage-proofs-${test.info().project.name}.png` });
 });

@@ -55,6 +55,18 @@ export async function staticCatalogue(path: string, signal: AbortSignal): Promis
   const manifest = await read<Manifest>(root + 'manifest.json', signal);
   const url = new URL(path, window.location.origin);
   if (url.pathname.endsWith('/coverage')) return manifest.coverage;
+  if (url.pathname.endsWith('/evidence')) {
+    const recording = url.searchParams.get('recording') ?? '';
+    if (!/^musicbrainz:recording:[0-9a-f-]{36}$/.test(recording))
+      throw new Error('Invalid recording evidence identity.');
+    const bucket = (await fingerprint(recording)).slice(0, 2);
+    const entries = await read<Record<string, unknown>>(
+      root + manifest.version + '/proofs/' + bucket + '.json',
+      signal,
+      true,
+    );
+    return entries[recording] ?? { recording_id: recording, total: 0, items: [], limit: 20 };
+  }
   const entity = url.pathname.endsWith('/artists') ? 'artists' : 'tracks';
   const prefix = root + manifest.version + '/' + entity + '/';
   const params = url.searchParams;

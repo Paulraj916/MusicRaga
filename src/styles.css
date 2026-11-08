@@ -3950,3 +3950,55 @@ footer button {
     align-items: flex-start;
   }
 }
+
+/* Coverage is separate from promotional catalogue totals; readable on narrow screens. */
+.coverage-panel {
+  margin: 1.5rem 0;
+  padding: clamp(1rem, 3vw, 1.8rem);
+  border: 1px solid var(--line);
+  border-radius: 1.2rem;
+  background: var(--surface);
+}
+.coverage-panel h3 {
+  max-width: 42rem;
+  font-size: clamp(1.15rem, 3vw, 1.6rem);
+}
+.coverage-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.1rem;
+}
+.coverage-grid dt {
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+.coverage-grid dd {
+  margin: 0.45rem 0;
+  font-size: clamp(1.5rem, 3vw, 2.1rem);
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+.coverage-panel p {
+  line-height: 1.65;
+}
+.credit-proof {
+  padding: 1rem 0;
+}
+.credit-proof li {
+  margin-block: 1rem;
+}
+.proof-identity {
+  display: block;
+  overflow-wrap: anywhere;
+  margin-block: 0.5rem;
+}
+@media (max-width: 600px) {
+  .coverage-grid {
+    grid-template-columns: 1fr;
+    gap: 0.6rem;
+  }
+  .coverage-grid > div {
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 0.6rem;
+  }
+}

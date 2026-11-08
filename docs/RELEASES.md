@@ -1,5 +1,9 @@
 # Versioned public preview releases
 
+## v3/v4 — source role proofs, additive recordings and truthful lyric-pair counters
+
+Prepared 09 Nov 2026 IST. Code deployment is gated on tests; use Actions and actual hosted manifest to confirm active state. 127,064 recording IDs (+3,812), 21,096 works, 212 Wikidata music entities, 21,406 source profiles. Recording composer20,893 / lyricist17,787 / vocal13,902; preferred-v2 composer20,887 / lyricist17,781. 61,158 v3 proof chains plus baseline versions remain separate; two newer baseline composers and eight older IDs retained. 15 identity ambiguities excluded; six implausible durations explicitly unknown. Visible cleared native+romanized recording-linked pairs0 / goal2,000,000; metadata gap1,872,936, pair gap2,000,000. Native/romanized/translation distinctions remain. AdsOFF/noindex, free ad-free preview unchanged. See V3_V4_RELEASE.md and catalogue-v3-v4-coverage.json. No universal-catalogue or ranking claim.
+
 ## Music Raga naming checkpoint — 09 November 2026 (IST)
 
 The final user-selected display name is **Music Raga**, repository/path **MusicRaga**. This renames the SAME Paulraj916 repository, retaining commits, branches, PR 1 and data. No Bharat Lyrics/LyricRaaga names were ever applied. Main remains unmerged. The new expected Pages path is https://paulraj916.github.io/MusicRaga/ ; actual success/HTTP checks are reported with the exact release commit. Do not assume the old Pages `/PowerWords/` path redirects. Historical source paths, release artifacts, original MIT notices, `pw:` local-storage keys and internal legacy meta keys remain intentionally preserved; browser storage may not transfer between origins.

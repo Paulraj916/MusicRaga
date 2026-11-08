@@ -15,11 +15,14 @@ type Track = {
   scope_basis: string;
   credits: Credit[];
   linked_recordings?: number;
+  role_proof_count?: number;
   association_evidence?: {
     tier: string;
     work_languages: string[];
     release_text_languages: string[];
     release_ids: string[];
+    primary_artist_id?: string;
+    primary_artist_area_id?: string;
   };
   credit_evidence?: {
     artist_id: string;
@@ -59,6 +62,16 @@ type Coverage = {
   sources: Record<string, number>;
   languages: { code: string; name: string; tracks: number }[];
   language_associations?: { language: string; tracks: number }[];
+  recording_roles?: Record<string, number>;
+  role_proof_chains?: number;
+  lyric_pair_coverage?: {
+    real_recordings: number;
+    cleared_native_romanized_pairs: number;
+    recordings_without_cleared_pair: number;
+    target: number;
+    metadata_gap_to_target: number;
+    pair_gap_to_target: number;
+  };
   explicit_vocal_recordings?: number;
   explicit_vocal_artist_identities?: number;
 };
@@ -75,6 +88,87 @@ const safeSource = (value: string) => {
     return false;
   }
 };
+type EvidencePage = {
+  total: number;
+  limit: number;
+  items: {
+    id: string;
+    artist: string | null;
+    role: string;
+    work: string | null;
+    context: string | null;
+    source_urls: string[];
+    evidence_ids: string[];
+  }[];
+};
+function CreditEvidence({ recording }: { recording: string }) {
+  const [result, setResult] = useState<EvidencePage | null>(null);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  async function load() {
+    setLoading(true);
+    setError('');
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 15000);
+    try {
+      const path = appHref('/api/v1/evidence?recording=' + encodeURIComponent(recording));
+      const response = await fetch(path, { signal: controller.signal, credentials: 'omit' });
+      const value =
+        response.status === 404 || response.status >= 500
+          ? await staticCatalogue(path, controller.signal)
+          : response.ok
+            ? await response.json()
+            : null;
+      if (!value || !Array.isArray((value as EvidencePage).items))
+        throw new Error('Invalid proof response');
+      setResult(value as EvidencePage);
+    } catch {
+      setError('Credit evidence could not load. Retry or open the source record.');
+    } finally {
+      window.clearTimeout(timeout);
+      setLoading(false);
+    }
+  }
+  return (
+    <section className="credit-proof" aria-label="Versioned credit evidence">
+      {!result && (
+        <button type="button" className="button" onClick={load} disabled={loading}>
+          {loading ? 'Loading credit evidence…' : 'View credit evidence'}
+        </button>
+      )}
+      {error && <p role="alert">{error}</p>}
+      {result && (
+        <>
+          <p role="status">
+            Showing {result.items.length} of {result.total} source proof chains. Versioned
+            assertions can overlap; not separate performances or lyric licences.
+          </p>
+          <ul>
+            {result.items.map((p) => (
+              <li key={p.id}>
+                <strong>
+                  {p.role}: {p.artist ?? 'Source artist identity'}
+                </strong>
+                {p.work && <> · composition: {p.work}</>}
+                <p>{p.context}</p>
+                {p.source_urls.filter(safeSource).map((url, i) => (
+                  <a key={url} href={url} target="_blank" rel="noopener noreferrer">
+                    Source {i + 1} ↗{' '}
+                  </a>
+                ))}
+                <small className="proof-identity">Proof: {p.id}</small>
+              </li>
+            ))}
+          </ul>
+          <p>
+            Full qualifiers and versioned relationship IDs remain in the downloadable CC0 sidecars
+            and local database. Composition credits do not establish that lyrics were sung.
+          </p>
+        </>
+      )}
+    </section>
+  );
+}
 export default function IndiaIndex() {
   const [entity, setEntity] = useState('tracks');
   const [kind, setKind] = useState('');
@@ -205,6 +299,57 @@ export default function IndiaIndex() {
             </>
           )}
         </p>
+      )}
+      {coverage?.lyric_pair_coverage && activePage?.mode !== 'synthetic' && (
+        <section className="coverage-panel" aria-labelledby="coverage-heading">
+          <div>
+            <p className="eyebrow">Transparent progress · not a completeness claim</p>
+            <h3 id="coverage-heading">The catalogue and the words are different milestones.</h3>
+          </div>
+          <dl className="coverage-grid">
+            <div>
+              <dt>Distinct real recording IDs</dt>
+              <dd data-testid="recording-coverage">
+                {coverage.lyric_pair_coverage.real_recordings.toLocaleString()}
+              </dd>
+            </div>
+            <div>
+              <dt>Cleared native + romanized lyric pairs</dt>
+              <dd data-testid="pair-coverage">
+                {coverage.lyric_pair_coverage.cleared_native_romanized_pairs.toLocaleString()}
+              </dd>
+            </div>
+            <div>
+              <dt>Recording-linked pair goal · not achieved</dt>
+              <dd>{coverage.lyric_pair_coverage.target.toLocaleString()}</dd>
+            </div>
+          </dl>
+          <p>
+            Metadata gap to goal:{' '}
+            <strong data-testid="metadata-gap">
+              {coverage.lyric_pair_coverage.metadata_gap_to_target.toLocaleString()}
+            </strong>{' '}
+            · Cleared-pair gap:{' '}
+            <strong data-testid="pair-gap">
+              {coverage.lyric_pair_coverage.pair_gap_to_target.toLocaleString()}
+            </strong>
+            .
+          </p>
+          <p>
+            {coverage.lyric_pair_coverage.recordings_without_cleared_pair.toLocaleString()} indexed
+            recordings have no cleared pair. Text rights remain unverified or restricted. Tanglish /
+            Hinglish means native words in English letters, <strong>not English translation</strong>
+            . Fictional demos and ancient verse are excluded from these recording-linked counts.
+          </p>
+          {coverage.recording_roles && (
+            <p>
+              Recording-level composition evidence:{' '}
+              {coverage.recording_roles.composer?.toLocaleString() ?? '0'} composer ·{' '}
+              {coverage.recording_roles.lyricist?.toLocaleString() ?? '0'} lyricist. Roles overlap,
+              are incomplete and do not grant lyric rights.
+            </p>
+          )}
+        </section>
       )}
       {activePage?.mode === 'synthetic' && (
         <p role="note" className="index-warning">
@@ -453,6 +598,22 @@ export default function IndiaIndex() {
                   )}
                   <details>
                     <summary>Provenance and availability</summary>
+                    {t.association_evidence?.primary_artist_area_id && (
+                      <p>
+                        Primary artist source-area association: not citizenship, recording location
+                        or sung language.{' '}
+                        <a
+                          href={
+                            'https://musicbrainz.org/area/' +
+                            t.association_evidence.primary_artist_area_id
+                          }
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Source area ↗
+                        </a>
+                      </p>
+                    )}
                     {!!t.credit_evidence?.length && (
                       <ul>
                         {t.credit_evidence.map((c, i) => (
@@ -486,6 +647,7 @@ export default function IndiaIndex() {
                           : ''}
                       </p>
                     )}
+                    {!!t.role_proof_count && <CreditEvidence key={t.id} recording={t.id} />}
                     <p>{t.scope_basis}</p>
                     <p>CC0 core metadata only. No lyrics, translations or audio imported.</p>
                     {safeSource(t.source_url) && (

@@ -42,7 +42,9 @@ try {
     await page.goto(origin);
     await page.getByRole('button', { name: 'Open India index', exact: true }).click();
     const dialog = page.getByRole('dialog', { name: 'The growing India index', exact: true });
-    await expect(dialog.getByText(/138,348 indexed entities/)).toBeVisible();
+    await expect(dialog.getByText(/148,372 indexed entities/)).toBeVisible();
+    await expect(dialog.getByTestId('recording-coverage')).toHaveText('127,064');
+    await expect(dialog.getByTestId('pair-coverage')).toHaveText('0');
     await expect(dialog.getByText(/Free static preview/)).toBeVisible();
     await dialog.getByRole('textbox', { name: 'Native title or artist' }).fill('Paarkadhe');
     await dialog.getByRole('button', { name: 'Search index', exact: true }).click();
@@ -55,6 +57,27 @@ try {
     await expect(
       dialog.getByRole('heading', { name: 'Paarkadhe Paarkadhe', exact: true }).first(),
     ).toBeVisible();
+    await dialog
+      .getByRole('combobox', { name: 'Language association (not sung language)', exact: true })
+      .selectOption('');
+    await dialog
+      .getByRole('combobox', { name: 'Contributor role', exact: true })
+      .selectOption('composer');
+    await dialog
+      .getByRole('combobox', { name: 'Entity type', exact: true })
+      .selectOption('recording');
+    await dialog.getByRole('textbox', { name: 'Native title or artist' }).fill('Hengaithe');
+    await dialog.getByRole('button', { name: 'Search index', exact: true }).click();
+    const evidenceArticle = dialog
+      .locator('article')
+      .filter({ has: page.getByRole('heading', { name: 'Hengaithe Maige', exact: true }) })
+      .first();
+    await expect(evidenceArticle).toBeVisible();
+    await evidenceArticle.getByText('Provenance and availability', { exact: true }).click();
+    await evidenceArticle
+      .getByRole('button', { name: 'View credit evidence', exact: true })
+      .click();
+    await expect(evidenceArticle.getByRole('status')).toContainText('source proof chains');
     assert(await dialog.evaluate((el) => el.scrollWidth <= el.clientWidth + 1));
     const accessibility = await new AxeBuilder({ page })
       .include('dialog')
@@ -63,7 +86,7 @@ try {
     assert.deepEqual(accessibility.violations, []);
     await mkdir('artifacts', { recursive: true });
     await dialog
-      .getByRole('heading', { name: 'Paarkadhe Paarkadhe', exact: true })
+      .getByRole('heading', { name: 'Hengaithe Maige', exact: true })
       .first()
       .scrollIntoViewIfNeeded();
     await page.screenshot({ path: 'artifacts/project-musicraga-' + name + '.png' });
@@ -74,6 +97,7 @@ try {
       canonical,
       native_source_index: true,
       explicit_vocal_and_association_filter: true,
+      composer_proofs_and_zero_cleared_pair_counter: true,
       axe_violations: 0,
       runtime_errors: 0,
     });

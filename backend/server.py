@@ -7,6 +7,7 @@ from pathlib import Path
 from socketserver import ThreadingMixIn
 from urllib.parse import parse_qs, unquote
 from wsgiref.simple_server import WSGIServer, make_server
+from .enrich_roles import evidence_summary
 from .catalogue import ValidationError, connect, coverage, search, search_profiles
 
 
@@ -55,6 +56,10 @@ def app_factory(database, static="dist"):
                             raise ValidationError("coverage accepts no parameters")
                         db.execute("BEGIN")
                         result = coverage(db)
+                    elif path == "/api/v1/evidence":
+                        if set(params) != {'recording'}:
+                            raise ValidationError('evidence requires only recording')
+                        result = evidence_summary(db, params['recording'])
                     elif path == "/api/v1/artists":
                         db.execute("BEGIN")
                         result = search_profiles(db, params)

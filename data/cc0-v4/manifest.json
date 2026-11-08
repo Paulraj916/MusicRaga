@@ -1,0 +1,56 @@
+{
+  "additional-artists-v4.jsonl.gz": {
+    "records": 428,
+    "compressedBytes": 23985,
+    "compressedSha256": "2bc658f0456d5eaa615f9e1c3cdc119c5d294684aed8eefc8130b2dd8c88ba62",
+    "uncompressedSha256": "3ccf893477c86e44005302ea1e64cab5388f49a4c56852078cb9a22affd01e7a",
+    "license": "CC0-1.0",
+    "purpose": "supporting-source-evidence-or-entities",
+    "gzipMtime": 0
+  },
+  "additional-preferred-recordings-v4.jsonl.gz": {
+    "records": 3812,
+    "compressedBytes": 602134,
+    "compressedSha256": "81a60df55a0172a092918509ba83399a781a7b0935647fc700a0a022f2baf2cd",
+    "uncompressedSha256": "dec5e991fb7f389cb7b72459bfe658d3bb60ea2d2066a2b0c6f3a90e238fba0a",
+    "license": "CC0-1.0",
+    "purpose": "preferred-recording-additions",
+    "gzipMtime": 0
+  },
+  "recording-work-evidence-v4.jsonl.gz": {
+    "records": 152,
+    "compressedBytes": 13437,
+    "compressedSha256": "7571637013ff791dbbabb583ae2c9e34fde9590eff933867df584ccfe810d948",
+    "uncompressedSha256": "176dfdd075a921a0c19535fd026150ea6734fc0e5f1adebcae4663ebb2f3054b",
+    "license": "CC0-1.0",
+    "purpose": "supporting-source-evidence-or-entities",
+    "gzipMtime": 0
+  },
+  "india-geographic-containment-evidence-v4.jsonl.gz": {
+    "records": 400,
+    "compressedBytes": 16035,
+    "compressedSha256": "cbb9ea3e6817c22986bc5d4a022b82722526df4e77d79676c7da2a4f82b16331",
+    "uncompressedSha256": "77e955426a6ab17885e979a3c83d198d80ed8fb0180fe0b6e32d130090d73d1c",
+    "license": "CC0-1.0",
+    "purpose": "supporting-source-evidence-or-entities",
+    "gzipMtime": 0
+  },
+  "india-associated-areas-v4.jsonl.gz": {
+    "records": 401,
+    "compressedBytes": 19838,
+    "compressedSha256": "510c8fa83ed562cde48a0414383efcd06d27cf87738ab05f43cfd26fa998a7f2",
+    "uncompressedSha256": "e60a7b8ecf7fd4c78f336963bd96d9cae13226bed43444eaff8a4b0e8da0177a",
+    "license": "CC0-1.0",
+    "purpose": "supporting-source-evidence-or-entities",
+    "gzipMtime": 0
+  },
+  "identity-review-v4.jsonl.gz": {
+    "records": 15,
+    "compressedBytes": 901,
+    "compressedSha256": "72a5645652fa8be28af7203e5d2a337854643a316b53d93eb9da0f8718ec6a19",
+    "uncompressedSha256": "aa8c9052353d94f65d39e09e212df33a52553154b0352120db6566457c49b846",
+    "license": "CC0-1.0",
+    "purpose": "audit-only-excluded-from-preferred",
+    "gzipMtime": 0
+  }
+}

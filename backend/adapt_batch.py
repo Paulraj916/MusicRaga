@@ -65,6 +65,12 @@ def adapt(raw, original_line):
                 relationship_evidence.append({"artist_id":relationship.get("artistId"),"role":role,"role_id":relationship.get("roleId"),"relationship_id":relationship.get("sourceRelationshipId"),"attributes":relationship.get("attributes",[])})
             association=raw.get("indiaAssociation",{})
             association_evidence={"tier":association.get("tier"),"work_languages":raw.get("associatedWorkLanguages",[]),"release_text_languages":association.get("releaseTextLanguages",[]),"release_ids":raw.get("associatedReleaseIds",[]),"india_release_market":bool(association.get("indiaReleaseMarket"))} if association.get("tier") else {}
+            if association.get('primaryArtistAreaEvidence'):
+                area=association['primaryArtistAreaEvidence']
+                association_evidence.update({'primary_artist_id':area.get('primaryCreditedArtistId'),
+                    'primary_artist_area_id':area.get('sourceArtistAreaUuid'),
+                    'geographic_evidence_ids':area.get('geographicContainmentEvidenceIds',[]),
+                    'recording_work_evidence_ids':association.get('recordingWorkPerformanceEvidenceIds',[])})
             return validate({"source": provider,"source_id":sid,"source_url":proof.get("sourceUrl"),
                 "license":"CC0-1.0","license_url":SOURCES[provider][1],"retrieved_at":proof.get("retrievedAt"),
                 "title":title,"aliases":[],"languages":[],"countries":[],"credits":recording_credits,"credit_evidence":relationship_evidence,"association_evidence":association_evidence,"year":None,"album":None,

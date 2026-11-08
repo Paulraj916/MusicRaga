@@ -78,9 +78,13 @@ def bootstrap(database="var/catalogue.sqlite", directory="data/cc0", report_path
                 if run["completed"]:
                     break
         reports.append(report)
+    from .enrich_roles import integrate
+    role_report = integrate(database, baseline=directory)
+    from .expand_v4 import integrate_v4
+    expansion_report = integrate_v4(database)
     resolved_names=resolve_credit_names(database)
     with connect(database,True) as db:
-        result={"batch_reports":reports,"coverage":coverage(db),"network_requests":0,"tracks_with_names_resolved_through_exact_profile_ids":resolved_names,
+        result={"v4_expansion":expansion_report,"role_enrichment":role_report,"batch_reports":reports,"coverage":coverage(db),"network_requests":0,"tracks_with_names_resolved_through_exact_profile_ids":resolved_names,
                 "notice":"Works, linked recordings and Wikidata song/single entities overlap; never sum them as unique songs. No lyric rights granted."}
     destination=Path(report_path)
     destination.parent.mkdir(parents=True,exist_ok=True)

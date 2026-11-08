@@ -6,6 +6,7 @@ from collections import defaultdict
 from pathlib import Path
 from .bootstrap import bootstrap
 from .catalogue import canonical, connect, coverage, mode
+from .enrich_roles import evidence_summary
 
 
 def tokens(value):
@@ -30,6 +31,17 @@ def export(database, output="dist/catalogue"):
             digest.update(canonical(list(row)).encode())
         for row in db.execute("SELECT id,payload FROM artist_profiles ORDER BY id"):
             digest.update(canonical(list(row)).encode())
+        for row in db.execute("SELECT track_id,artist_id,role,name FROM credits ORDER BY track_id,artist_id,role"):
+            digest.update(canonical(list(row)).encode())
+        for row in db.execute("SELECT recording_id,work_id FROM work_recordings ORDER BY recording_id,work_id"):
+            digest.update(canonical(list(row)).encode())
+        for row in db.execute("SELECT key,value FROM meta WHERE key IN ('role_enrichment_digest','v4_expansion_digest') ORDER BY key"):
+            digest.update(canonical(list(row)).encode())
+        if db.execute("SELECT 1 FROM sqlite_master WHERE name='role_credit_proofs'").fetchone():
+            for row in db.execute("SELECT id,payload FROM role_credit_proofs ORDER BY id"):
+                digest.update(canonical(list(row)).encode())
+        for row in db.execute("SELECT recording_id,native_ref,romanized_ref,rights_evidence,review_state FROM lyric_pair_clearances ORDER BY recording_id"):
+            digest.update(canonical(list(row)).encode())
         version=digest.hexdigest()[:24]
         target=root/version
         target.mkdir(exist_ok=True)
@@ -39,6 +51,13 @@ def export(database, output="dist/catalogue"):
             dest=target/path
             dest.parent.mkdir(parents=True,exist_ok=True)
             dest.write_text(canonical(value),encoding="utf-8")
+        proof_buckets=defaultdict(dict)
+        if db.execute("SELECT 1 FROM sqlite_master WHERE name='role_credit_proofs'").fetchone():
+            for row in db.execute("SELECT DISTINCT recording_id FROM role_credit_proofs ORDER BY recording_id"):
+                key=hashlib.sha256(row[0].encode()).hexdigest()[:2]
+                proof_buckets[key][row[0]]=evidence_summary(db,row[0])
+            for key,value in proof_buckets.items():
+                write(f"proofs/{key}.json",value)
         for entity in ["tracks","artists"]:
             buckets=defaultdict(lambda:defaultdict(list))
             facets=defaultdict(list)
@@ -52,6 +71,9 @@ def export(database, output="dist/catalogue"):
                     item["lyrics_available"]=False
                     item["credits"]=[dict(r) for r in db.execute("SELECT artist_id,name,role FROM credits WHERE track_id=? ORDER BY role,name",(row["id"],))]
                     item["linked_recordings"]=db.execute("SELECT count(*) FROM work_recordings WHERE work_id=?",(row["id"],)).fetchone()[0]
+                    if item['kind']=='recording':
+                        item['role_proof_count']=db.execute("SELECT count(*) FROM role_credit_proofs WHERE recording_id=?",(row['id'],)).fetchone()[0] if proof_buckets else 0
+                        item['associated_work_ids']=sorted({r[0].split(':')[-1] for r in db.execute("SELECT work_id FROM work_recordings WHERE recording_id=?",(row['id'],))})
                     body=" ".join([item["title"],*item["aliases"],item["album"] or "",*(c["name"] or "" for c in item["credits"])])
                     keys={"source:"+item["source"],"kind:"+item["kind"]}
                     keys.update("language:"+v for v in item["languages"])
