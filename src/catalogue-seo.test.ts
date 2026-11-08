@@ -97,12 +97,12 @@ describe('real prerender route SEO', () => {
     expect(local.baseUrl).toBe('http://localhost:4173');
     expect(pageSeo('/songs/munbe-vaa/', local).robots).toBe('noindex,follow');
   });
-  it('requires an explicit real HTTPS root origin before enabling indexing', () => {
+  it('requires an explicit real HTTPS origin and safe project path before enabling indexing', () => {
     for (const url of [
       'http://localhost:4173',
       'https://localhost',
       'https://user:pass@site.test',
-      'https://site.test/path',
+      'https://site.test/unsafe%20path',
       'https://site.test/?q=a',
       'ftp://site.test',
     ])
@@ -168,4 +168,12 @@ it('production indexing needs an explicit page review list, never just a real-me
   expect(pageSeo('/songs/tirukkural-invocation/', reviewed).robots).toBe('index,follow');
   expect(pageSeo('/songs/munbe-vaa/', reviewed).robots).toBe('noindex,follow');
   expect(() => siteConfig('https://site.test', true, ['/invented-bulk-page/'])).toThrow();
+});
+
+it('supports factual project-host canonicals without changing logical routes', () => {
+  const config = siteConfig('https://paulraj916.github.io/PowerWords/', false);
+  expect(config.baseUrl).toBe('https://paulraj916.github.io/PowerWords');
+  expect(pageSeo('/songs/tirukkural-invocation/', config).canonical).toBe(
+    'https://paulraj916.github.io/PowerWords/songs/tirukkural-invocation/',
+  );
 });

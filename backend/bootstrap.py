@@ -6,16 +6,16 @@ import json
 import os
 from collections import Counter
 from pathlib import Path
-from .adapt_batch import adapt
+from .adapt_batch import adapt, adapt_profile_v2
 from .catalogue import (ValidationError, canonical, connect, coverage, file_hash, import_profiles,
-                        initialize, publish, stage)
+                        initialize, publish, stage, resolve_credit_names)
 
 
 def prepare(root, entry, cache):
     source = (root / entry["file"]).resolve()
     if not source.is_relative_to(root.resolve()) or file_hash(source) != entry["compressed_sha256"]:
         raise ValidationError("bundled compressed source hash mismatch")
-    key = entry["uncompressed_sha256"][:24] + "-adapter-v3"
+    key = entry["uncompressed_sha256"][:24] + "-adapter-v4"
     normalized, report_path = cache / (key + ".jsonl"), cache / (key + ".json")
     if normalized.exists() and report_path.exists():
         report = json.loads(report_path.read_text())
@@ -39,7 +39,7 @@ def prepare(root, entry, cache):
                 continue
             try:
                 value = json.loads(line)
-                record = value if entry["kind"] == "artist-profiles" else adapt(value,line)
+                record = value if entry["kind"] == "artist-profiles" else adapt_profile_v2(value) if entry["kind"]=="artist-profiles-v2" else adapt(value,line)
                 out.write(canonical(record) + "\n")
                 accepted += 1
             except (ValidationError, ValueError, TypeError, AttributeError) as exc:
@@ -65,7 +65,7 @@ def bootstrap(database="var/catalogue.sqlite", directory="data/cc0", report_path
     reports=[]
     for entry in manifest["files"]:
         normalized,report=prepare(root,entry,cache)
-        if entry["kind"] == "artist-profiles":
+        if entry["kind"] in {"artist-profiles","artist-profiles-v2"}:
             with normalized.open(encoding="utf-8") as source:
                 report["profiles_changed"]=import_profiles(database,(json.loads(line) for line in source))
         else:
@@ -78,8 +78,9 @@ def bootstrap(database="var/catalogue.sqlite", directory="data/cc0", report_path
                 if run["completed"]:
                     break
         reports.append(report)
+    resolved_names=resolve_credit_names(database)
     with connect(database,True) as db:
-        result={"batch_reports":reports,"coverage":coverage(db),"network_requests":0,
+        result={"batch_reports":reports,"coverage":coverage(db),"network_requests":0,"tracks_with_names_resolved_through_exact_profile_ids":resolved_names,
                 "notice":"Works, linked recordings and Wikidata song/single entities overlap; never sum them as unique songs. No lyric rights granted."}
     destination=Path(report_path)
     destination.parent.mkdir(parents=True,exist_ok=True)

@@ -52,11 +52,24 @@ def adapt(raw, original_line):
         sid = raw.get("externalIds", {}).get("musicbrainzWork")
         if raw.get("entityType") == "recording":
             sid = raw.get("externalIds", {}).get("musicbrainzRecording")
+            recording_credits=[]
+            relationship_evidence=[]
+            for artist in raw.get("artistCredit",[]):
+                recording_credits.append({"source_id":artist.get("artistId"),"name":artist.get("name"),"role":"credited_artist"})
+            for relationship in raw.get("explicitArtistRelationships",[]):
+                role=relationship.get("role")
+                if role not in ROLES:
+                    evidence.setdefault("unmapped_roles",[]).append(role)
+                    continue
+                recording_credits.append({"source_id":relationship.get("artistId"),"name":relationship.get("artistName"),"role":role})
+                relationship_evidence.append({"artist_id":relationship.get("artistId"),"role":role,"role_id":relationship.get("roleId"),"relationship_id":relationship.get("sourceRelationshipId"),"attributes":relationship.get("attributes",[])})
+            association=raw.get("indiaAssociation",{})
+            association_evidence={"tier":association.get("tier"),"work_languages":raw.get("associatedWorkLanguages",[]),"release_text_languages":association.get("releaseTextLanguages",[]),"release_ids":raw.get("associatedReleaseIds",[]),"india_release_market":bool(association.get("indiaReleaseMarket"))} if association.get("tier") else {}
             return validate({"source": provider,"source_id":sid,"source_url":proof.get("sourceUrl"),
                 "license":"CC0-1.0","license_url":SOURCES[provider][1],"retrieved_at":proof.get("retrievedAt"),
-                "title":title,"aliases":[],"languages":[],"countries":[],"credits":[],"year":None,"album":None,
+                "title":title,"aliases":[],"languages":[],"countries":[],"credits":recording_credits,"credit_evidence":relationship_evidence,"association_evidence":association_evidence,"year":None,"album":None,
                 "kind":"recording","duration_ms":raw.get("durationMs"),"associated_work_ids":raw.get("associatedWorkIds",[]),
-                "scope_basis":"Explicit recording-to-composition relationship. Recording language, singer, release date and nationality are UNKNOWN; overseas covers are possible.","provenance":evidence})
+                "scope_basis":"Preferred source-associated recording; work language and edition-text language are evidence, NOT sung language or nationality. Generic credited artists are not inferred singers/composers; only explicit relationships carry roles. Recording first release date remains unknown.","provenance":evidence})
         if raw.get("entityType") != "work":
             raise ValidationError("unsupported source entity type")
         kind, countries, year = "work", [], None
@@ -116,3 +129,16 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+def adapt_profile_v2(raw):
+    """Source aliases and generic credited-artist identity, never inferred occupation/nationality."""
+    sid=raw.get("id","").removeprefix("mb-artist:")
+    proof=raw.get("provenance",[{}])[0]
+    if proof.get("license")!="CC0-1.0" or proof.get("sourceUrl")!="https://musicbrainz.org/artist/"+sid:
+        raise ValidationError("invalid v2 profile provenance")
+    aliases=[]
+    for value in raw.get("aliases",[]):
+        name=value.get("name") if isinstance(value,dict) else value
+        if isinstance(name,str) and name and len(name)<=500:aliases.append(name)
+    return {"id":"musicbrainz:artist:"+sid,"name":raw.get("name"),"aliases":list(dict.fromkeys(aliases))[:40],"roles":[],"countries":[],"countryEvidence":"Source credit/relationship association only, not nationality or inferred singer occupation.","externalIds":{"wikidata":None,"musicbrainz":[sid]},"provenance":[{**proof,"licenseUrl":SOURCES["musicbrainz"][1]}]}

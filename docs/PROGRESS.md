@@ -1,5 +1,11 @@
 # Current scalable catalogue checkpoint · 09 November 2026 (IST)
 
+## Active v2 lakh-scale checkpoint (supersedes v1 counts below)
+
+Read `docs/V2_LAKH_CATALOGUE.md` first. Active index: **123,252 distinct MusicBrainz recordings** (preferred 123,244 + eight older retained), **14,884 works**, **212 Wikidata music entities** = **138,348 source music entities**, plus **19,921 source artist profiles**, not deduplicated songs/people. Explicit vocal coverage: **10,956 recordings / 2,411 source artist IDs**. Work/release-text language associations are separately filtered and NEVER treated as sung language or nationality. Roles/attributes retain exact source evidence. Root and `/PowerWords/` static builds work; free default-noindex Pages preview target is https://paulraj916.github.io/PowerWords/ (check actual deployment status). Main is not merged or overwritten.
+
+V3 normalized evidence/handoff is preserved in `data/pending-v3` for portable continuation; it is NOT imported or claimed active yet. Follow its exact sidecar→proof→nondeleting overlay order next; no new recording count. Never infer vocalist from artist credit, equate edition appearances to songs, delete old IDs/evidence, scrape protected lyrics or promise Google/AdSense results. No uninterrupted 24-hour job exists.
+
 New work is on `feat/scalable-india-catalogue`, preserving published main `7bbb59650f3e0b864c13a1da3169ec26cc9bc327`. Actual implementation: durable SQLite FTS5 core/staging/provenance/identities/graph/profiles; optional read-only API; immutable free-static query/page/facet shards; source rights and bounded fetch tooling; all-India language taxonomy with observed/unknown coverage; original reader/SEO retained.
 
 Real accepted bulk index: **14,884 compositions; 17,130 linked recordings; 212 Wikidata song/single entities; 2,446 source artist profiles**. These are not additive unique songs/people. 19 matching source-selection languages, 3,059 source credit identities, 17,332 graph edges, zero missing work targets, 32,085 unknown years and 17,154 unknown-language entities. One missing-title source item is quarantined. Actual reports: `artifacts/catalogue-real-coverage.json` and compressed-source manifest. Original curated 18 entries are separate and can overlap.

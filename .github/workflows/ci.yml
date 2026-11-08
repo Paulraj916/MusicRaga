@@ -37,3 +37,46 @@ jobs:
             playwright-report/
             artifacts/
           retention-days: 14
+
+  free-pages-preview:
+    needs: verify
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/feat/scalable-india-catalogue')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    concurrency:
+      group: pages-preview
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    env:
+      VITE_BASE_PATH: /PowerWords/
+      SITE_URL: https://paulraj916.github.io/PowerWords
+      ALLOW_INDEXING: 'false'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: npm ci
+      - run: npm run build
+      - run: npm run test:seo
+      - run: npx playwright install --with-deps chromium
+      - name: Verify actual project-host discovery before deploying
+        run: |
+          node scripts/serve.mjs --port 4174 &
+          npm run test:project-host
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+      - id: deployment
+        uses: actions/deploy-pages@v4

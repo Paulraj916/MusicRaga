@@ -96,7 +96,7 @@ test('real free static shards discover native metadata, artists and linked recor
   await page.goto('/');
   await page.getByRole('button', { name: 'Open India index', exact: true }).click();
   const dialog = page.getByRole('dialog', { name: 'The growing India index', exact: true });
-  await expect(dialog.getByText(/32,226 indexed entities/)).toBeVisible();
+  await expect(dialog.getByText(/138,348 indexed entities/)).toBeVisible();
   await expect(dialog.getByText(/Free static preview/)).toBeVisible();
   await dialog.getByRole('textbox', { name: 'Native title or artist' }).fill('எஞ்சாய்');
   await dialog.getByRole('button', { name: 'Search index', exact: true }).click();
@@ -105,10 +105,12 @@ test('real free static shards discover native metadata, artists and linked recor
   await dialog.getByRole('combobox', { name: 'Explore', exact: true }).selectOption('artists');
   await dialog.getByRole('textbox', { name: 'Native title or artist' }).fill('Rahman');
   await dialog.getByRole('button', { name: 'Search index', exact: true }).click();
-  await expect(dialog.getByRole('heading', { name: 'A. R. Rahman', exact: true })).toBeVisible();
+  await expect(
+    dialog.getByRole('heading', { name: 'A. R. Rahman', exact: true }).first(),
+  ).toBeVisible();
   const artist = dialog
     .locator('article')
-    .filter({ has: page.getByRole('heading', { name: 'A. R. Rahman', exact: true }) });
+    .filter({ has: page.locator('a[href="https://www.wikidata.org/wiki/Q108560"]') });
   await artist
     .getByRole('button', { name: 'Explore linked MusicBrainz credit records' })
     .first()
@@ -125,4 +127,31 @@ test('real free static shards discover native metadata, artists and linked recor
     'recording',
   );
   await expect(dialog.getByText(/Language unknown/).first()).toBeVisible();
+});
+
+test('preferred v2 metadata filters explicit vocals separately from generic credit and language evidence', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Open India index', exact: true }).click();
+  const dialog = page.getByRole('dialog', { name: 'The growing India index', exact: true });
+  await expect(
+    dialog.getByText(/10,956 recordings with explicit vocal relationships/),
+  ).toBeVisible();
+  await dialog.getByRole('textbox', { name: 'Native title or artist' }).fill('Paarkadhe');
+  await dialog.getByRole('button', { name: 'Search index', exact: true }).click();
+  await dialog
+    .getByRole('combobox', { name: 'Contributor role', exact: true })
+    .selectOption('vocal');
+  await dialog
+    .getByRole('combobox', { name: 'Language association (not sung language)', exact: true })
+    .selectOption('tam');
+  await expect(
+    dialog.getByRole('heading', { name: 'Paarkadhe Paarkadhe', exact: true }).first(),
+  ).toBeVisible();
+  await expect(
+    dialog.getByText(/Neither proves sung language or Indian origin/).first(),
+  ).toBeVisible();
+  await expect(dialog.getByText(/Language unknown/).first()).toBeVisible();
+  expect(await dialog.evaluate((el) => el.scrollWidth <= el.clientWidth + 1)).toBe(true);
 });

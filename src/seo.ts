@@ -27,10 +27,10 @@ export function siteConfig(
     u.password ||
     u.search ||
     u.hash ||
-    u.pathname !== '/'
+    !/^\/(?:[A-Za-z0-9_-]+\/?)*$/.test(u.pathname)
   )
     throw new Error(
-      'SITE_URL must be a root HTTP(S) origin without credentials, path, query or fragment.',
+      'SITE_URL must be a HTTP(S) origin with an optional simple project path, without credentials, query or fragment.',
     );
   if (
     allowIndexing &&
@@ -39,7 +39,11 @@ export function siteConfig(
     throw new Error('ALLOW_INDEXING requires an explicit real HTTPS origin, not localhost.');
   if (reviewedPaths.some((path) => !ALL_ROUTES.includes(path)))
     throw new Error('Reviewed indexing paths must be actual curated routes.');
-  return { baseUrl: u.origin, allowIndexing, reviewedPaths: [...new Set(reviewedPaths)] };
+  return {
+    baseUrl: u.origin + u.pathname.replace(/\/$/, ''),
+    allowIndexing,
+    reviewedPaths: [...new Set(reviewedPaths)],
+  };
 }
 export function pageSeo(path: string, config: SeoConfig) {
   const route = resolveRoute(path);

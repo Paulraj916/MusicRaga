@@ -56,7 +56,7 @@ Every listed route is an actual prebuilt HTML file. Titles, descriptions, OG, ca
 
 ## SEO launch configuration
 
-Default builds use the honest preview origin `http://localhost:4173`, `noindex,follow` and robots `Disallow: /`. No fictional production domain is shipped. Copy `.env.example` to `.env`, set **your actual HTTPS root origin** as `SITE_URL`, review rights/content/operator readiness, and only then explicitly set `ALLOW_INDEXING=true` **and `REVIEWED_INDEX_PATHS` to an individually reviewed list of substantive eligible routes** and rebuild. An enabled indexing build without that list fails closed.
+Default builds use the honest preview origin `http://localhost:4173`, `noindex,follow` and robots `Disallow: /`. No fictional production domain is shipped. Copy `.env.example` to `.env`, set **your actual HTTPS origin and optional simple project path** as `SITE_URL`, review rights/content/operator readiness, and only then explicitly set `ALLOW_INDEXING=true` **and `REVIEWED_INDEX_PATHS` to an individually reviewed list of substantive eligible routes** and rebuild. An enabled indexing build without that list fails closed.
 
 `dist/sitemap.xml`, `dist/robots.txt`, canonical/OG/hreflang and `dist/build-manifest.json` derive from the configured origin. Fictional-only routes **always stay noindex and outside the sitemap**, even when indexing is enabled. See [SEO](docs/SEO.md) and [deployment](docs/DEPLOYMENT.md). These mechanisms do not promise rankings, rich results, AdSense approval or revenue.
 
@@ -87,23 +87,25 @@ React 19 + strict TypeScript + Vite, complemented by a stdlib Python/SQLite cata
 
 No complete discography, commercial lyric licence, broad independent catalogue, production editorial/admin system, cross-device account sync, provider integration, full fuzzy/semantic search or live ads. Search is Unicode-normalised terms and known aliases; related-album recovery is labelled. Filters are single exact selections, not ranges/multiselect. Native-language writing/renderings need human editorial review. Automated axe/Chromium tests are not screen-reader certification, real-device QA or a zero-bug guarantee. Static metadata-only pages and a small text edition do not make the business launch-ready.
 
-## Growing India catalogue — new scalable checkpoint
+## Growing India catalogue — active lakh-scale v2 checkpoint
 
-The curated 18-entry reader is now complemented by **14,884 sourced compositions**, **17,130 linked recordings**, **212 accepted Wikidata song/single entities**, and **2,446 source artist profiles**. These are **not additive unique-song/unique-person counts or all Indian music**. One missing-title source row is quarantined. Preferred works have explicit source Song + Indian-language evidence across 19 selection languages; cross-border/overseas versions remain possible. No commercial lyrics/audio/art is imported.
+**123,252 distinct MusicBrainz recordings**, **14,884 source compositions**, **212 Wikidata music entities**, and **19,921 separate source artist profiles** are available through **Open India index**, above the curated shelf. These are not additive unique-song/unique-person counts, nationality proof, licensed lyrics or all Indian music. Eight older recording IDs are preserved. **10,956 recordings / 2,411 source artist IDs** have explicit vocal evidence; generic credited artists are not inferred singers or composers.
 
-**Open India index** searches actual metadata/native aliases, contributor roles, languages and typed entities; artist profiles and composition→recording exploration work on free static hosting via query-specific shards. No giant catalogue array is added to the client bundle. The optional SQLite/FTS5 API supports durable staging/upsert, keyset pagination, Unicode marks, provenance, unknowns and local publication. Default bulk setup is offline and hash-verified; no paid API required.
+The **Language association (not sung language)** filter distinguishes work/release-text association from actual unknown recording language. Source roles/attributes/proofs, artist credit filtering, native aliases and work→recording exploration work on paged API or **free static query-specific shards**, without a giant client catalogue array. Standard full builds require Python; default bootstrap is offline and hash-verified. See [exact v2 scope/metrics/deferred work](docs/V2_LAKH_CATALOGUE.md).
+
+Configured ad-free project preview target: **https://paulraj916.github.io/PowerWords/**. Actual availability depends on a successful `free-pages-preview` job, not this README alone. Project-prefix clean routes/assets/native discovery have a dedicated desktop/mobile regression. Default builds remain root-host compatible; `.env.example` describes `VITE_BASE_PATH`. HTML indexing and live ads remain off.
 
 ```sh
-npm run catalogue:bootstrap           # optional mutable local SQLite database
-npm run build                        # full static shards + original clean SEO pages
-npm run catalogue:serve              # optional local API + frontend, port 4180
-npm run test:backend                  # Python integration/rights/import/search tests
-npm run test:ads                      # ads default-off/config validation
+npm run catalogue:bootstrap          # optional local SQLite catalogue
+npm run catalogue:serve              # optional actual read-only API, port 4180
+npm run test:backend                 # source/rights/import/native-search regressions
+npm run test:ads                     # empty/default-off publisher validation
+npm run test:project-host            # separate /PowerWords/ local build on port 4174
 ```
 
-Read [SOURCE_PIPELINE](docs/SOURCE_PIPELINE.md), [SCALABLE_ARCHITECTURE](docs/SCALABLE_ARCHITECTURE.md), [24-hour checkpoints](docs/24_HOUR_CHECKPOINT_PLAN.md) and [free hosting/search/ads](docs/FREE_HOSTING_SEARCH_ADS.md). Exact real counts/unknowns: `artifacts/catalogue-real-coverage.json`. A separate **100,000-row SYNTHETIC benchmark** measures storage/import/search capacity, never real song coverage. No 24-hour subscription-independent execution, all-India completeness, #1 ranking, instant indexing, AdSense approval or earnings is promised.
+Read [SOURCE_PIPELINE](docs/SOURCE_PIPELINE.md), [SCALABLE_ARCHITECTURE](docs/SCALABLE_ARCHITECTURE.md), [24-hour checkpoints](docs/24_HOUR_CHECKPOINT_PLAN.md), [free hosting/search/ads](docs/FREE_HOSTING_SEARCH_ADS.md) and V2_LAKH_CATALOGUE. Actual v2 report: `artifacts/catalogue-v2-coverage.json`. The separate **100,000-row SYNTHETIC benchmark** is capacity evidence, never real song coverage. Pending v3 evidence is preserved portably in `data/pending-v3` but is NOT active and its role gains are not claimed.
 
-Ad configuration and ads.txt generation are validated but **live ad requests are hard-blocked**, with empty publisher settings by default. A real own publisher ID, approval, certified CMP/privacy, CSP and production review are still needed. Free root-hosted static deployment is supported; GitHub Pages project-subpath routing still needs adaptation. This upgrade creates code/PR, not accounts, deployment or Search Console/AdSense submissions.
+No all-India completion, uninterrupted subscription-independent 24-hour run, #1 ranking, instant indexing, AdSense approval or earnings guarantee. GitHub Pages is an ad-free open-source preview, not a commercial-hosting promise; its terms/limits, project-root ads.txt and header restrictions are documented. No paid resources/accounts or Google submissions were created. Real operator/legal/native review, protected-lyrics permissions and approved consent-safe publisher setup remain.
 
 ## Public source repository
 

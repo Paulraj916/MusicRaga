@@ -24,3 +24,7 @@ data/cc0/reproduction/data/*.jsonl
 
 .catalogue-build/
 .catalogue-build-final/
+
+# Generated alternate local project-host builds and temporary build copies
+dist-pages/
+.pages-build-backup-*/

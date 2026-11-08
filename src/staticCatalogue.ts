@@ -8,10 +8,12 @@ type Manifest = {
   entities: Record<string, { count: number; term_buckets: string[] }>;
 };
 const root = `${import.meta.env.BASE_URL}catalogue/`;
-const cache = new Map<string, unknown>();
+const cache = new Map<string, { value: unknown; bytes: number }>();
+let cacheBytes = 0;
+const CACHE_BYTE_BUDGET = 8 * 1024 * 1024; // decoded UTF-8 JSON budget, not a JS heap guarantee.
 async function read<T>(url: string, signal: AbortSignal, missing = false): Promise<T> {
   const isManifest = url.endsWith('/manifest.json');
-  if (!isManifest && cache.has(url)) return cache.get(url) as T;
+  if (!isManifest && cache.has(url)) return cache.get(url)!.value as T;
   const response = await fetch(url, {
     signal,
     credentials: 'omit',
@@ -23,9 +25,18 @@ async function read<T>(url: string, signal: AbortSignal, missing = false): Promi
       'The optional catalogue server and static index are unavailable. The curated website still works.',
     );
   }
-  const result = (await response.json()) as T;
-  if (cache.size >= 16) cache.delete(cache.keys().next().value!);
-  if (!isManifest) cache.set(url, result);
+  const text = await response.text();
+  const bytes = new TextEncoder().encode(text).byteLength;
+  const result = JSON.parse(text) as T;
+  if (!isManifest && bytes <= CACHE_BYTE_BUDGET) {
+    while (cache.size && (cache.size >= 16 || cacheBytes + bytes > CACHE_BYTE_BUDGET)) {
+      const oldest = cache.keys().next().value!;
+      cacheBytes -= cache.get(oldest)!.bytes;
+      cache.delete(oldest);
+    }
+    cache.set(url, { value: result, bytes });
+    cacheBytes += bytes;
+  }
   return result;
 }
 async function fingerprint(value: string) {
@@ -85,7 +96,15 @@ export async function staticCatalogue(path: string, signal: AbortSignal): Promis
       combine(bucket[hash] ?? []);
     }
     const sameCredit = params.get('role') && params.get('artist');
-    for (const key of ['language', 'role', 'source', 'artist', 'kind', 'work']) {
+    for (const key of [
+      'language',
+      'association_language',
+      'role',
+      'source',
+      'artist',
+      'kind',
+      'work',
+    ]) {
       const value = params.get(key);
       if (value && !(sameCredit && ['role', 'artist'].includes(key))) await facet(key, value);
     }

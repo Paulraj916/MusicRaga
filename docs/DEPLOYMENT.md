@@ -44,3 +44,7 @@ Passing automated checks does not guarantee legal compliance, security, accessib
 ## Full free static catalogue build
 
 Standard build now also needs Python 3.11+/SQLite FTS5 and emits versioned query shards/pages from bundled compressed CC0 metadata, so optional Python runtime/API is not required for static discovery. No raw dump/database should be deployed. Follow FREE_HOSTING_SEARCH_ADS.md for root-host/free-tier limitations, real SITE_URL, indexing review and intentionally blocked live ads. GitHub Pages project subpaths require separate adaptation. No paid service or live deployment is created by this upgrade.
+
+## New v2/project-host clarification
+
+`docs/V2_LAKH_CATALOGUE.md` supersedes the smaller v1 counts and earlier project-base-path limitation: root and `/PowerWords/` builds now work. The free Pages preview is configured through the CI-gated `free-pages-preview` job, with actual live status checked at delivery. It is an ad-free default-noindex project demonstration, not a commercial hosting/AdSense promise; Pages ignores `_headers`, cannot serve this project's root-level publisher ads.txt or run Python, and has documented size/bandwidth/usage limits. Actual origin/operator/content/indexing/privacy/advertising review still required. Pending v3 sidecars are preserved but not active; do not count their role gains yet.

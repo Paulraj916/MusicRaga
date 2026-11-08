@@ -1,3 +1,4 @@
+import { appHref, logicalPath } from './deployment';
 import { useEffect, useRef, useState } from 'react';
 import IndiaIndex from './IndiaIndex';
 import type { ReactNode } from 'react';
@@ -537,7 +538,7 @@ function Reader({
 
 export default function App({ initialPath }: { initialPath?: string } = {}) {
   const [path, setPath] = useState(
-    initialPath ?? (typeof window !== 'undefined' ? window.location.pathname : '/'),
+    initialPath ?? (typeof window !== 'undefined' ? logicalPath(window.location.pathname) : '/'),
   );
   const route = resolveRoute(path);
   const [scope, setScope] = useState('all');
@@ -630,7 +631,7 @@ export default function App({ initialPath }: { initialPath?: string } = {}) {
   }, [selected]);
   useEffect(() => {
     const sync = () => {
-      setPath(window.location.pathname);
+      setPath(logicalPath(window.location.pathname));
       setView('discover');
     };
     window.addEventListener('popstate', sync);
@@ -721,7 +722,7 @@ export default function App({ initialPath }: { initialPath?: string } = {}) {
     else setMetadataPreview(song);
   };
   const navigatePath = (nextPath: string) => {
-    window.history.pushState(null, '', nextPath);
+    window.history.pushState(null, '', appHref(nextPath));
     setPath(nextPath);
     setView('discover');
     setSelected(null);
@@ -735,7 +736,7 @@ export default function App({ initialPath }: { initialPath?: string } = {}) {
   };
   const navigate = (next: View) => {
     if (path !== '/') {
-      window.history.pushState(null, '', '/');
+      window.history.pushState(null, '', appHref('/'));
       setPath('/');
     }
     setScope('all');
@@ -778,7 +779,7 @@ export default function App({ initialPath }: { initialPath?: string } = {}) {
         aria-label={menu ? 'Navigation' : undefined}
       >
         <a
-          href="/"
+          href={appHref('/')}
           className="brand"
           onClick={(e) => {
             e.preventDefault();
@@ -920,7 +921,8 @@ export default function App({ initialPath }: { initialPath?: string } = {}) {
         <main id="main" tabIndex={-1}>
           <section className="index-entry" aria-label="Growing catalogue">
             <span>
-              Beyond the curated shelf <small>Optional, source-led metadata index</small>
+              Real India-associated discovery{' '}
+              <small>Source-backed recordings, artists and language evidence · metadata only</small>
             </span>
             <button className="button" onClick={() => setShowIndiaIndex(true)}>
               Open India index
@@ -1293,7 +1295,7 @@ export default function App({ initialPath }: { initialPath?: string } = {}) {
                           {CATALOGUE.some((s) => s.id === song.id) ? (
                             <a
                               className="song-title"
-                              href={songPath(song)}
+                              href={appHref(songPath(song))}
                               onClick={(e) => follow(e, songPath(song), navigatePath)}
                             >
                               {song.title}
@@ -1308,10 +1310,12 @@ export default function App({ initialPath }: { initialPath?: string } = {}) {
                         {CATALOGUE.some((s) => s.id === song.id) ? (
                           <a
                             className="artist-link"
-                            href={artistPath(
-                              song.credits?.find((c) => c.role === 'singer')?.name ??
-                                song.credits?.[0]?.name ??
-                                song.artist,
+                            href={appHref(
+                              artistPath(
+                                song.credits?.find((c) => c.role === 'singer')?.name ??
+                                  song.credits?.[0]?.name ??
+                                  song.artist,
+                              ),
                             )}
                             onClick={(e) =>
                               follow(

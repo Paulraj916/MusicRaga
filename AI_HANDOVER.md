@@ -1,5 +1,11 @@
 # AI / developer continuation handover
 
+## Active v2 lakh-scale checkpoint (supersedes v1 counts below)
+
+Read `docs/V2_LAKH_CATALOGUE.md` first. Active index: **123,252 distinct MusicBrainz recordings** (preferred 123,244 + eight older retained), **14,884 works**, **212 Wikidata music entities** = **138,348 source music entities**, plus **19,921 source artist profiles**, not deduplicated songs/people. Explicit vocal coverage: **10,956 recordings / 2,411 source artist IDs**. Work/release-text language associations are separately filtered and NEVER treated as sung language or nationality. Roles/attributes retain exact source evidence. Root and `/PowerWords/` static builds work; free default-noindex Pages preview target is https://paulraj916.github.io/PowerWords/ (check actual deployment status). Main is not merged or overwritten.
+
+V3 normalized evidence/handoff is preserved in `data/pending-v3` for portable continuation; it is NOT imported or claimed active yet. Follow its exact sidecar→proof→nondeleting overlay order next; no new recording count. Never infer vocalist from artist credit, equate edition appearances to songs, delete old IDs/evidence, scrape protected lyrics or promise Google/AdSense results. No uninterrupted 24-hour job exists.
+
 ## Start here
 
 Read `README.md`, `NEXT_STEPS.md`, `docs/PROGRESS.md`, `docs/REAL_CATALOGUE.md`, `docs/SEO.md`, `docs/CONTENT_RIGHTS.md`, `docs/ADS_AND_PRIVACY.md`, then `docs/CATALOGUE.md` and `docs/PUBLICATION.md`. Repository research files are historical.

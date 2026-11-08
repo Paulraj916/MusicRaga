@@ -31,3 +31,7 @@ A starting development machine: Node 24, Python 3.11+ with FTS5, approximately 2
 5. Use official core mirrors/dumps under reviewed rights/terms; release/album/performer/date coverage needs more sources. Obtain approval before any paid capacity, account creation or infrastructure change. Free-tier quotas are not unlimited production capacity.
 
 SQLite online backup (`Connection.backup`) or a fully stopped writer is required for consistent snapshots; do not copy only a live main file while ignoring WAL. Keep private evidence/operator credentials out of the public repository. No runtime or subscription-independent scheduler is created by this code.
+
+## New v2/project-host clarification
+
+`docs/V2_LAKH_CATALOGUE.md` supersedes the smaller v1 counts and earlier project-base-path limitation: root and `/PowerWords/` builds now work. The free Pages preview is configured through the CI-gated `free-pages-preview` job, with actual live status checked at delivery. It is an ad-free default-noindex project demonstration, not a commercial hosting/AdSense promise; Pages ignores `_headers`, cannot serve this project's root-level publisher ads.txt or run Python, and has documented size/bandwidth/usage limits. Actual origin/operator/content/indexing/privacy/advertising review still required. Pending v3 sidecars are preserved but not active; do not count their role gains yet.

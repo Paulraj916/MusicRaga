@@ -1,0 +1,24 @@
+{
+  "passed": true,
+  "local_url": "http://localhost:4174/PowerWords/",
+  "states": [
+    {
+      "viewport": "desktop",
+      "clean_route_reload": 200,
+      "canonical": "https://paulraj916.github.io/PowerWords/songs/tirukkural-invocation/",
+      "native_source_index": true,
+      "explicit_vocal_and_association_filter": true,
+      "axe_violations": 0,
+      "runtime_errors": 0
+    },
+    {
+      "viewport": "mobile",
+      "clean_route_reload": 200,
+      "canonical": "https://paulraj916.github.io/PowerWords/songs/tirukkural-invocation/",
+      "native_source_index": true,
+      "explicit_vocal_and_association_filter": true,
+      "axe_violations": 0,
+      "runtime_errors": 0
+    }
+  ]
+}

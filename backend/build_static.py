@@ -25,7 +25,7 @@ def export(database, output="dist/catalogue"):
     root.mkdir(parents=True,exist_ok=True)
     with connect(database,True) as db:
         db.execute("BEGIN")
-        digest=hashlib.sha256(b"powerwords-static-index-v1")
+        digest=hashlib.sha256(b"powerwords-static-index-v3")
         for row in db.execute("SELECT id,fingerprint FROM tracks ORDER BY id"):
             digest.update(canonical(list(row)).encode())
         for row in db.execute("SELECT id,payload FROM artist_profiles ORDER BY id"):
@@ -55,6 +55,7 @@ def export(database, output="dist/catalogue"):
                     body=" ".join([item["title"],*item["aliases"],item["album"] or "",*(c["name"] or "" for c in item["credits"])])
                     keys={"source:"+item["source"],"kind:"+item["kind"]}
                     keys.update("language:"+v for v in item["languages"])
+                    keys.update("association_language:"+v for key in ["work_languages","release_text_languages"] for v in item.get("association_evidence",{}).get(key,[]))
                     keys.update("role:"+c["role"] for c in item["credits"])
                     keys.update("artist:"+c["artist_id"] for c in item["credits"])
                     keys.update("artistrole:"+c["artist_id"]+"|"+c["role"] for c in item["credits"])
@@ -62,7 +63,7 @@ def export(database, output="dist/catalogue"):
                     for key in keys:
                         facets[key].append(count)
                 else:
-                    body=item["name"]
+                    body=" ".join([item["name"],*item.get("aliases",[])])
                 for token in set(tokens(body)):
                     buckets[format(ord(token[0]),"x")][token].append(count)
                 page.append(item)

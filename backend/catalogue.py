@@ -38,6 +38,7 @@ ROLES = {"singer", "composer", "lyricist", "producer", "arranger", "conductor",
 SOURCES = {"musicbrainz": ("musicbrainz.org", "https://musicbrainz.org/doc/About/Data_License"),
            "wikidata": ("www.wikidata.org", "https://www.wikidata.org/wiki/Wikidata:Licensing"),
            "synthetic": ("example.invalid", "https://creativecommons.org/publicdomain/zero/1.0/")}
+ROLES.update({"vocal", "remixer", "engineer", "instrument", "recording", "mix", "programming", "misc", "phonographic copyright", "sound", "performing orchestra", "editor", "video appearance", "video director", "choreographer", "samples from artist", "mix-DJ", "chorus master", "balance", "audio", "graphic design", "audio director", "legal representation", "artwork", "instrument technician", "artists and repertoire", "compiler", "field recordist", "animation", "cinematographer", "video copyright", "art direction", "design"})
 MAX_LINE = 65536
 
 
@@ -81,7 +82,7 @@ def validate(raw, synthetic=False):
         raise ValidationError("record must be an object")
     allowed = {"source", "source_id", "source_url", "license", "license_url", "retrieved_at",
                "title", "aliases", "languages", "year", "album", "credits", "countries",
-               "kind", "scope_basis", "provenance", "associated_work_ids", "duration_ms"}
+               "kind", "scope_basis", "provenance", "associated_work_ids", "duration_ms", "association_evidence", "credit_evidence"}
     if set(raw) - allowed:
         raise ValidationError("unsupported fields (lyrics/audio and arbitrary metadata are forbidden)")
     source = raw.get("source")
@@ -162,6 +163,38 @@ def validate(raw, synthetic=False):
         if not isinstance(provenance["unmapped_roles"], list) or len(provenance["unmapped_roles"]) > 100:
             raise ValidationError("invalid unmapped roles")
         provenance["unmapped_roles"] = [text(v, "source role", 100) for v in provenance["unmapped_roles"]]
+    association = raw.get("association_evidence", {})
+    if not isinstance(association, dict) or set(association)-{"tier","work_languages","release_text_languages","release_ids","india_release_market"}:
+        raise ValidationError("unsupported language association evidence")
+    if association:
+        if source != "musicbrainz" or kind != "recording" or association.get("tier") not in {"work-language-associated","release-text-language"}:
+            raise ValidationError("invalid association tier")
+        if type(association.get("india_release_market")) is not bool:
+            raise ValidationError("invalid market evidence")
+        for key in ["work_languages","release_text_languages"]:
+            values=association.get(key,[])
+            if not isinstance(values,list) or len(values)>64 or any(v not in LANGUAGES for v in values):
+                raise ValidationError("unsupported association language code")
+        ids=association.get("release_ids",[])
+        if not isinstance(ids,list) or len(ids)>2000 or any(not valid_id("musicbrainz",v)for v in ids):
+            raise ValidationError("invalid edition release identities")
+    result["association_evidence"]=association
+    evidence=raw.get("credit_evidence",[])
+    if not isinstance(evidence,list) or len(evidence)>100:
+        raise ValidationError("invalid credit evidence")
+    for item in evidence:
+        if not isinstance(item,dict) or set(item)-{"artist_id","role","role_id","relationship_id","attributes"} or not valid_id(source,item.get("artist_id")) or item.get("role") not in ROLES:
+            raise ValidationError("invalid relationship evidence")
+        if not valid_id("musicbrainz",item.get("role_id")) or type(item.get("relationship_id")) is not int:
+            raise ValidationError("invalid relationship identity")
+        attributes=item.get("attributes",[])
+        if not isinstance(attributes,list) or len(attributes)>40:
+            raise ValidationError("invalid performance attributes")
+        for attribute in attributes:
+            if not isinstance(attribute,dict) or set(attribute)!={"id","name"} or not valid_id("musicbrainz",attribute["id"]):
+                raise ValidationError("invalid performance attribute identity")
+            text(attribute["name"],"performance attribute",200)
+    result["credit_evidence"]=evidence
     result["provenance"] = provenance
     credits = raw.get("credits", [])
     if not isinstance(credits, list) or len(credits) > 100:
@@ -206,6 +239,10 @@ CREATE TABLE IF NOT EXISTS languages(
  track_id TEXT NOT NULL REFERENCES tracks(id) ON DELETE CASCADE, language TEXT NOT NULL,
  PRIMARY KEY(track_id,language));
 CREATE INDEX IF NOT EXISTS languages_lookup ON languages(language,track_id);
+CREATE TABLE IF NOT EXISTS language_associations(
+ track_id TEXT NOT NULL REFERENCES tracks(id) ON DELETE CASCADE,language TEXT NOT NULL,basis TEXT NOT NULL,
+ PRIMARY KEY(track_id,language,basis));
+CREATE INDEX IF NOT EXISTS association_lookup ON language_associations(language,track_id);
 CREATE TABLE IF NOT EXISTS countries(
  track_id TEXT NOT NULL REFERENCES tracks(id) ON DELETE CASCADE, country TEXT NOT NULL,
  PRIMARY KEY(track_id,country));
@@ -347,7 +384,7 @@ def upsert(db, record):
     if old:
         db.execute("INSERT OR IGNORE INTO revisions VALUES(?,?,?,?)",
                    (identity, old["fingerprint"], old["payload"], now()))
-        for table in ["credits", "languages", "countries", "work_recordings"]:
+        for table in ["credits", "languages", "countries", "work_recordings", "language_associations"]:
             db.execute(f"DELETE FROM {table} WHERE {'recording_id' if table == 'work_recordings' else 'track_id'}=?", (identity,))
         db.execute("DELETE FROM search WHERE rowid=?", (old["pk"],))
     db.execute("""INSERT INTO tracks(id,source,source_id,title,year,sort_year,kind,album,fingerprint,payload,updated_at) VALUES(?,?,?,?,?,?,?,?,?,?,?)
@@ -368,6 +405,8 @@ def upsert(db, record):
     for field, table in [("languages", "languages"), ("countries", "countries")]:
         db.executemany(f"INSERT INTO {table} VALUES(?,?)", [(identity, v) for v in record[field]])
     db.executemany("INSERT INTO work_recordings VALUES(?,?)", [(identity, "musicbrainz:work:" + v) for v in record["associated_work_ids"]])
+    for key,basis in [("work_languages","work"),("release_text_languages","release_text")]:
+        db.executemany("INSERT OR IGNORE INTO language_associations VALUES(?,?,?)",[(identity,v,basis)for v in record.get("association_evidence",{}).get(key,[])])
     body = " ".join([record["title"], *record["aliases"], record["album"] or "",
                      *(c["name"] or "" for c in record["credits"])])
     pk = db.execute("SELECT pk FROM tracks WHERE id=?", (identity,)).fetchone()[0]
@@ -402,6 +441,10 @@ def coverage(db):
     unknown = count("SELECT count(*) FROM tracks t WHERE NOT EXISTS(SELECT 1 FROM languages l WHERE l.track_id=t.id)")
     return {"schema_version": 1, "mode": mode(db), "generation": int(db.execute("SELECT value FROM meta WHERE key='generation'").fetchone()[0]),
             "tracks": total, "entity_kinds": dict(db.execute("SELECT kind,count(*) FROM tracks GROUP BY kind")),
+            "language_associations": [dict(r) for r in db.execute("SELECT language,count(DISTINCT track_id) AS tracks FROM language_associations GROUP BY language")],
+            "association_tiers": dict(db.execute("SELECT json_extract(payload,'$.association_evidence.tier'),count(*) FROM tracks WHERE json_extract(payload,'$.association_evidence.tier') IS NOT NULL GROUP BY 1")),
+            "explicit_vocal_recordings": count("SELECT count(DISTINCT track_id) FROM credits WHERE role='vocal'"),
+            "explicit_vocal_artist_identities": count("SELECT count(DISTINCT artist_id) FROM credits WHERE role='vocal'"),
             "artist_profiles": count("SELECT count(*) FROM artist_profiles"),
             "work_recording_links": count("SELECT count(*) FROM work_recordings"),
             "unresolved_work_links": count("SELECT count(*) FROM work_recordings w WHERE NOT EXISTS(SELECT 1 FROM tracks t WHERE t.id=w.work_id AND t.kind='work')"),
@@ -419,7 +462,7 @@ def coverage(db):
 
 
 def search(db, params):
-    allowed = {"q", "source", "language", "role", "artist", "year", "album", "kind", "country", "work", "limit", "cursor"}
+    allowed = {"q", "source", "language", "role", "artist", "year", "album", "kind", "country", "work", "association_language", "limit", "cursor"}
     if set(params) - allowed:
         raise ValidationError("unknown query parameter")
     try:
@@ -431,7 +474,7 @@ def search(db, params):
     filters = {k: normal(str(v)).strip() if k == "q" else str(v) for k, v in params.items() if k not in {"limit", "cursor"} and v}
     if len(filters.get("q", "")) > 200:
         raise ValidationError("query too long")
-    for key, values in [("source", SOURCES), ("language", LANGUAGES), ("role", ROLES), ("kind", {"work", "recording", "song_or_single", "unknown"})]:
+    for key, values in [("source", SOURCES), ("language", LANGUAGES), ("association_language", LANGUAGES), ("role", ROLES), ("kind", {"work", "recording", "song_or_single", "unknown"})]:
         if key in filters and filters[key] not in values:
             raise ValidationError(f"invalid {key}")
     where, args = [], []
@@ -441,7 +484,7 @@ def search(db, params):
                 raise ValidationError("invalid year")
             where.append(f"t.{key}=?")
             args.append(filters[key])
-    for key, table, column in [("language", "languages", "language"), ("country", "countries", "country")]:
+    for key, table, column in [("language", "languages", "language"), ("association_language", "language_associations", "language"), ("country", "countries", "country")]:
         if key in filters:
             where.append(f"EXISTS(SELECT 1 FROM {table} x WHERE x.track_id=t.id AND x.{column}=?)")
             args.append(filters[key])
@@ -508,18 +551,28 @@ def import_profiles(path, records):
             raise ValidationError("real artist profiles cannot be mixed into a synthetic benchmark database")
         db.execute("BEGIN IMMEDIATE")
         for raw in records:
-            if set(raw) - {"id", "externalIds", "name", "roles", "countries", "countryEvidence", "provenance"}:
+            if set(raw) - {"id", "externalIds", "name", "roles", "countries", "countryEvidence", "provenance", "aliases"}:
                 raise ValidationError("unsupported artist profile fields")
             sid = raw.get("externalIds", {}).get("wikidata")
-            if not valid_id("wikidata", sid):
+            mb=raw.get("externalIds",{}).get("musicbrainz",[])
+            is_mb=raw.get("id","").startswith("musicbrainz:artist:")
+            if is_mb:
+                sid=raw["id"]
+            if not ((is_mb and len(mb)==1 and valid_id("musicbrainz",mb[0]) and sid=="musicbrainz:artist:"+mb[0]) or (not is_mb and valid_id("wikidata", sid))):
                 raise ValidationError("invalid artist profile identity")
             name = text(raw.get("name"), "artist profile name")
             proof = raw.get("provenance", [])
-            if not proof or proof[0].get("license") != "CC0-1.0" or proof[0].get("sourceUrl") != f"https://www.wikidata.org/wiki/{sid}" or proof[0].get("licenseUrl") != SOURCES["wikidata"][1]:
+            provider="musicbrainz" if is_mb else "wikidata"
+            expected=f"https://musicbrainz.org/artist/{mb[0]}" if is_mb else f"https://www.wikidata.org/wiki/{sid}"
+            if not proof or proof[0].get("license") != "CC0-1.0" or proof[0].get("sourceUrl") != expected or proof[0].get("licenseUrl") != SOURCES[provider][1]:
                 raise ValidationError("unapproved artist provenance")
             links = raw.get("externalIds", {}).get("musicbrainz", [])
             if not isinstance(links, list) or len(links) > 30 or any(not valid_id("musicbrainz", v) for v in links):
                 raise ValidationError("invalid artist cross-reference")
+            aliases=raw.get("aliases",[])
+            if not isinstance(aliases,list) or len(aliases)>40:
+                raise ValidationError("invalid profile aliases")
+            for alias in aliases:text(alias,"profile alias")
             payload = canonical(raw)
             if len(payload.encode()) > MAX_LINE:
                 raise ValidationError("profile too large")
@@ -529,7 +582,7 @@ def import_profiles(path, records):
             db.execute("INSERT INTO artist_profiles(id,name,payload) VALUES(?,?,?) ON CONFLICT(id) DO UPDATE SET name=excluded.name,payload=excluded.payload", (sid,name,payload))
             pk = db.execute("SELECT pk FROM artist_profiles WHERE id=?", (sid,)).fetchone()[0]
             db.execute("DELETE FROM profile_search WHERE rowid=?", (pk,))
-            db.execute("INSERT INTO profile_search(rowid,profile_id,body) VALUES(?,?,?)", (pk,sid,normal(name)))
+            db.execute("INSERT INTO profile_search(rowid,profile_id,body) VALUES(?,?,?)", (pk,sid,normal(" ".join([name,*aliases]))))
             accepted += 1
         if accepted:
             db.execute("UPDATE meta SET value=CAST(value AS INTEGER)+1 WHERE key='generation'")
@@ -559,7 +612,7 @@ def search_profiles(db, params):
             if len(token) > 2048:
                 raise ValueError()
             cursor = json.loads(base64.urlsafe_b64decode(token + "="*(-len(token)%4)))
-            if cursor["q"] != query or cursor["generation"] != generation or not valid_id("wikidata",cursor["id"]):
+            if cursor["q"] != query or cursor["generation"] != generation or not (valid_id("wikidata",cursor["id"]) or (cursor["id"].startswith("musicbrainz:artist:") and valid_id("musicbrainz",cursor["id"].removeprefix("musicbrainz:artist:")))):
                 raise ValueError()
         except (ValueError,KeyError,TypeError):
             raise ValidationError("invalid artist cursor; restart search") from None
@@ -569,3 +622,18 @@ def search_profiles(db, params):
     more, rows = len(rows)>limit, rows[:limit]
     cursor = base64.urlsafe_b64encode(canonical({"q":query,"generation":generation,"id":rows[-1]["id"]}).encode()).decode().rstrip("=") if more else None
     return {"items":[json.loads(r["payload"]) for r in rows],"total":total,"next_cursor":cursor,"mode":mode(db)}
+
+
+def resolve_credit_names(path):
+    """Fill only missing credit names through exact same-source profile IDs; never name-match people."""
+    with connect(path) as db:
+        ids=[r[0] for r in db.execute("SELECT DISTINCT c.track_id FROM credits c JOIN artist_profiles p ON p.id=replace(c.artist_id,'wikidata:artist:','') WHERE c.name IS NULL")]
+        db.execute("UPDATE credits SET name=(SELECT p.name FROM artist_profiles p WHERE p.id=replace(credits.artist_id,'wikidata:artist:','')) WHERE name IS NULL AND EXISTS(SELECT 1 FROM artist_profiles p WHERE p.id=replace(credits.artist_id,'wikidata:artist:',''))")
+        for identity in ids:
+            row=db.execute("SELECT pk,payload FROM tracks WHERE id=?",(identity,)).fetchone();record=json.loads(row['payload'])
+            names=[r[0] or '' for r in db.execute("SELECT name FROM credits WHERE track_id=?",(identity,))]
+            body=' '.join([record['title'],*record['aliases'],record['album'] or '',*names])
+            db.execute("DELETE FROM search WHERE rowid=?",(row['pk'],))
+            db.execute("INSERT INTO search(rowid,track_id,body) VALUES(?,?,?)",(row['pk'],identity,normal(body)))
+        if ids:db.execute("UPDATE meta SET value=CAST(value AS INTEGER)+1 WHERE key='generation'")
+        return len(ids)

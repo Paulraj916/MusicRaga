@@ -1,0 +1,217 @@
+{
+  "complete": true,
+  "networkRequests": 0,
+  "sourceArchiveUrl": "https://data.metabrainz.org/pub/musicbrainz/data/fullexport/20261104-002222/mbdump.tar.bz2",
+  "sourceArchiveSha256": "fa3ed54bb6371c1737959f3631c8e5001a79e72c2376433697950c1185470cf1",
+  "sourceRetrievedAt": "2026-11-09T00:48:13.659246+05:30",
+  "targetArtifact": "/workspace/powerwords-india-data-20261109/expansion-v2/data/preferred-india-associated-recordings-v2.jsonl",
+  "targetSha256": "f74b75a7edfaf615d03d7fc264676ba3050ba729cba367dcd8a5061a7c703d74",
+  "immutableV2Inputs": {
+    "/workspace/powerwords-india-data-20261109/expansion-v2/data/preferred-india-associated-recordings-v2.jsonl": "f74b75a7edfaf615d03d7fc264676ba3050ba729cba367dcd8a5061a7c703d74",
+    "/workspace/powerwords-india-data-20261109/expansion-v2/raw/schema-columns.json": "67925b0d606a23968c0a1acc5f70fa60c27aa336afa742f5606d0e71931ae21b",
+    "/workspace/powerwords-india-data-20261109/expansion-v2/data/preferred-india-associated-artists-v2.jsonl": "0ba3f5b2213449aa09496971a6595c2a86e98a2a004a67b01c12ad69cd167eb4",
+    "/workspace/powerwords-india-data-20261109/expansion-v2/data/wikidata-musicbrainz-discogs-artist-crosswalk.jsonl": "110c1cce498132da2bcedbb42d4504696622654ee3b1b57b80a5903270818d0d",
+    "/workspace/powerwords-india-data-20261109/expansion-v2/checkpoints/core-extract.json": "3f4f6008b3a8d177fae326311cc1ffb9b6f6779317baa88329eb1711273f4ef3"
+  },
+  "inputTableHashes": {
+    "recording": {
+      "path": "/workspace/powerwords-india-data-20261109/expansion-v2/raw/tables/recording",
+      "bytes": 4639820470,
+      "sha256": "9b695ef84032c8211a65d3916fa26c2dba951168bcdfdd84724727ab65a5e19c",
+      "rows": 40826836
+    },
+    "link_type": {
+      "path": "/workspace/powerwords-india-data-20261109/expansion-v2/raw/tables/link_type",
+      "bytes": 209013,
+      "sha256": "066781db3820dafff2ddb28955d987e3e60d5d20e9428961bf47547f24e8885f",
+      "rows": 697
+    },
+    "l_recording_work": {
+      "path": "/workspace/powerwords-india-data-20261109/expansion-v2/raw/tables/l_recording_work",
+      "bytes": 539261655,
+      "sha256": "fedf41c97edef19316b8a87b4ad504e9d3f378b6e0b628d940263c02547bf024",
+      "rows": 8006870
+    },
+    "l_artist_work": {
+      "path": "/workspace/powerwords-india-data-20261109/expansion-v2/raw/tables/l_artist_work",
+      "bytes": 322289875,
+      "sha256": "69b42330fadc554f66413dcaeb614bfc07aa6cd6080537e47d0a09941da0f2d7",
+      "rows": 4791379
+    },
+    "l_artist_recording": {
+      "path": "/workspace/powerwords-india-data-20261109/expansion-v2/raw/tables/l_artist_recording",
+      "bytes": 1299793463,
+      "sha256": "3aea414b99d00a0beb0d31cd469f191eb3c776aa3385eda632addb171b84f920",
+      "rows": 19175663
+    },
+    "link": {
+      "path": "/workspace/powerwords-india-data-20261109/expansion-v2/raw/tables/link",
+      "bytes": 75120177,
+      "sha256": "c3bb06b8a66a4cf830df44879053365986d032e752b8910660e37110d2e06ffb",
+      "rows": 1158762
+    },
+    "link_attribute_type": {
+      "path": "/workspace/powerwords-india-data-20261109/expansion-v2/raw/tables/link_attribute_type",
+      "bytes": 230123,
+      "sha256": "2886719e220e8a04a2030237f1c12d2803f2a26e667351a571f23e64019b5f93",
+      "rows": 1172
+    },
+    "link_attribute": {
+      "path": "/workspace/powerwords-india-data-20261109/expansion-v2/raw/tables/link_attribute",
+      "bytes": 37751718,
+      "sha256": "4d90079ae68fe14edd87129861f89361139126d2d05a2039b4cba04a03301644",
+      "rows": 926823
+    },
+    "work_type": {
+      "path": "/workspace/powerwords-india-data-20261109/expansion-v2/raw/tables/work_type",
+      "bytes": 5984,
+      "sha256": "7fafdcc059dd669136d34116cc4417b0feba629ad7df4bff02ea5b1a7ec5ecae",
+      "rows": 29
+    },
+    "work": {
+      "path": "/workspace/powerwords-india-data-20261109/expansion-v2/raw/tables/work",
+      "bytes": 299290131,
+      "sha256": "f95b02c16c9cdb29e88fac3762e9497c40a755445590ed68136ff75bf7340616",
+      "rows": 2893957
+    },
+    "language": {
+      "path": "/workspace/powerwords-india-data-20261109/expansion-v2/raw/tables/language",
+      "bytes": 235987,
+      "sha256": "7758d61ce341da61ce5ce82fbbc422b902f5e805fdd35f59869402becdb181c0",
+      "rows": 7846
+    },
+    "work_language": {
+      "path": "/workspace/powerwords-india-data-20261109/expansion-v2/raw/tables/work_language",
+      "bytes": 83981509,
+      "sha256": "1ae82907d65c927851c2074386138ff1dc09d769bd0a382a6bfc5bf1a5bb5ecd",
+      "rows": 1871553
+    },
+    "artist_type": {
+      "path": "/workspace/powerwords-india-data-20261109/expansion-v2/raw/tables/artist_type",
+      "bytes": 1129,
+      "sha256": "69328bfb7fa9ea13e9a44edac4cdd32f5dd4cca074c34329173223deb0d5028d",
+      "rows": 6
+    },
+    "artist": {
+      "path": "/workspace/powerwords-india-data-20261109/expansion-v2/raw/tables/artist",
+      "bytes": 446439954,
+      "sha256": "dd319086b95bf086e2da36ac0531c9a046e484741b627b72e9d2b063cf5e0ae6",
+      "rows": 3032671
+    },
+    "artist_alias": {
+      "path": "/workspace/powerwords-india-data-20261109/expansion-v2/raw/tables/artist_alias",
+      "bytes": 59053457,
+      "sha256": "5f6886c3db8a9f2449fdd971bcba673c28119ff81bc0bdce59dab2ca99001d2c",
+      "rows": 551073
+    }
+  },
+  "roleTypeContract": {
+    "composer": {
+      "id": 168,
+      "uuid": "d59d99ea-23d4-4a80-b066-edca32ee158f",
+      "entityType0": "artist",
+      "entityType1": "work",
+      "deprecated": false
+    },
+    "performance": {
+      "id": 278,
+      "uuid": "a3005666-a872-32c3-ad06-98af558e99b0",
+      "entityType0": "recording",
+      "entityType1": "work",
+      "deprecated": false
+    },
+    "performer": {
+      "id": 156,
+      "uuid": "628a9658-f54c-4142-b0c0-95f031b544da",
+      "entityType0": "artist",
+      "entityType1": "recording",
+      "deprecated": false
+    },
+    "vocal": {
+      "id": 149,
+      "uuid": "0fdbe3c6-7700-4a31-ae54-b53f06ae1cfa",
+      "entityType0": "artist",
+      "entityType1": "recording",
+      "deprecated": false
+    },
+    "lyricist": {
+      "id": 165,
+      "uuid": "3e48faba-ec01-47fd-8e89-30e81161661c",
+      "entityType0": "artist",
+      "entityType1": "work",
+      "deprecated": false
+    },
+    "authorship": {
+      "id": 170,
+      "uuid": "cc9fcb45-7ab5-4629-bc5f-277f2592fa5a",
+      "entityType0": "artist",
+      "entityType1": "work",
+      "deprecated": false
+    },
+    "writer": {
+      "id": 167,
+      "uuid": "a255bca1-b157-4518-9108-7b147dc3fc68",
+      "entityType0": "artist",
+      "entityType1": "work",
+      "deprecated": false
+    }
+  },
+  "v2ImmutabilityVerified": true,
+  "python": "3.13.5 (main, Aug 10 2026, 12:06:59) [GCC 14.2.0]",
+  "outputs": {
+    "artist-recording-evidence-v3.jsonl": {
+      "bytes": 18537898,
+      "sha256": "08bc8fdc5576efb09289170dd60e2974390442cb070c08bd4e857bad129815a0"
+    },
+    "artist-work-evidence-v3.jsonl": {
+      "bytes": 34616323,
+      "sha256": "1a09679bbb91fa697be4b72de345ed5c9c4333b2bf543a840c67c8d353d0aed5"
+    },
+    "coverage-details-v3.json": {
+      "bytes": 7328,
+      "sha256": "807f4e1de2d563cac5044d1135e921c5a0764293b3a9dc14d97e718ce59d1874"
+    },
+    "coverage-diff-v2-v3.json": {
+      "bytes": 3358,
+      "sha256": "cc800a26685116a2e5512c83bf6eb7d6ae2e33df900a2e9e99571c3fe4328df5"
+    },
+    "recording-role-enrichment-v3.jsonl": {
+      "bytes": 156361362,
+      "sha256": "04bb431a8f6780754cfc7a575a3262e62c9f561e56a620837ed21eef0965e90c"
+    },
+    "recording-work-evidence-v3.jsonl": {
+      "bytes": 23666631,
+      "sha256": "1eeddf1e6ded9784967238a362c0374f6dd484a6e963f73cea1a8b6cf62da363"
+    },
+    "role-artist-crosswalk-v3.jsonl": {
+      "bytes": 413743,
+      "sha256": "ecd346068afd9dd0f9ccc1c00fb3f6ea9878cd5e9fe731fd4acd458fdb9e9041"
+    },
+    "role-artists-v3.jsonl": {
+      "bytes": 4907774,
+      "sha256": "4a98bb955d4a50044e39a6b8831671ac8f8a732c6c131822fb4870cdbafbf8fd"
+    },
+    "role-coverage-v3.json": {
+      "bytes": 4052,
+      "sha256": "f48ceb1422d41f396eae4f3618ef9f94f92cd7ae3d0788952f9eea7802b0b6b8"
+    },
+    "role-works-v3.jsonl": {
+      "bytes": 15128986,
+      "sha256": "54a8ee2a6f5f399205a38edd7b0aeeb59a49049ea100f913592c5a55a86ad644"
+    },
+    "validation-report-v3.json": {
+      "bytes": 1879,
+      "sha256": "3a4fba677af9cd55cfc0912808322ef1946a941267dd86f5f1fffcd1557ebf52"
+    }
+  },
+  "finalizedAfterValidation": true,
+  "baselineWorkArtifact": {
+    "path": "/workspace/powerwords-india-data-20261109/data/indian-language-song-works.jsonl",
+    "sha256": "3d71a9a64cfe1510d950981443df9d6ee4ed7cf095ac9714954b9ff96b2c0b92"
+  },
+  "licenseEvidence": {
+    "path": "/workspace/powerwords-india-data-20261109/expansion-v3/docs/SOURCE_CC0_LICENSE.txt",
+    "sha256": "75f3c90d6fa833817f19d019b35807687c3ed1c0b858b5f274625e96dda24bea"
+  },
+  "builderCodeSha256": "ce25ccb601c52c08f473c4e93298766c8bf36cf17e6427a653d196cfbb783034"
+}

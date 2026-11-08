@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "notice": "Bounded CC0 metadata snapshot, not all Indian songs; works/recordings are not additive unique songs.",
+  "notice": "Preferred v2 recordings upsert over the previous work-linked batch, retaining eight older absent IDs. Language association is not sung language or nationality; all source entities overlap.",
   "files": [
     {
       "file": "indian-language-song-works.jsonl.gz",
@@ -33,6 +33,22 @@
       "uncompressed_sha256": "63095a3541f6cb227a85eb8824b6cd91cb9f1199255e0fce5af56bf2b5343a35",
       "compressed_sha256": "a33c3aae92b5704ec15b58193c59e014d10ff7d093af60d88e55bce257b320f3",
       "compressed_bytes": 101747
+    },
+    {
+      "file": "preferred-india-associated-recordings-v2.jsonl.gz",
+      "kind": "recordings",
+      "records": 123244,
+      "uncompressed_sha256": "f74b75a7edfaf615d03d7fc264676ba3050ba729cba367dcd8a5061a7c703d74",
+      "compressed_sha256": "aabb6dd8a44255a4524928f7f65035b6cfa9d9cddfc60b046421b07e0bac29e7",
+      "compressed_bytes": 14762319
+    },
+    {
+      "file": "preferred-india-associated-artists-v2.jsonl.gz",
+      "kind": "artist-profiles-v2",
+      "records": 17475,
+      "uncompressed_sha256": "0ba3f5b2213449aa09496971a6595c2a86e98a2a004a67b01c12ad69cd167eb4",
+      "compressed_sha256": "87fa77dc7b2434df683f1397665cfe2ad06a17f0a6a24dd4b576451121bbf117",
+      "compressed_bytes": 1026650
     }
   ]
 }

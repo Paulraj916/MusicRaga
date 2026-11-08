@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { staticCatalogue } from './staticCatalogue';
+import { appHref } from './deployment';
 
 type Credit = { artist_id: string; name: string | null; role: string };
 type Track = {
@@ -14,6 +15,17 @@ type Track = {
   scope_basis: string;
   credits: Credit[];
   linked_recordings?: number;
+  association_evidence?: {
+    tier: string;
+    work_languages: string[];
+    release_text_languages: string[];
+    release_ids: string[];
+  };
+  credit_evidence?: {
+    artist_id: string;
+    role: string;
+    attributes: { id: string; name: string }[];
+  }[];
 };
 type Page = {
   items: Track[];
@@ -46,6 +58,9 @@ type Coverage = {
   roles: Record<string, number>;
   sources: Record<string, number>;
   languages: { code: string; name: string; tracks: number }[];
+  language_associations?: { language: string; tracks: number }[];
+  explicit_vocal_recordings?: number;
+  explicit_vocal_artist_identities?: number;
 };
 const safeSource = (value: string) => {
   try {
@@ -68,6 +83,7 @@ export default function IndiaIndex() {
   const [query, setQuery] = useState('');
   const [applied, setApplied] = useState('');
   const [language, setLanguage] = useState('');
+  const [association, setAssociation] = useState('');
   const [role, setRole] = useState('');
   const [source, setSource] = useState('');
   const [artist, setArtist] = useState('');
@@ -92,6 +108,7 @@ export default function IndiaIndex() {
     for (const [key, value] of Object.entries({
       q: applied,
       language,
+      association_language: association,
       role,
       source,
       artist,
@@ -101,7 +118,15 @@ export default function IndiaIndex() {
     }))
       if (value) params.set(key, value);
     if (entity === 'artists')
-      for (const key of ['language', 'role', 'source', 'artist', 'kind', 'work'])
+      for (const key of [
+        'language',
+        'association_language',
+        'role',
+        'source',
+        'artist',
+        'kind',
+        'work',
+      ])
         params.delete(key);
     async function get<T>(url: string): Promise<T> {
       const result = await fetch(url, { signal: controller.signal, credentials: 'omit' });
@@ -119,8 +144,8 @@ export default function IndiaIndex() {
       return result.json() as Promise<T>;
     }
     Promise.all([
-      get<Page | Profiles>('/api/v1/' + entity + '?' + params),
-      get<Coverage>('/api/v1/coverage'),
+      get<Page | Profiles>(appHref('/api/v1/' + entity + '?' + params)),
+      get<Coverage>(appHref('/api/v1/coverage')),
     ])
       .then(([result, metrics]) => {
         if (!Array.isArray(result.items) || !Array.isArray(metrics.languages))
@@ -156,15 +181,15 @@ export default function IndiaIndex() {
       controller.abort();
       window.clearTimeout(timeout);
     };
-  }, [applied, language, role, source, artist, cursor, retry, entity, kind, work]);
+  }, [applied, language, association, role, source, artist, cursor, retry, entity, kind, work]);
   const activePage = page ?? profiles;
   return (
     <div className="india-index">
       <p className="eyebrow">AN INDEX THAT CAN GROW · METADATA ONLY</p>
       <p>
-        Search the optional durable server index, one page at a time. This is not every Indian song,
-        and artist associations do not prove Indian origin. Curated reading pages remain separate
-        and may overlap.
+        Search the real source-backed India-associated catalogue, one page at a time. This is not
+        every Indian song, and artist associations do not prove Indian origin. Curated reading pages
+        remain separate and may overlap.
       </p>
       {coverage && (
         <p className="index-metrics">
@@ -172,6 +197,13 @@ export default function IndiaIndex() {
           {coverage.resolved_artists.toLocaleString()} source credit identities ·{' '}
           {coverage.unknown_language.toLocaleString()} unknown-language records ·{' '}
           {coverage.unknown_year.toLocaleString()} unknown years
+          {coverage.explicit_vocal_recordings !== undefined && (
+            <>
+              {' '}
+              · {coverage.explicit_vocal_recordings.toLocaleString()} recordings with explicit vocal
+              relationships (not inferred from artist names)
+            </>
+          )}
         </p>
       )}
       {activePage?.mode === 'synthetic' && (
@@ -232,6 +264,25 @@ export default function IndiaIndex() {
             {coverage?.languages.map((l) => (
               <option key={l.code} value={l.code} disabled={!l.tracks}>
                 {l.name} · {l.tracks} {l.tracks ? '' : '(not observed)'}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Language association (not sung language)
+          <select
+            disabled={entity === 'artists'}
+            value={association}
+            onChange={(e) => {
+              setAssociation(e.target.value);
+              restart();
+            }}
+          >
+            <option value="">All association evidence</option>
+            {(coverage?.language_associations ?? []).map((l) => (
+              <option key={l.language} value={l.language}>
+                {coverage?.languages.find((v) => v.code === l.language)?.name ?? l.language} ·{' '}
+                {l.tracks}
               </option>
             ))}
           </select>
@@ -315,7 +366,7 @@ export default function IndiaIndex() {
           Clear selected artist
         </button>
       )}
-      {loading && <p role="status">Searching the server index…</p>}
+      {loading && <p role="status">Searching the source-backed index…</p>}
       {error && (
         <div role="alert">
           <p>{error}</p>
@@ -352,7 +403,8 @@ export default function IndiaIndex() {
                     {t.languages.length ? t.languages.join(', ') : 'Language unknown'}
                   </p>
                   <p className="muted">
-                    Source-asserted credits; not independently musicologically verified.
+                    Source-asserted credits; not independently musicologically verified. Generic
+                    credited artists are NOT automatically singers or composers.
                   </p>
                   <ul className="index-credits">
                     {t.credits.map((c, i) => (
@@ -376,6 +428,7 @@ export default function IndiaIndex() {
                         setWork(t.id);
                         setKind('recording');
                         setLanguage('');
+                        setAssociation('');
                         setRole('');
                         setArtist('');
                         setSource('musicbrainz');
@@ -387,8 +440,52 @@ export default function IndiaIndex() {
                       Explore {t.linked_recordings} linked recordings
                     </button>
                   )}
+                  {t.association_evidence?.tier && (
+                    <p className="index-warning">
+                      Association: {t.association_evidence.tier.replaceAll('-', ' ')}. Work
+                      language:{' '}
+                      {(t.association_evidence.work_languages ?? []).join(', ') || 'unknown'};
+                      edition-text language:{' '}
+                      {(t.association_evidence.release_text_languages ?? []).join(', ') ||
+                        'unknown'}
+                      . Neither proves sung language or Indian origin.
+                    </p>
+                  )}
                   <details>
                     <summary>Provenance and availability</summary>
+                    {!!t.credit_evidence?.length && (
+                      <ul>
+                        {t.credit_evidence.map((c, i) => (
+                          <li key={i}>
+                            Explicit {c.role}:{' '}
+                            {t.credits.find(
+                              (v) => v.artist_id === 'musicbrainz:artist:' + c.artist_id,
+                            )?.name ?? 'Source artist identity'}
+                            {c.attributes.length
+                              ? ' · ' + c.attributes.map((a) => a.name).join(', ')
+                              : ''}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                    {!!t.association_evidence?.release_ids?.length && (
+                      <p>
+                        Associated editions (not original recording dates):{' '}
+                        {t.association_evidence.release_ids.slice(0, 5).map((id) => (
+                          <a
+                            key={id}
+                            href={'https://musicbrainz.org/release/' + id}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Source edition ↗{' '}
+                          </a>
+                        ))}
+                        {t.association_evidence.release_ids.length > 5
+                          ? 'Additional edition IDs retained in source metadata.'
+                          : ''}
+                      </p>
+                    )}
                     <p>{t.scope_basis}</p>
                     <p>CC0 core metadata only. No lyrics, translations or audio imported.</p>
                     {safeSource(t.source_url) && (
@@ -424,7 +521,7 @@ export default function IndiaIndex() {
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      View Wikidata source ↗
+                      View artist source ↗
                     </a>
                   )}
                   {profile.externalIds.musicbrainz.map((id) => (
@@ -439,6 +536,7 @@ export default function IndiaIndex() {
                         setKind('');
                         setSource('');
                         setLanguage('');
+                        setAssociation('');
                         setApplied('');
                         setQuery('');
                         restart();
