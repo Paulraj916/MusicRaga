@@ -87,7 +87,19 @@ React 19 + strict TypeScript + Vite; no application backend. One shared componen
 
 No complete discography, commercial lyric licence, broad independent catalogue, backend/editorial admin, cross-device account sync, provider integration, full fuzzy/semantic search or live ads. Search is Unicode-normalised terms and known aliases; related-album recovery is labelled. Filters are single exact selections, not ranges/multiselect. Native-language writing/renderings need human editorial review. Automated axe/Chromium tests are not screen-reader certification, real-device QA or a zero-bug guarantee. Static metadata-only pages and a small text edition do not make the business launch-ready.
 
-The owner/account is now verified as **Paulraj916 / Paul Raj**, not the initially active Navina0 CLI identity. Correct connected-account searches returned 45 owner repositories but no PowerWords variant; the exact `Paulraj916/PowerWords` check returned HTTP 404. This may require the correct existing URL or a permission grant; it is not a reason to create a remote or use someone else's same-name project. The parent handles CLI login; no duplicate account switch is performed here. **No remote repository was created, unrelated repository cloned, code pushed or PR opened.** See [current research](docs/PAULRAJ_TARGET_RESEARCH.md).
+## Public source repository
+
+**https://github.com/Paulraj916/PowerWords** · default/source branch **`main`**. The owner explicitly approved creating this public repository and publishing the website. Authenticated CLI identity was verified as Paulraj916; the exact repository was absent before approved creation. The complete original local commit history is retained; no force push or history rewrite is needed. Historical discovery failures are preserved and labelled in the repository research docs, not current blockers.
+
+```sh
+git clone https://github.com/Paulraj916/PowerWords.git
+cd PowerWords
+npm ci
+npm run build
+npm run preview
+```
+
+GitHub is the **source** URL, not a deployed website or production canonical origin. Keep `SITE_URL`/indexing conservative until an actual HTTPS deployment is reviewed. `package.json` has `private: true` to prevent accidental npm publishing; that does not make the GitHub repository private. See [publication and audit notes](docs/PUBLICATION.md). Demo videos remain local delivery artifacts with paths in [recording notes](docs/DEMO_RECORDING.md); no hosted video download is claimed.
 
 Continue with: **“Read AI_HANDOVER.md and NEXT_STEPS.md, run the checks, preserve existing work, and implement the next unblocked item without inventing facts or licences.”**
 

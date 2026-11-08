@@ -1,3 +1,5 @@
+> Publication update: the parent reported that the corrected final `1794160112232` recording passed videoReview. Videos are local delivery artifacts, not hosted in GitHub; source is https://github.com/Paulraj916/PowerWords. Earlier pending-review wording below records the capture-time state.
+
 # Real interaction demo recording
 
 `npm run record:demo` requires a running production preview at `http://127.0.0.1:4173`, Chromium installed by Playwright and local `ffmpeg` / `ffprobe`. It records **actual browser actions on this local application only**, not generated footage, motion-graphics simulation or a signed-in external service. Non-local network requests are blocked and fail the recording. No copyrighted audio is played; the demo is silent.
@@ -15,7 +17,7 @@ The recorder writes a uniquely named combined H.264/yuv420p/30fps MP4 under `/wo
 7. Saved favourite, named local collection and after-hours theme.
 8. Mobile home/navigation drawer, native-title search, real metadata rights gate, dark text folio and practice room.
 
-Screenshots from real UI actions (mobile in a separate non-recording pass to avoid mutating capture geometry) are also saved under `artifacts/upgraded-demo-*`. Automated capture success and ffprobe metadata prove that a file was produced, not that someone watched or editorially approved it. Parent/human video review is required before delivery; no claim of watching is made. This is test/demo evidence, not a claim that all browsers/devices are certified or every possible UI state is bug-free.
+Screenshots from real UI actions (mobile in a separate non-recording pass to avoid mutating capture geometry) are also saved under `artifacts/upgraded-demo-*`. Automated capture success and ffprobe metadata prove that a file was produced, not that someone watched or editorially approved it. The parent reported that the corrected final recording passed videoReview; this executor makes no claim of watching. New recordings require fresh parent/human review. This is test/demo evidence, not a claim that all browsers/devices are certified or every possible UI state is bug-free.
 
 ## Revised capture safety
 

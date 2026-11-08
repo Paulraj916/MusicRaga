@@ -1,3 +1,5 @@
+> Final review update: the parent reported that corrected demo `1794160112232` passed videoReview before public-source publication. The pending-review wording below describes the capture-time gate; a new recording still requires a fresh review. Current source: https://github.com/Paulraj916/PowerWords (`main`).
+
 # Rejected mobile recording: investigation and correction
 
 ## Report and evidence
@@ -30,4 +32,4 @@ Two independently noticed product details were corrected: the ancient reader now
 - `npm run test:video` extracts the final native mobile frame and compares the real modal area with the same UI in a **separate non-recording** browser context. Current SSIM **0.992297**, required ≥0.93; crop/extreme zoom would fail. Geometry is 412×892, DPR 1, scale 1. Evidence: `artifacts/mobile-review/video-regression.json`, `revised-mobile-final.png`, `revised-mobile-reference.png`.
 - `revised-mobile-contact-sheet.png` covers the revised native mobile sequence; representative extracted stills were inspected, with no screenshot-induced enlargement/grey surface observed.
 
-The revised MP4 still needs **parent/human videoReview before delivery**. Frame/image regression and codec validation do not claim someone watched or approved the full video, nor certify every device/browser.
+The parent reported that the revised final MP4 **passed videoReview**. This executor inspected stills/contact sheets, not a claimed full viewing. Frame/image regression and codec validation alone do not prove editorial approval or certify every device/browser. Review every new recording.

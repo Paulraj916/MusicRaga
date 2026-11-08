@@ -1,3 +1,5 @@
+> Historical research, superseded 09 November 2026, 00:11 IST. The owner subsequently approved public creation; the confirmed source is https://github.com/Paulraj916/PowerWords (`main`). Read PUBLICATION.md for current status. Literal earlier observations below are preserved for audit, not active blockers.
+
 # Corrected GitHub owner / exact target research
 
 Updated 2026-11-08 23:21 IST. The owner explicitly corrected “Not nabina”; the parent independently verified the connected GitHub identity **Paulraj916 / Paul Raj**, https://github.com/Paulraj916. Paulraj916 is now the established owner/account, not a guessed public search result. The earlier Navina0 investigation was the wrong account and must not guide target ownership.

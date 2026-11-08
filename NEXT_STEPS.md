@@ -2,7 +2,7 @@
 
 ## P0 — exact repository and preservation
 
-- Confirm the owner's exact PowerWords repository URL and authenticated account access.
+- Continue from the confirmed public https://github.com/Paulraj916/PowerWords repository (`main`); inspect its current history and use feature branches/PRs for future work.
 - Inspect its tree/configuration read-only. If an existing app is present, adapt rather than overwrite; a `prototype/` subdirectory may be safer initially.
 - Work on a fresh feature branch; preserve existing history, files, tests and attribution. Re-run this project’s checks after integration. Push only to the confirmed target. Do not force-push, skip hooks or auto-merge.
 

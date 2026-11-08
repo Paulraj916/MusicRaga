@@ -1,3 +1,5 @@
+> Historical research, superseded 09 November 2026, 00:11 IST. The owner subsequently approved public creation; the confirmed source is https://github.com/Paulraj916/PowerWords (`main`). Read PUBLICATION.md for current status. Literal earlier observations below are preserved for audit, not active blockers.
+
 > Historical wrong-account discovery. The user corrected the owner to Paulraj916, not Navina0. Read PAULRAJ_TARGET_RESEARCH.md for current owner/access findings. Literal earlier commands are preserved below.
 
 # Exact repository discovery retry

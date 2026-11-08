@@ -1,4 +1,4 @@
-# Current delivery status · 08 November 2026, 23:22 IST
+# Current delivery status · 09 November 2026, 00:11 IST
 
 ## Corrective follow-up completed
 
@@ -12,7 +12,7 @@ The owner is **Paulraj916 / Paul Raj**, not Navina0. Parent videoReview rejected
 - Added browser viewport/scale/sticky-header/artwork/playback reachability regressions and `npm run test:video`: final real mobile frame versus independent non-recording UI reference, SSIM **0.992297** ≥0.93. No screenshots mutate the captured mobile surface.
 - Investigation/evidence: MOBILE_CAPTURE_REVIEW.md, `artifacts/mobile-review/viewport-diagnostics.json`, rejected/revised contact sheets, final/reference frame PNGs and `video-regression.json`.
 
-### Current video — parent/human videoReview still required
+### Current video — corrected recording passed parent videoReview
 
 Combined: `/workspace/powerwords-upgraded-20261108-demo-1794160112232.mp4`
 
@@ -20,7 +20,7 @@ Native portrait mobile: `/workspace/powerwords-upgraded-20261108-mobile-17941601
 
 Combined codec: **H.264, 1280×900, 30 fps, 65.30s**, silent. Mobile is **412×892**. Shots: desktop discovery/curated paths, Rahman chronology+album+singer, protected-commercial rights/source pages, Tamil related search, Tamil/English/Latin reading, silent seeking/sync, library/theme; then mobile drawer/native search/full source heading/rights gate/text folio/intact reader/scroll to playback/return to header. Actual local interaction, no generated footage or copyrighted audio.
 
-Capture reports **0 external requests and 0 runtime page errors**; chapter measurements assert scale 1 and bounds. Representative extracted stills/contact sheets were inspected, **not a claimed full video viewing**. Passing SSIM/codec checks does not substitute for parent videoReview before delivery.
+Capture reports **0 external requests and 0 runtime page errors**; chapter measurements assert scale 1 and bounds. Representative extracted stills/contact sheets were inspected, **not a claimed full video viewing**. The parent subsequently reported that this corrected recording passed videoReview. Any newly recorded replacement needs a fresh review.
 
 ## Whole-site foundation retained
 
@@ -40,7 +40,7 @@ Capture reports **0 external requests and 0 runtime page errors**; chapter measu
 | Unit/data/search/rights/SEO tests          | **57 passed**, 2 files                                                                                                                   |
 | Production build                           | Passed; **68 static routes + 404**                                                                                                       |
 | Every-route static SEO audit               | Passed titles/descriptions/canonical/OG/JSON/H1/index gates/text/rights/hreflang/sitemap/robots                                          |
-| Desktop/mobile Chromium browser tests      | **55 passed + 1 expected desktop skip**, 56 total, **15.8s**                                                                             |
+| Desktop/mobile Chromium browser tests      | **55 passed + 1 expected desktop skip**, 56 total, **16.9s**                                                                             |
 | Selected WCAG2 A/AA and WCAG2.1 AA axe     | **0 detected violations** in tested light/dark discovery, reader, library, filters, karaoke and clean source/text/artist/language routes |
 | Narrow/enlarged and reported mobile states | 320px overflow checks, 36px text, scale-1/header/artwork/playback bounds passed                                                          |
 | Native mobile video regression             | **SSIM 0.992297**, passed; actual 412×892 surface                                                                                        |
@@ -49,14 +49,14 @@ Capture reports **0 external requests and 0 runtime page errors**; chapter measu
 
 Node 24.22.1 / npm 11.21.1; locked dependencies unchanged. Prior full clean `npm ci` passed. Only skip: mobile-only drawer case on desktop; it passed on mobile. Screenshots are evidence, not pixel-baseline certification. Tests/native-language/manual screen-reader/browser/physical-device/legal coverage are not exhaustive; zero bugs is not promised.
 
-## Correct owner / remote blocker
+## Confirmed public repository
 
-Verified connected identity **Paulraj916**, https://github.com/Paulraj916. Its sanctioned connector returned **45 owner repositories** and **0 normalised PowerWords variants**, with no power/word/lyric name candidates. Direct correct-account lookup `GET https://api.github.com/repos/Paulraj916/PowerWords` returned **404 Not Found**. At the last read-only CLI check, CLI still identified Navina0; parent handles the authorised account change, no duplicate login/switch/removal occurs here. See PAULRAJ_TARGET_RESEARCH.md for exact commands/calls/errors and unrelated same-name public projects not selected.
+The owner explicitly approved: create a **public Paulraj916/PowerWords repository and push the website code**. Live `gh api user --jq .login` returned **Paulraj916**. The pre-create exact repository check returned HTTP 404; approved `gh repo create Paulraj916/PowerWords --public --source=. --remote=origin` succeeded. Public source: **https://github.com/Paulraj916/PowerWords**. Local/default publication branch is **main**, with every original commit retained. No unrelated clone, paid service, deployment, force push or history rewrite.
 
-No matching existing repo with authenticated write permission established; **no unrelated clone, remote creation, push or PR**. Need exact existing URL/access (or separate explicit permission if a new repo is wanted). Do not infer repository absence from a wrong-account 404 or choose another owner’s PowerWords. Integrate preserving existing history/files only after target/access confirmation.
+The earlier wrong-account and correct-account absent-repository searches are historical; see PUBLICATION.md for the current audit/publication procedure and repository research files for literal earlier errors. GitHub Actions results must be checked live, not inferred from local validation.
 
 ## Local continuation / portability
 
-Source `/workspace/powerwords-20261108-standalone`, branch `feat/powerwords-foundation`. Preview remains **http://localhost:4173/** on 0.0.0.0; source/text/artist clean paths work. Temporary local QA service, not public hosting or an uptime guarantee. Updated ZIP, full history bundle, checksums and commit are reported with this delivery; previous artifacts are retained. Original foundation: FOUNDATION_PROGRESS.md; first upgrade (superseded video/account findings): UPGRADE_PROGRESS_BEFORE_MOBILE_REVIEW.md.
+Source `/workspace/powerwords-20261108-standalone`, branch `main`. Preview remains **http://localhost:4173/** on 0.0.0.0; source/text/artist clean paths work. Temporary local QA service, not public hosting or an uptime guarantee. Updated ZIP, full history bundle, checksums and commit are reported with this delivery; previous artifacts are retained. Original foundation: FOUNDATION_PROGRESS.md; first upgrade (superseded video/account findings): UPGRADE_PROGRESS_BEFORE_MOBILE_REVIEW.md.
 
-Remaining production blockers: confirmed target/integration, substantial permissioned catalogue, source-terms/jurisdiction/variant/expiry publishing model, native/editorial/legal review, real operator/takedown/privacy/terms, trusted backend/admin/search/account/provider architecture, actual HTTPS deployment/live headers/SEO review, broader manual/device testing, consent-safe approved advertising and ongoing operations. Static SEO is implemented, not an unfinished placeholder. No paid resources or deployment were created.
+Remaining production blockers: substantial permissioned catalogue, source-terms/jurisdiction/variant/expiry publishing model, native/editorial/legal review, real operator/takedown/privacy/terms, trusted backend/admin/search/account/provider architecture, actual HTTPS deployment/live headers/SEO review, broader manual/device testing, consent-safe approved advertising and ongoing operations. Static SEO is implemented, not an unfinished placeholder. No paid resources or deployment were created.
