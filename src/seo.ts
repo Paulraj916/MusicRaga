@@ -48,9 +48,9 @@ export function siteConfig(
 export function pageSeo(path: string, config: SeoConfig) {
   const route = resolveRoute(path);
   const canonical = config.baseUrl + (path === '/' ? '/' : path.replace(/\/*$/, '/'));
-  let title = 'Music Raga — Every word, a world.';
+  let title = 'Music Raga — Search songs, albums & artists';
   let description =
-    'Explore sourced Indian song credits, public-domain Tamil verse and clearly labelled original multilingual demos. A quiet place for the words behind music.';
+    'Search song titles, albums and artists. Explore source-backed recording credits with clear lyric availability. Real-song native and romanized lyrics are not yet cleared for display.';
   let lang = 'en';
   if (route.kind === 'song') {
     const s = route.song;

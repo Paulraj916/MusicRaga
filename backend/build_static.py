@@ -1,11 +1,12 @@
 """Offline page/facet/token shards for free static hosting; never bundle all records in JS."""
+import gzip
 import hashlib
 import json
 import unicodedata
 from collections import defaultdict
 from pathlib import Path
 from .bootstrap import bootstrap
-from .catalogue import canonical, connect, coverage, mode
+from .catalogue import canonical, connect, coverage, mode, file_hash, ValidationError
 from .enrich_roles import evidence_summary
 
 
@@ -21,12 +22,33 @@ def tokens(value):
         yield "".join(current)
 
 
+def load_editions(directory="data/cc0-editions"):
+    root=Path(directory)
+    if not root.exists():return {},''
+    manifest=json.loads((root/'manifest.json').read_text());path=root/manifest['file']
+    if manifest['file']!='preferred-india-associated-releases-v2.jsonl.gz' or manifest['license']!='CC0-1.0' or file_hash(path)!=manifest['compressed_sha256']:
+        raise ValidationError('edition source hash/license mismatch')
+    digest=hashlib.sha256();result={};count=0
+    with gzip.open(path,'rb')as stream:
+        for line in stream:
+            digest.update(line);count+=1;raw=json.loads(line)
+            sid=raw['id'].removeprefix('mb-release:');proof=raw['provenance'][0]
+            if proof['license']!='CC0-1.0' or proof['sourceUrl']!='https://musicbrainz.org/release/'+sid:
+                raise ValidationError('invalid source edition evidence')
+            result[sid]={'title':raw['title'],'source_url':proof['sourceUrl']}
+    if digest.hexdigest()!=manifest['uncompressed_sha256'] or count!=manifest['records']:
+        raise ValidationError('edition uncompressed source mismatch')
+    return result,manifest['compressed_sha256']
+
+
 def export(database, output="dist/catalogue"):
     root=Path(output)
     root.mkdir(parents=True,exist_ok=True)
+    editions,edition_digest=load_editions()
     with connect(database,True) as db:
         db.execute("BEGIN")
-        digest=hashlib.sha256(b"powerwords-static-index-v3")
+        digest=hashlib.sha256(b"music-raga-search-first-index-v1")
+        digest.update(edition_digest.encode())
         for row in db.execute("SELECT id,fingerprint FROM tracks ORDER BY id"):
             digest.update(canonical(list(row)).encode())
         for row in db.execute("SELECT id,payload FROM artist_profiles ORDER BY id"):
@@ -62,19 +84,22 @@ def export(database, output="dist/catalogue"):
             buckets=defaultdict(lambda:defaultdict(list))
             facets=defaultdict(list)
             page=[]
+            lookup=defaultdict(dict)
             count=0
             rows=db.execute("SELECT id,payload FROM tracks ORDER BY sort_year DESC,id" if entity=="tracks" else "SELECT id,payload FROM artist_profiles ORDER BY id")
             for row in rows:
                 item=json.loads(row["payload"])
                 if entity=="tracks":
                     item["id"]=row["id"]
+                    lookup[hashlib.sha256(row['id'].encode()).hexdigest()[:2]][row['id']]=count
+                    item['edition_titles']=list({e['source_url']:e for rid in item.get('association_evidence',{}).get('release_ids',[]) if (e:=editions.get(rid))}.values())[:10]
                     item["lyrics_available"]=False
                     item["credits"]=[dict(r) for r in db.execute("SELECT artist_id,name,role FROM credits WHERE track_id=? ORDER BY role,name",(row["id"],))]
                     item["linked_recordings"]=db.execute("SELECT count(*) FROM work_recordings WHERE work_id=?",(row["id"],)).fetchone()[0]
                     if item['kind']=='recording':
                         item['role_proof_count']=db.execute("SELECT count(*) FROM role_credit_proofs WHERE recording_id=?",(row['id'],)).fetchone()[0] if proof_buckets else 0
                         item['associated_work_ids']=sorted({r[0].split(':')[-1] for r in db.execute("SELECT work_id FROM work_recordings WHERE recording_id=?",(row['id'],))})
-                    body=" ".join([item["title"],*item["aliases"],item["album"] or "",*(c["name"] or "" for c in item["credits"])])
+                    body=" ".join([item["title"],*item["aliases"],item["album"] or "",*(c["name"] or "" for c in item["credits"]),*(e["title"] for e in item["edition_titles"])])
                     keys={"source:"+item["source"],"kind:"+item["kind"]}
                     keys.update("language:"+v for v in item["languages"])
                     keys.update("association_language:"+v for key in ["work_languages","release_text_languages"] for v in item.get("association_evidence",{}).get(key,[]))
@@ -86,7 +111,11 @@ def export(database, output="dist/catalogue"):
                         facets[key].append(count)
                 else:
                     body=" ".join([item["name"],*item.get("aliases",[])])
-                for token in set(tokens(body)):
+                searchable=set(tokens(body))
+                if entity=='tracks':
+                    # Whitespace-insensitive source-edition normalization, not invented song aliases.
+                    searchable.update(''.join(tokens(e['title'])) for e in item['edition_titles'])
+                for token in filter(None,searchable):
                     buckets[format(ord(token[0]),"x")][token].append(count)
                 page.append(item)
                 count+=1
@@ -95,6 +124,8 @@ def export(database, output="dist/catalogue"):
                     page=[]
             if page:
                 write(f"{entity}/pages/{(count-1)//100}.json",page)
+            for bucket,index in lookup.items():
+                write(f"lookup/{bucket}.json",dict(index))
             for bucket,index in buckets.items():
                 write(f"{entity}/terms/{bucket}.json",dict(index))
             facet_buckets=defaultdict(dict)

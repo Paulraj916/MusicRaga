@@ -31,6 +31,35 @@ try {
     const errors = [];
     page.on('pageerror', (e) => errors.push(e.message));
     await page.goto(origin);
+    await expect(
+      page.getByRole('searchbox', { name: 'Search songs, albums or artists' }),
+    ).toBeVisible();
+    await page.screenshot({
+      path: 'artifacts/search-first-project-' + name + '-home.png',
+      fullPage: true,
+    });
+    await page.getByRole('searchbox').fill('Alaipayuthey songs');
+    await page.getByRole('button', { name: 'Search', exact: true }).click();
+    const result = page.locator('a.song-result-row').first();
+    await expect(result).toContainText('Alaipayuthey');
+    const songTitle = await result.locator('h3').innerText();
+    await result.click();
+    assert.equal((await page.reload()).status(), 200);
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText(songTitle);
+    await expect(
+      page.getByRole('heading', { name: 'Lyrics not yet available.', exact: true }),
+    ).toBeVisible();
+    assert.equal(new URL(page.url()).pathname, '/MusicRaga/');
+    assert.deepEqual(
+      (await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze())
+        .violations,
+      [],
+    );
+    await page.screenshot({
+      path: 'artifacts/search-first-project-' + name + '-reader.png',
+      fullPage: true,
+    });
+    await page.goto(origin + '?workspace=1');
     await expect(page.getByRole('heading', { level: 1 })).toContainText('Every word');
     await page.getByRole('link', { name: /The Tamil reading room/ }).click();
     await expect(page).toHaveURL(new RegExp('/MusicRaga/songs/tirukkural-invocation/$'));
@@ -39,7 +68,7 @@ try {
     await expect(page.getByRole('heading', { level: 1 })).toContainText('Tirukkural');
     const canonical = await page.locator('link[rel=canonical]').getAttribute('href');
     assert.equal(canonical, 'https://paulraj916.github.io/MusicRaga/songs/tirukkural-invocation/');
-    await page.goto(origin);
+    await page.goto(origin + '?workspace=1');
     await page.getByRole('button', { name: 'Open India index', exact: true }).click();
     const dialog = page.getByRole('dialog', { name: 'The growing India index', exact: true });
     await expect(dialog.getByText(/148,372 indexed entities/)).toBeVisible();
@@ -94,6 +123,7 @@ try {
     report.push({
       viewport: name,
       clean_route_reload: 200,
+      root_search_and_source_album_reader_reload: true,
       canonical,
       native_source_index: true,
       explicit_vocal_and_association_filter: true,

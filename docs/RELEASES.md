@@ -1,5 +1,9 @@
 # Versioned public preview releases
 
+## 9 November 2026 — search-first root and clear song reader
+
+Default homepage search is immediately visible. Direct Tamil/English-letter/artist/verified-edition search → result → readable unavailable-lyrics entry, shared-link refresh, local-only audio and back/search. Source-backed album bridge adds **no recordings**: still 127,064 recording IDs and **0** cleared native + romanized pairs. Advanced evidence/goal dashboards are secondary. Ads OFF and preview noindex unchanged. See `SEARCH_FIRST_RELEASE.md` for exact scope and validation.
+
 ## v3/v4 — source role proofs, additive recordings and truthful lyric-pair counters
 
 Prepared 09 Nov 2026 IST. Code deployment is gated on tests; use Actions and actual hosted manifest to confirm active state. 127,064 recording IDs (+3,812), 21,096 works, 212 Wikidata music entities, 21,406 source profiles. Recording composer20,893 / lyricist17,787 / vocal13,902; preferred-v2 composer20,887 / lyricist17,781. 61,158 v3 proof chains plus baseline versions remain separate; two newer baseline composers and eight older IDs retained. 15 identity ambiguities excluded; six implausible durations explicitly unknown. Visible cleared native+romanized recording-linked pairs0 / goal2,000,000; metadata gap1,872,936, pair gap2,000,000. Native/romanized/translation distinctions remain. AdsOFF/noindex, free ad-free preview unchanged. See V3_V4_RELEASE.md and catalogue-v3-v4-coverage.json. No universal-catalogue or ranking claim.

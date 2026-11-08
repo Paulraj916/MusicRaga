@@ -4,9 +4,13 @@
 
 A distinctive, local-first Indian music discovery and multilingual reading foundation. Warm paper, after-hours themes, original record-inspired artwork, source-led listening paths, quiet reading folios, rich filters and private karaoke practice. **Working software with sourced credits and reusable ancient text—not a complete licensed commercial lyrics business.**
 
+## Search comes first
+
+Open `/`, enter a song/album/artist, and choose a clearly labelled result. Tamil/English-letter source titles and actual edition names are searchable; `Alaipayuthey songs` finds 28 source recording IDs in this release. Real-song native + romanized lyric pairs remain **0**: the reader clearly says **Lyrics not yet available**, not fake lyrics/playback. Verified existing album destinations and local-only audio are optional. Detailed filters/evidence and original practice remain secondary under **More tools** (`?workspace=1`). [Release details and limitations](docs/SEARCH_FIRST_RELEASE.md).
+
 ## Run the finished production version
 
-Node **22.12+** (Node 24 recommended), npm, and **Python 3.11+ with SQLite FTS5** for the full catalogue build. No paid service/account/API key is required. `npm run build:curated` remains the smaller Node-only reading build.
+Node **22.12+** (Node 24 recommended), npm, and **Python 3.11+ with SQLite FTS5** for the full catalogue build. No paid service/account/API key is required. `npm run build:curated` remains the smaller Node-only reading build, but does not produce bulk search shards; the normal full build is required for standalone root catalogue search.
 
 ```sh
 npm ci
@@ -47,7 +51,7 @@ Every listed route is an actual prebuilt HTML file. Titles, descriptions, OG, ca
 - **18 entries:** 5 individually sourced real recording metadata pages, 1 ancient public-domain verse edition, 12 clearly fictional original demos. No commercial lyric, audio, translation, transliteration or album artwork is bundled. [Per-item facts and rights](docs/REAL_CATALOGUE.md).
 - Native-script/title/alias/credit and permitted-text search. Tamil query `முன்பே வா lyrics` finds Munbe Vaa. A query containing `Vadachennai` plus an unverified quote returns **explicitly related album entries**, never a fabricated lyric identification. No ranking guarantee or keyword stuffing.
 - **96 schema-driven dimensions** in 8 groups. **50 currently have values; 46 remain unavailable.** All use real matching when values exist; unavailable fields are disabled and marked unknown. Populated demo fields are not claimed to be verified real-song attributes. Contributor filters match individual duet singers; active selections combine with AND.
-- Root collections: All entries / Sources first / Read freely / Original demos. Artist collection chronology, album and singer controls. Unknown ancient dates remain last, not disguised as a modern year.
+- Secondary workspace (`/?workspace=1`) collections: All entries / Sources first / Read freely / Original demos. Artist collection chronology, album and singer controls. Unknown ancient dates remain last, not disguised as a modern year.
 - Mobile-first source-led collection pages, music-credit pages and line-numbered reading folios, plus a distraction-free native-dialog practice room.
 - Original/English/Latin tabs (Thanglish for Tamil), keyboard tab navigation, text sizing, copy, line seeking, focus restoration and reduced-motion support.
 - Silent timed rehearsal; local audio ≤50 MB; LRC ≤256 KB / 500 lines / 4 hours; manual −10…+10 second sync. Files never upload and are discarded on close. No included copyrighted audio, microphone, recording or streaming.

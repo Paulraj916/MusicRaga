@@ -55,6 +55,28 @@ export async function staticCatalogue(path: string, signal: AbortSignal): Promis
   const manifest = await read<Manifest>(root + 'manifest.json', signal);
   const url = new URL(path, window.location.origin);
   if (url.pathname.endsWith('/coverage')) return manifest.coverage;
+  if (url.pathname.endsWith('/item')) {
+    const id = url.searchParams.get('id') ?? '';
+    if (!/^(musicbrainz:(recording|work):[0-9a-f-]{36}|wikidata:Q[0-9]+)$/.test(id))
+      throw new Error('Invalid song identity.');
+    const bucket = (await fingerprint(id)).slice(0, 2);
+    const ids = await read<Record<string, number>>(
+      root + manifest.version + '/lookup/' + bucket + '.json',
+      signal,
+      true,
+    );
+    const position = ids[id];
+    if (position === undefined) return { item: null };
+    const page = await read<unknown[]>(
+      root +
+        manifest.version +
+        '/tracks/pages/' +
+        Math.floor(position / manifest.page_size) +
+        '.json',
+      signal,
+    );
+    return { item: page[position % manifest.page_size] ?? null };
+  }
   if (url.pathname.endsWith('/evidence')) {
     const recording = url.searchParams.get('recording') ?? '';
     if (!/^musicbrainz:recording:[0-9a-f-]{36}$/.test(recording))

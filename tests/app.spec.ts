@@ -1,3 +1,4 @@
+// Retained advanced-workspace regression. Default root search is covered separately.
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { DEMO_SONGS } from '../src/catalogue';
@@ -10,7 +11,7 @@ async function nav(page: import('@playwright/test').Page, name: string) {
     .click();
 }
 test.beforeEach(async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/?workspace=1');
 });
 test('discovery search filter sort and clear work', async ({ page }) => {
   await expect(page.locator('.song-card')).toHaveCount(18);
@@ -143,7 +144,7 @@ test('catalogue import validates then filters new session content', async ({ pag
   await expect(page.locator('.song-card')).toHaveCount(19);
 });
 test('direct song URL opens the right reader', async ({ page }) => {
-  await page.goto('/#song=blue-hour');
+  await page.goto('/?workspace=1#song=blue-hour');
   await expect(page.getByRole('dialog')).toBeVisible();
   await expect(
     page.getByRole('dialog').getByRole('heading', { name: 'Blue hour', exact: true }),

@@ -1,0 +1,9 @@
+{
+  "file": "preferred-india-associated-releases-v2.jsonl.gz",
+  "compressed_sha256": "4fdc6fb39d28d70896b13c9506519d22e4f2b336ea288a31b02ead70ae58370b",
+  "uncompressed_sha256": "4c38f336b54d2d2542459b29907102e6f0bad00d159657343a1cd09cbe9d9d99",
+  "records": 25574,
+  "license": "CC0-1.0",
+  "source_url": "https://data.metabrainz.org/pub/musicbrainz/data/fullexport/20261104-002222/mbdump.tar.bz2",
+  "license_url": "https://musicbrainz.org/doc/About/Data_License"
+}

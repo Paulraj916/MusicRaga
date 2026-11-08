@@ -1,3 +1,4 @@
+// Retained advanced-workspace regression. Default root search is covered separately.
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 const field = 'Search songs, artists, albums and lyrics metadata';
@@ -26,7 +27,7 @@ test('real clean routes expose crawlable metadata before JavaScript', async ({
   await context.close();
 });
 test('real native title search and unknown Tamil quote stay honest', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/?workspace=1');
   await page.getByRole('textbox', { name: field }).fill('முன்பே வா lyrics');
   await expect(page.locator('.song-card')).toHaveCount(1);
   await expect(page.locator('.song-title')).toHaveText('Munbe Vaa');
@@ -109,7 +110,7 @@ test('generated sitemap robots and security headers use configured preview origi
 });
 for (const theme of ['light', 'dark'])
   test(`new source-led routes are accessible in ${theme} mode`, async ({ page }, info) => {
-    await page.goto('/');
+    await page.goto('/?workspace=1');
     if (theme === 'dark') await page.getByRole('button', { name: 'Switch to dark theme' }).click();
     for (const path of [
       '/artists/a-r-rahman/',
@@ -150,14 +151,14 @@ test('all page families fit a 320px mobile viewport with enlarged reading size',
   await page.getByRole('button', { name: 'Open practice room' }).click();
   await overflow(page);
   await page.keyboard.press('Escape');
-  await page.goto('/');
+  await page.goto('/?workspace=1');
   await page.getByRole('button', { name: 'Filters', exact: true }).click();
   await expect(page.getByRole('dialog')).toBeVisible();
   await overflow(page);
 });
 for (const theme of ['light', 'dark'])
   test(`library filters and karaoke studio accessibility in ${theme}`, async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/?workspace=1');
     if (theme === 'dark') await page.getByRole('button', { name: 'Switch to dark theme' }).click();
     await page.getByRole('button', { name: 'Save A little light', exact: true }).click();
     const navigate = async (name: RegExp) => {
@@ -182,7 +183,7 @@ for (const theme of ['light', 'dark'])
     await overflow(page);
   });
 test('real credit pages save to local library and named collections', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/?workspace=1');
   if (await page.getByRole('button', { name: 'Open navigation', exact: true }).isVisible())
     await page.getByRole('button', { name: 'Open navigation', exact: true }).click();
   await page
@@ -215,7 +216,7 @@ test('real credit pages save to local library and named collections', async ({ p
 test('unpublished imported metadata has a truthful local inspector, not a fake public route', async ({
   page,
 }) => {
-  await page.goto('/');
+  await page.goto('/?workspace=1');
   if (await page.getByRole('button', { name: 'Open navigation', exact: true }).isVisible())
     await page.getByRole('button', { name: 'Open navigation', exact: true }).click();
   await page.getByRole('button', { name: 'Make it yours' }).click();
@@ -249,13 +250,13 @@ test('unpublished imported metadata has a truthful local inspector, not a fake p
   await expect(
     page.getByRole('dialog').getByRole('button', { name: 'Play rehearsal' }),
   ).toHaveCount(0);
-  await expect(page).toHaveURL('/');
+  await expect(page).toHaveURL('/?workspace=1');
 });
 test('mobile reported states retain scale one, intact reader header and reachable controls', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 412, height: 892 });
-  await page.goto('/');
+  await page.goto('/?workspace=1');
   await page.getByRole('button', { name: 'Switch to dark theme' }).click();
   await page
     .getByRole('textbox', { name: 'Search songs, artists, albums and lyrics metadata' })

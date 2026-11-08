@@ -1,3 +1,4 @@
+// Retained advanced-workspace regression. Default root search is covered separately.
 import { expect, test } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
@@ -5,7 +6,7 @@ test('optional index fails honestly on a static-only deployment', async ({ page 
   await page.route('**/catalogue/manifest.json', (route) =>
     route.fulfill({ status: 404, body: 'not configured' }),
   );
-  await page.goto('/');
+  await page.goto('/?workspace=1');
   await page.getByRole('button', { name: 'Open India index', exact: true }).click();
   await expect(page.getByRole('alert')).toContainText(
     'optional catalogue server and static index are unavailable',
@@ -65,7 +66,7 @@ test('paged native index, contributor selection, coverage and mobile accessibili
       },
     });
   });
-  await page.goto('/');
+  await page.goto('/?workspace=1');
   await page.getByRole('button', { name: 'Open India index', exact: true }).click();
   const dialog = page.getByRole('dialog', { name: 'The growing India index', exact: true });
   await expect(dialog.getByRole('heading', { name: 'SYNTHETIC தமிழ் வானம்' })).toBeVisible();
@@ -93,7 +94,7 @@ test('paged native index, contributor selection, coverage and mobile accessibili
 test('real free static shards discover native metadata, artists and linked recordings', async ({
   page,
 }) => {
-  await page.goto('/');
+  await page.goto('/?workspace=1');
   await page.getByRole('button', { name: 'Open India index', exact: true }).click();
   const dialog = page.getByRole('dialog', { name: 'The growing India index', exact: true });
   await expect(dialog.getByText(/148,372 indexed entities/)).toBeVisible();
@@ -132,7 +133,7 @@ test('real free static shards discover native metadata, artists and linked recor
 test('preferred v2 metadata filters explicit vocals separately from generic credit and language evidence', async ({
   page,
 }) => {
-  await page.goto('/');
+  await page.goto('/?workspace=1');
   await page.getByRole('button', { name: 'Open India index', exact: true }).click();
   const dialog = page.getByRole('dialog', { name: 'The growing India index', exact: true });
   await expect(
@@ -159,7 +160,7 @@ test('preferred v2 metadata filters explicit vocals separately from generic cred
 test('actual v3 composer proofs and truthful recording-linked lyric-pair progress', async ({
   page,
 }) => {
-  await page.goto('/');
+  await page.goto('/?workspace=1');
   await page.getByRole('button', { name: 'Open India index', exact: true }).click();
   const dialog = page.getByRole('dialog', { name: 'The growing India index', exact: true });
   await expect(dialog.getByTestId('recording-coverage')).toHaveText('127,064');

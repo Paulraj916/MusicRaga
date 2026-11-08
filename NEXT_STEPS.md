@@ -1,5 +1,9 @@
 # Next steps — scalable catalogue checkpoint
 
+## Latest: search-first root (9 November 2026)
+
+Read `docs/SEARCH_FIRST_RELEASE.md` first. Default root is now direct song/album/artist search and a clear unavailable-lyrics reader. Advanced tools moved behind More tools / `?workspace=1`; real recording-linked native + romanized pairs remain **0**. Album-name static discovery uses a verified 25,574-release metadata bridge; recordings stay **127,064**, not extra songs. Ads OFF, preview noindex. Run full build (or reuse verified shards) before browser tests; `build:curated` alone removes/does not rebuild the catalogue.
+
 **Current user-selected brand: Music Raga** (formerly PowerWords). Canonical repo: https://github.com/Paulraj916/MusicRaga ; project preview target: https://paulraj916.github.io/MusicRaga/ . Same history/data/PR preserved; verify the release deployment/HTTP before claiming live. Old Pages path may NOT redirect. Read `docs/RELEASES.md`.
 
 ## Active v3 role evidence + v4 additive snapshot

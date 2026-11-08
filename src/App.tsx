@@ -1,6 +1,7 @@
 import { appHref, logicalPath } from './deployment';
 import { useEffect, useRef, useState } from 'react';
 import IndiaIndex from './IndiaIndex';
+import SongSearchHome from './SongSearchHome';
 import type { ReactNode } from 'react';
 import {
   ArrowDownUp,
@@ -541,8 +542,14 @@ export default function App({ initialPath }: { initialPath?: string } = {}) {
     initialPath ?? (typeof window !== 'undefined' ? logicalPath(window.location.pathname) : '/'),
   );
   const route = resolveRoute(path);
+  const [workspace, setWorkspace] = useState(
+    () =>
+      typeof window !== 'undefined' &&
+      new URLSearchParams(window.location.search).get('workspace') === '1',
+  );
   const [scope, setScope] = useState('all');
   const [view, setView] = useState<View>('discover');
+  const simpleHome = view === 'discover' && route.kind === 'home' && !workspace;
   const [showIndiaIndex, setShowIndiaIndex] = useState(false);
   const [query, setQuery] = useState('');
   const [filters, setFilters] = useState<Filters>({});
@@ -631,6 +638,7 @@ export default function App({ initialPath }: { initialPath?: string } = {}) {
   }, [selected]);
   useEffect(() => {
     const sync = () => {
+      setWorkspace(new URLSearchParams(window.location.search).get('workspace') === '1');
       setPath(logicalPath(window.location.pathname));
       setView('discover');
     };
@@ -768,7 +776,7 @@ export default function App({ initialPath }: { initialPath?: string } = {}) {
     }
   }
   return (
-    <div className="app-shell">
+    <div className={'app-shell' + (simpleHome ? ' simple-home' : '')}>
       <a className="skip-link" href="#main">
         Skip to content
       </a>
@@ -919,16 +927,45 @@ export default function App({ initialPath }: { initialPath?: string } = {}) {
           </div>
         </header>
         <main id="main" tabIndex={-1}>
-          <section className="index-entry" aria-label="Growing catalogue">
-            <span>
-              Real India-associated discovery{' '}
-              <small>Source-backed recordings, artists and language evidence · metadata only</small>
-            </span>
-            <button className="button" onClick={() => setShowIndiaIndex(true)}>
-              Open India index
-            </button>
-          </section>
-          {view === 'discover' && route.kind !== 'home' ? (
+          {!simpleHome && (
+            <section className="index-entry" aria-label="Growing catalogue">
+              <span>
+                Real India-associated discovery{' '}
+                <small>
+                  Source-backed recordings, artists and language evidence · metadata only
+                </small>
+              </span>
+              <button className="button" onClick={() => setShowIndiaIndex(true)}>
+                Open India index
+              </button>
+              <button
+                className="text-button"
+                onClick={() => {
+                  setWorkspace(false);
+                  setView('discover');
+                  setPath('/');
+                  window.history.pushState(null, '', appHref('/'));
+                }}
+              >
+                Back to simple song search
+              </button>
+            </section>
+          )}
+          {simpleHome ? (
+            <SongSearchHome
+              theme={theme}
+              onTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              onTools={() => {
+                setWorkspace(true);
+                const u = new URL(window.location.href);
+                u.searchParams.set('workspace', '1');
+                u.searchParams.delete('song');
+                window.history.pushState(null, '', u.pathname + u.search);
+              }}
+              onExample={() => setSelected(DEMO_SONGS[0])}
+              onPolicy={setInfo}
+            />
+          ) : view === 'discover' && route.kind !== 'home' ? (
             <CataloguePage
               key={path}
               route={route}
@@ -1436,20 +1473,22 @@ export default function App({ initialPath }: { initialPath?: string } = {}) {
               )}
             </>
           )}
-          <footer>
-            <div className="footer-brand">
-              Music Raga<span>.</span>
-              <small>Made for a deeper listen.</small>
-            </div>
-            <div>
-              <button onClick={() => setInfo('rights')}>Content & rights</button>
-              <button onClick={() => setInfo('privacy')}>Privacy</button>
-              <button onClick={() => setInfo('guide')}>About this demo</button>
-            </div>
-            <span>
-              LESS NOISE. MORE MEANING. <span className="footer-star">✳</span>
-            </span>
-          </footer>
+          {!simpleHome && (
+            <footer>
+              <div className="footer-brand">
+                Music Raga<span>.</span>
+                <small>Made for a deeper listen.</small>
+              </div>
+              <div>
+                <button onClick={() => setInfo('rights')}>Content & rights</button>
+                <button onClick={() => setInfo('privacy')}>Privacy</button>
+                <button onClick={() => setInfo('guide')}>About this demo</button>
+              </div>
+              <span>
+                LESS NOISE. MORE MEANING. <span className="footer-star">✳</span>
+              </span>
+            </footer>
+          )}
         </main>
       </div>
       <div className={`global-status ${status ? 'visible' : ''}`} role="status">
