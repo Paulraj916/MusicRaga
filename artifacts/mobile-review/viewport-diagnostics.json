@@ -1,0 +1,338 @@
+[
+  {
+    "profile": "previous-device",
+    "state": "home",
+    "innerWidth": 412,
+    "innerHeight": 915,
+    "screen": {
+      "width": 412,
+      "height": 915
+    },
+    "dpr": 2.625,
+    "scrollY": 0,
+    "visualViewport": {
+      "width": 412,
+      "height": 915,
+      "scale": 1,
+      "offsetTop": 0
+    },
+    "docWidth": 412,
+    "dialog": null
+  },
+  {
+    "profile": "previous-device",
+    "state": "drawer",
+    "innerWidth": 412,
+    "innerHeight": 915,
+    "screen": {
+      "width": 412,
+      "height": 915
+    },
+    "dpr": 2.625,
+    "scrollY": 0,
+    "visualViewport": {
+      "width": 412,
+      "height": 915,
+      "scale": 1,
+      "offsetTop": 0
+    },
+    "docWidth": 412,
+    "dialog": null
+  },
+  {
+    "profile": "previous-device",
+    "state": "search-focus",
+    "innerWidth": 412,
+    "innerHeight": 915,
+    "screen": {
+      "width": 412,
+      "height": 915
+    },
+    "dpr": 2.625,
+    "scrollY": 45,
+    "visualViewport": {
+      "width": 412,
+      "height": 915,
+      "scale": 1,
+      "offsetTop": 0
+    },
+    "docWidth": 412,
+    "dialog": null
+  },
+  {
+    "profile": "previous-device",
+    "state": "credits-top",
+    "innerWidth": 412,
+    "innerHeight": 915,
+    "screen": {
+      "width": 412,
+      "height": 915
+    },
+    "dpr": 2.625,
+    "scrollY": 0,
+    "visualViewport": {
+      "width": 412,
+      "height": 915,
+      "scale": 1,
+      "offsetTop": 0
+    },
+    "docWidth": 412,
+    "dialog": null
+  },
+  {
+    "profile": "previous-device",
+    "state": "credits-gate",
+    "innerWidth": 412,
+    "innerHeight": 915,
+    "screen": {
+      "width": 412,
+      "height": 915
+    },
+    "dpr": 2.625,
+    "scrollY": 660,
+    "visualViewport": {
+      "width": 412,
+      "height": 915,
+      "scale": 1,
+      "offsetTop": 0
+    },
+    "docWidth": 412,
+    "dialog": null
+  },
+  {
+    "profile": "previous-device",
+    "state": "practice-top",
+    "innerWidth": 412,
+    "innerHeight": 915,
+    "screen": {
+      "width": 412,
+      "height": 915
+    },
+    "dpr": 2.625,
+    "scrollY": 738,
+    "visualViewport": {
+      "width": 412,
+      "height": 915,
+      "scale": 1,
+      "offsetTop": 0
+    },
+    "docWidth": 412,
+    "dialog": {
+      "x": 19,
+      "y": 12,
+      "width": 374,
+      "height": 891,
+      "scrollHeight": 1300,
+      "clientHeight": 889,
+      "scrollTop": 0,
+      "header": {
+        "x": 20,
+        "y": 13,
+        "width": 372,
+        "height": 55
+      }
+    }
+  },
+  {
+    "profile": "previous-device",
+    "state": "practice-player",
+    "innerWidth": 412,
+    "innerHeight": 915,
+    "screen": {
+      "width": 412,
+      "height": 915
+    },
+    "dpr": 2.625,
+    "scrollY": 738,
+    "visualViewport": {
+      "width": 412,
+      "height": 915,
+      "scale": 1,
+      "offsetTop": 0
+    },
+    "docWidth": 412,
+    "dialog": {
+      "x": 19,
+      "y": 12,
+      "width": 374,
+      "height": 891,
+      "scrollHeight": 1300,
+      "clientHeight": 889,
+      "scrollTop": 411,
+      "header": {
+        "x": 20,
+        "y": 13,
+        "width": 372,
+        "height": 55
+      }
+    }
+  },
+  {
+    "profile": "matched-capture",
+    "state": "home",
+    "innerWidth": 412,
+    "innerHeight": 892,
+    "screen": {
+      "width": 412,
+      "height": 892
+    },
+    "dpr": 1,
+    "scrollY": 0,
+    "visualViewport": {
+      "width": 412,
+      "height": 892,
+      "scale": 1,
+      "offsetTop": 0
+    },
+    "docWidth": 412,
+    "dialog": null
+  },
+  {
+    "profile": "matched-capture",
+    "state": "drawer",
+    "innerWidth": 412,
+    "innerHeight": 892,
+    "screen": {
+      "width": 412,
+      "height": 892
+    },
+    "dpr": 1,
+    "scrollY": 0,
+    "visualViewport": {
+      "width": 412,
+      "height": 892,
+      "scale": 1,
+      "offsetTop": 0
+    },
+    "docWidth": 412,
+    "dialog": null
+  },
+  {
+    "profile": "matched-capture",
+    "state": "search-focus",
+    "innerWidth": 412,
+    "innerHeight": 892,
+    "screen": {
+      "width": 412,
+      "height": 892
+    },
+    "dpr": 1,
+    "scrollY": 67,
+    "visualViewport": {
+      "width": 412,
+      "height": 892,
+      "scale": 1,
+      "offsetTop": 0
+    },
+    "docWidth": 412,
+    "dialog": null
+  },
+  {
+    "profile": "matched-capture",
+    "state": "credits-top",
+    "innerWidth": 412,
+    "innerHeight": 892,
+    "screen": {
+      "width": 412,
+      "height": 892
+    },
+    "dpr": 1,
+    "scrollY": 0,
+    "visualViewport": {
+      "width": 412,
+      "height": 892,
+      "scale": 1,
+      "offsetTop": 0
+    },
+    "docWidth": 412,
+    "dialog": null
+  },
+  {
+    "profile": "matched-capture",
+    "state": "credits-gate",
+    "innerWidth": 412,
+    "innerHeight": 892,
+    "screen": {
+      "width": 412,
+      "height": 892
+    },
+    "dpr": 1,
+    "scrollY": 671,
+    "visualViewport": {
+      "width": 412,
+      "height": 892,
+      "scale": 1,
+      "offsetTop": 0
+    },
+    "docWidth": 412,
+    "dialog": null
+  },
+  {
+    "profile": "matched-capture",
+    "state": "practice-top",
+    "innerWidth": 412,
+    "innerHeight": 892,
+    "screen": {
+      "width": 412,
+      "height": 892
+    },
+    "dpr": 1,
+    "scrollY": 749,
+    "visualViewport": {
+      "width": 412,
+      "height": 892,
+      "scale": 1,
+      "offsetTop": 0
+    },
+    "docWidth": 412,
+    "dialog": {
+      "x": 19,
+      "y": 12,
+      "width": 374,
+      "height": 868,
+      "scrollHeight": 1300,
+      "clientHeight": 866,
+      "scrollTop": 0,
+      "header": {
+        "x": 20,
+        "y": 13,
+        "width": 372,
+        "height": 55
+      }
+    }
+  },
+  {
+    "profile": "matched-capture",
+    "state": "practice-player",
+    "innerWidth": 412,
+    "innerHeight": 892,
+    "screen": {
+      "width": 412,
+      "height": 892
+    },
+    "dpr": 1,
+    "scrollY": 749,
+    "visualViewport": {
+      "width": 412,
+      "height": 892,
+      "scale": 1,
+      "offsetTop": 0
+    },
+    "docWidth": 412,
+    "dialog": {
+      "x": 19,
+      "y": 12,
+      "width": 374,
+      "height": 868,
+      "scrollHeight": 1300,
+      "clientHeight": 866,
+      "scrollTop": 434,
+      "header": {
+        "x": 20,
+        "y": 13,
+        "width": 372,
+        "height": 55
+      }
+    }
+  }
+]

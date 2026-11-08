@@ -3,6 +3,7 @@ import { chromium, devices } from '@playwright/test';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { execFileSync } from 'node:child_process';
+import assert from 'node:assert/strict';
 const origin = process.env.DEMO_ORIGIN ?? 'http://127.0.0.1:4173';
 const url = new URL(origin);
 if (!['localhost', '127.0.0.1', '[::1]'].includes(url.hostname) || url.protocol !== 'http:')
@@ -119,38 +120,106 @@ try {
   const desktopVideo = page.video();
   await desktop.close();
   const desktopPath = await desktopVideo.path();
-  const phone = await context({ ...devices['Pixel 7'], viewport: { width: 412, height: 915 } });
+  // Even CSS/device/video dimensions, DPR 1. Never take screenshots in a live mobile
+  // recording: high-DPR/full-page screenshots temporarily resize Chromium's capture surface.
+  const phone = await context({
+    ...devices['Pixel 7'],
+    viewport: { width: 412, height: 892 },
+    screen: { width: 412, height: 892 },
+    deviceScaleFactor: 1,
+  });
   page = await phone.newPage();
   page.setDefaultTimeout(12000);
+  page.screenshot = async () => {
+    throw new Error(
+      'Mobile recording must not resize its capture surface. Use the separate screenshot verification pass.',
+    );
+  };
+  const mobileMeasurements = [];
+  async function settled(label) {
+    await page.evaluate(() => document.fonts.ready);
+    await pause(450);
+    const measure = await page.evaluate(() => {
+      const dialog = document.querySelector('dialog[open]');
+      const h = dialog?.querySelector('.dialog-top')?.getBoundingClientRect();
+      return {
+        width: innerWidth,
+        height: innerHeight,
+        dpr: devicePixelRatio,
+        scale: visualViewport.scale,
+        docWidth: document.documentElement.scrollWidth,
+        scrollY,
+        dialogScroll: dialog?.scrollTop ?? null,
+        header: h ? { x: h.x, y: h.y, right: h.right, bottom: h.bottom } : null,
+      };
+    });
+    assert.equal(measure.width, 412);
+    assert.equal(measure.height, 892);
+    assert.equal(measure.scale, 1);
+    assert(measure.docWidth <= 412);
+    if (measure.header) {
+      assert(
+        measure.header.x >= 0 &&
+          measure.header.y >= 0 &&
+          measure.header.right <= 412 &&
+          measure.header.bottom <= 892,
+      );
+    }
+    mobileMeasurements.push({ label, ...measure });
+  }
   await page.goto(origin + '/');
-  await page.evaluate(() => document.fonts.ready);
-  note('Mobile segment: actual 412px phone viewport, responsive home');
-  await page.screenshot({ path: 'artifacts/upgraded-demo-mobile-home.png' });
-  await pause(2000);
+  await settled('home');
+  note('Mobile: full 412 × 892 CSS-pixel portrait viewport, no crop');
+  await pause(1800);
   await page.getByRole('button', { name: 'Open navigation', exact: true }).click();
+  await settled('drawer');
   note('Mobile accessible navigation drawer');
   await pause(1700);
   await page.getByRole('button', { name: 'Close navigation', exact: true }).click();
   await page.getByRole('button', { name: 'Switch to dark theme' }).click();
-  await pause(1200);
+  await settled('drawer closed / dark theme');
   await search().fill('முன்பே வா lyrics');
-  await page.locator('.song-title').scrollIntoViewIfNeeded();
-  note('Mobile native-script search finds the sourced real recording');
-  await pause(1800);
+  await settled('native search');
+  note('Mobile native-title search: real sourced recording');
+  await pause(1900);
   await page.locator('.song-title').click();
-  await page.locator('.rights-gate').scrollIntoViewIfNeeded();
-  note('Mobile sourced credit view: honest no-lyrics gate');
-  await pause(2000);
-  await page.screenshot({ path: 'artifacts/upgraded-demo-mobile-credits.png', fullPage: true });
-  await page.goto(origin + '/songs/tirukkural-invocation/translation/');
-  await page.locator('.static-reader').scrollIntoViewIfNeeded();
-  note('Mobile dark reading folio and text versions');
+  await settled('credits top');
+  note('Mobile full recording heading and credited people');
   await pause(2200);
+  await page.evaluate(() => window.scrollTo({ top: 620, behavior: 'smooth' }));
+  await pause(900);
+  await settled('rights gate');
+  note('Controlled page scroll: readable commercial-lyrics rights gate');
+  await pause(2100);
+  await page
+    .locator('.route-breadcrumb')
+    .getByRole('link', { name: 'Discover', exact: true })
+    .click();
+  await search().fill('அகர முதல');
+  await page.locator('.song-title').click();
+  await settled('ancient text page');
+  await page.getByRole('link', { name: 'English rendering', exact: true }).click();
+  await page.locator('.static-reader').scrollIntoViewIfNeeded();
+  await settled('English text folio');
+  note('Mobile English rendering at its clean URL');
+  await pause(2300);
   await page.getByRole('button', { name: 'Open practice room' }).click();
   await page.getByRole('dialog').getByRole('tab', { name: 'English', exact: true }).click();
-  note('Mobile practice room stays ad-free and readable');
-  await pause(2200);
-  await page.screenshot({ path: 'artifacts/upgraded-demo-mobile-practice.png' });
+  await settled('practice header');
+  note('Mobile practice: intact header, artwork, language tabs and scrollable text');
+  await pause(2400);
+  const mobileRoom = page.getByRole('dialog');
+  await mobileRoom
+    .getByRole('button', { name: 'Play rehearsal', exact: true })
+    .scrollIntoViewIfNeeded();
+  await settled('practice playback controls');
+  note('Scroll within the room: playback controls remain reachable, close stays sticky');
+  await pause(2000);
+  await mobileRoom.evaluate((el) => el.scrollTo({ top: 0, behavior: 'smooth' }));
+  await pause(900);
+  await settled('practice restored top');
+  note('Return to intact reader header without zoom or clipping');
+  await pause(2400);
   const mobileVideo = page.video();
   await phone.close();
   const mobilePath = await mobileVideo.path();
@@ -158,64 +227,49 @@ try {
   if (runtimeErrors.length) throw new Error('Runtime errors: ' + runtimeErrors.join(', '));
   if (external.length)
     throw new Error('Unexpected non-local network request: ' + external.join(', '));
-  const encode = (input, out) =>
-    execFileSync(
-      'ffmpeg',
-      [
-        '-nostdin',
-        '-hide_banner',
-        '-loglevel',
-        'error',
-        '-y',
-        '-i',
-        input,
-        '-vf',
-        'scale=1280:900:force_original_aspect_ratio=decrease,pad=1280:900:(ow-iw)/2:(oh-ih)/2:color=0x1c201e,setsar=1',
-        '-r',
-        '30',
-        '-c:v',
-        'libx264',
-        '-threads',
-        '2',
-        '-preset',
-        'fast',
-        '-crf',
-        '22',
-        '-pix_fmt',
-        'yuv420p',
-        '-an',
-        '-movflags',
-        '+faststart',
-        out,
-      ],
-      { stdio: 'inherit', timeout: 180000 },
-    );
-  const desktopMp4 = resolve(dir, 'desktop.mp4');
-  encode(desktopPath, desktopMp4);
-  encode(mobilePath, mobileOutput);
-  const list = resolve(dir, 'concat.txt');
-  await writeFile(list, `file '${desktopMp4}'\nfile '${mobileOutput}'\n`);
+  const common = ['-nostdin', '-hide_banner', '-loglevel', 'error', '-y'];
+  const codec = [
+    '-r',
+    '30',
+    '-c:v',
+    'libx264',
+    '-threads',
+    '2',
+    '-preset',
+    'fast',
+    '-crf',
+    '20',
+    '-pix_fmt',
+    'yuv420p',
+    '-an',
+    '-movflags',
+    '+faststart',
+  ];
+  // Standalone mobile stays native portrait. The combined output uses contain+padding,
+  // no crop/zoom, and ONE H.264 encode rather than copying mismatched segment headers.
+  execFileSync(
+    'ffmpeg',
+    [...common, '-i', mobilePath, '-vf', 'fps=30,setsar=1', ...codec, mobileOutput],
+    { stdio: 'inherit', timeout: 180000 },
+  );
+  const filters =
+    "[0:v]fps=30,scale=1280:900:force_original_aspect_ratio=decrease,pad=1280:900:(ow-iw)/2:(oh-ih)/2:color=0x1c201e,setsar=1,setpts=PTS-STARTPTS[d];[1:v]fps=30,scale=-2:852,pad=1280:900:(ow-iw)/2:(oh-ih)/2:color=0x1c201e,setsar=1,drawbox=x=442:y=23:w=396:h=854:color=0x626456:t=1,drawtext=text='MOBILE / 412 x 892':x=65:y=78:fontsize=20:fontcolor=0xf1eee3,drawtext=text='Full portrait. Real local UI.':x=65:y=113:fontsize=14:fontcolor=0xb4b8a9,setpts=PTS-STARTPTS[m];[d][m]concat=n=2:v=1:a=0[out]";
   execFileSync(
     'ffmpeg',
     [
-      '-nostdin',
-      '-hide_banner',
-      '-loglevel',
-      'error',
-      '-y',
-      '-f',
-      'concat',
-      '-safe',
-      '0',
+      ...common,
       '-i',
-      list,
-      '-c',
-      'copy',
-      '-movflags',
-      '+faststart',
+      desktopPath,
+      '-i',
+      mobilePath,
+      '-filter_complex',
+      filters,
+      '-map',
+      '[out]',
+      ...codec,
       output,
     ],
-    { stdio: 'inherit', timeout: 60000 },
+    { stdio: 'inherit', timeout: 180000 },
   );
   const probe = JSON.parse(
     execFileSync(
@@ -237,6 +291,9 @@ try {
     mobileOutput,
     desktopWebm: desktopPath,
     mobileWebm: mobilePath,
+    mobileMeasurements,
+    composition:
+      'Single H.264 encode; contain/pad only, native 412x892 mobile output; no screenshot APIs during active mobile recording.',
     origin,
     events,
     externalRequests: external,

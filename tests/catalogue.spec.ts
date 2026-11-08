@@ -251,3 +251,43 @@ test('unpublished imported metadata has a truthful local inspector, not a fake p
   ).toHaveCount(0);
   await expect(page).toHaveURL('/');
 });
+test('mobile reported states retain scale one, intact reader header and reachable controls', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 412, height: 892 });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Switch to dark theme' }).click();
+  await page
+    .getByRole('textbox', { name: 'Search songs, artists, albums and lyrics metadata' })
+    .fill('முன்பே வா lyrics');
+  await page.locator('.song-title').click();
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Munbe Vaa');
+  await overflow(page);
+  await page.goto('/songs/tirukkural-invocation/translation/');
+  await page.getByRole('button', { name: 'Open practice room' }).click();
+  const d = page.getByRole('dialog');
+  await d.getByRole('tab', { name: 'English', exact: true }).click();
+  await expect(d.locator('.reader-info')).toContainText('Ancient text');
+  await expect(d.locator('.reader-heading h3')).toHaveAttribute('lang', 'ta');
+  const bounds = async () => {
+    const v = await page.evaluate(() => ({
+      scale: visualViewport?.scale,
+      width: innerWidth,
+      height: innerHeight,
+    }));
+    expect(v.scale).toBe(1);
+    const h = await d.locator('.dialog-top').boundingBox();
+    expect(h!.x).toBeGreaterThanOrEqual(0);
+    expect(h!.y).toBeGreaterThanOrEqual(0);
+    expect(h!.x + h!.width).toBeLessThanOrEqual(v.width);
+    expect(h!.y + h!.height).toBeLessThanOrEqual(v.height);
+    await overflow(page);
+  };
+  await bounds();
+  await d.getByRole('button', { name: 'Play rehearsal', exact: true }).scrollIntoViewIfNeeded();
+  await bounds();
+  await expect(d.getByRole('button', { name: 'Close The lyric room' })).toBeInViewport();
+  await d.evaluate((el) => el.scrollTo(0, 0));
+  await bounds();
+  await expect(d.locator('.reader-info .cover')).toBeInViewport();
+});

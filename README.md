@@ -24,6 +24,7 @@ npx playwright install chromium
 npm run test:e2e -- --workers=4  # production desktop/mobile workflows + axe
 npm audit                       # lockfile vulnerability check
 npm run record:demo             # actual local browser-action recording; ffmpeg required
+npm run test:video              # native mobile frame vs independent intact UI reference
 ```
 
 Playwright starts the production preview on 4173 if needed; build first. An already running preview must serve this build. Reports: `playwright-report/`; screenshots: `artifacts/`. Screenshots are review evidence, not pixel-baseline assertions. See [progress](docs/PROGRESS.md) for measured results and [recording](docs/DEMO_RECORDING.md) for the actual capture.
@@ -86,7 +87,7 @@ React 19 + strict TypeScript + Vite; no application backend. One shared componen
 
 No complete discography, commercial lyric licence, broad independent catalogue, backend/editorial admin, cross-device account sync, provider integration, full fuzzy/semantic search or live ads. Search is Unicode-normalised terms and known aliases; related-album recovery is labelled. Filters are single exact selections, not ranges/multiselect. Native-language writing/renderings need human editorial review. Automated axe/Chromium tests are not screen-reader certification, real-device QA or a zero-bug guarantee. Static metadata-only pages and a small text edition do not make the business launch-ready.
 
-The exact PowerWords GitHub repository is still unconfirmed. Authenticated Navina0 read-only own/collaborator/organisation matching found no exact PowerWords variant; the literal `Navina0/PowerWords` endpoint returned HTTP 404. **No remote repository was created, unrelated repository cloned, code pushed or PR opened.** Source, local history, archive and continuation docs are usable independently. Integrate only after confirming the target; preserve its existing work on a feature branch.
+The owner/account is now verified as **Paulraj916 / Paul Raj**, not the initially active Navina0 CLI identity. Correct connected-account searches returned 45 owner repositories but no PowerWords variant; the exact `Paulraj916/PowerWords` check returned HTTP 404. This may require the correct existing URL or a permission grant; it is not a reason to create a remote or use someone else's same-name project. The parent handles CLI login; no duplicate account switch is performed here. **No remote repository was created, unrelated repository cloned, code pushed or PR opened.** See [current research](docs/PAULRAJ_TARGET_RESEARCH.md).
 
 Continue with: **“Read AI_HANDOVER.md and NEXT_STEPS.md, run the checks, preserve existing work, and implement the next unblocked item without inventing facts or licences.”**
 

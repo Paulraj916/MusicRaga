@@ -249,7 +249,7 @@ function Reader({
           </span>
           <h3>{song.title}</h3>
           <p>
-            {song.artist} · {song.year}
+            {song.artist} · {song.year ?? 'Ancient text'}
           </p>
           <button className={`button ${saved ? 'saved' : ''}`} onClick={onSave}>
             <Heart size={16} fill={saved ? 'currentColor' : 'none'} />
@@ -322,7 +322,7 @@ function Reader({
           <div className="reader-heading">
             <div>
               <span className="eyebrow">LET THE WORDS BREATHE</span>
-              <h3>{song.nativeTitle}</h3>
+              <h3 lang={lyricLanguage(song.language, 'original')}>{song.nativeTitle}</h3>
             </div>
             <button
               className="icon-button"

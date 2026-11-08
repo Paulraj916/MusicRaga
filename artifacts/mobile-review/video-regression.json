@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "similarity": 0.992297,
+  "threshold": 0.93,
+  "geometry": {
+    "width": 412,
+    "height": 892,
+    "scale": 1,
+    "dpr": 1
+  },
+  "finalFrame": "artifacts/mobile-review/revised-mobile-final.png",
+  "referenceFrame": "artifacts/mobile-review/revised-mobile-reference.png",
+  "notice": "Independent non-recording UI reference; screenshot APIs never mutate active mobile recording; codec loss allowed, crop/zoom would fail."
+}

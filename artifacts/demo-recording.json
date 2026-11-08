@@ -1,8 +1,147 @@
 {
-  "output": "/workspace/powerwords-upgraded-20261108-demo-1794159527860.mp4",
-  "mobileOutput": "/workspace/powerwords-upgraded-20261108-mobile-1794159527860.mp4",
-  "desktopWebm": "/workspace/powerwords-20261108-standalone/recordings/demo-1794159527860/page@1f9e3d038a3319e47f4ba8ca7dadb890.webm",
-  "mobileWebm": "/workspace/powerwords-20261108-standalone/recordings/demo-1794159527860/page@e7afa8d4a1bcfe2c3566366279ae1e93.webm",
+  "output": "/workspace/powerwords-upgraded-20261108-demo-1794160112232.mp4",
+  "mobileOutput": "/workspace/powerwords-upgraded-20261108-mobile-1794160112232.mp4",
+  "desktopWebm": "/workspace/powerwords-20261108-standalone/recordings/demo-1794160112232/page@97760e5074ca0efe2c70469005cfdd91.webm",
+  "mobileWebm": "/workspace/powerwords-20261108-standalone/recordings/demo-1794160112232/page@d803667a85f5b828a62421e29798ae11.webm",
+  "mobileMeasurements": [
+    {
+      "label": "home",
+      "width": 412,
+      "height": 892,
+      "dpr": 1,
+      "scale": 1,
+      "docWidth": 412,
+      "scrollY": 0,
+      "dialogScroll": null,
+      "header": null
+    },
+    {
+      "label": "drawer",
+      "width": 412,
+      "height": 892,
+      "dpr": 1,
+      "scale": 1,
+      "docWidth": 412,
+      "scrollY": 0,
+      "dialogScroll": null,
+      "header": null
+    },
+    {
+      "label": "drawer closed / dark theme",
+      "width": 412,
+      "height": 892,
+      "dpr": 1,
+      "scale": 1,
+      "docWidth": 412,
+      "scrollY": 0,
+      "dialogScroll": null,
+      "header": null
+    },
+    {
+      "label": "native search",
+      "width": 412,
+      "height": 892,
+      "dpr": 1,
+      "scale": 1,
+      "docWidth": 412,
+      "scrollY": 67,
+      "dialogScroll": null,
+      "header": null
+    },
+    {
+      "label": "credits top",
+      "width": 412,
+      "height": 892,
+      "dpr": 1,
+      "scale": 1,
+      "docWidth": 412,
+      "scrollY": 0,
+      "dialogScroll": null,
+      "header": null
+    },
+    {
+      "label": "rights gate",
+      "width": 412,
+      "height": 892,
+      "dpr": 1,
+      "scale": 1,
+      "docWidth": 412,
+      "scrollY": 620,
+      "dialogScroll": null,
+      "header": null
+    },
+    {
+      "label": "ancient text page",
+      "width": 412,
+      "height": 892,
+      "dpr": 1,
+      "scale": 1,
+      "docWidth": 412,
+      "scrollY": 0,
+      "dialogScroll": null,
+      "header": null
+    },
+    {
+      "label": "English text folio",
+      "width": 412,
+      "height": 892,
+      "dpr": 1,
+      "scale": 1,
+      "docWidth": 412,
+      "scrollY": 1312,
+      "dialogScroll": null,
+      "header": null
+    },
+    {
+      "label": "practice header",
+      "width": 412,
+      "height": 892,
+      "dpr": 1,
+      "scale": 1,
+      "docWidth": 412,
+      "scrollY": 749,
+      "dialogScroll": 0,
+      "header": {
+        "x": 20,
+        "y": 13,
+        "right": 392,
+        "bottom": 68
+      }
+    },
+    {
+      "label": "practice playback controls",
+      "width": 412,
+      "height": 892,
+      "dpr": 1,
+      "scale": 1,
+      "docWidth": 412,
+      "scrollY": 749,
+      "dialogScroll": 434,
+      "header": {
+        "x": 20,
+        "y": 13,
+        "right": 392,
+        "bottom": 68
+      }
+    },
+    {
+      "label": "practice restored top",
+      "width": 412,
+      "height": 892,
+      "dpr": 1,
+      "scale": 1,
+      "docWidth": 412,
+      "scrollY": 749,
+      "dialogScroll": 0,
+      "header": {
+        "x": 20,
+        "y": 13,
+        "right": 392,
+        "bottom": 68
+      }
+    }
+  ],
+  "composition": "Single H.264 encode; contain/pad only, native 412x892 mobile output; no screenshot APIs during active mobile recording.",
   "origin": "http://127.0.0.1:4173",
   "events": [
     {
@@ -46,7 +185,7 @@
       "label": "Separate crawlable English rendering URL"
     },
     {
-      "seconds": 27.7,
+      "seconds": 27.6,
       "label": "Separate readable Latin / Thanglish version"
     },
     {
@@ -58,41 +197,53 @@
       "label": "Manual sync offset without hosted copyrighted audio"
     },
     {
-      "seconds": 34.3,
+      "seconds": 34.4,
       "label": "Local favourites and personal collection"
     },
     {
-      "seconds": 36.2,
+      "seconds": 36.3,
       "label": "After-hours theme and local saved library"
     },
     {
-      "seconds": 39.1,
-      "label": "Mobile segment: actual 412px phone viewport, responsive home"
+      "seconds": 39.5,
+      "label": "Mobile: full 412 × 892 CSS-pixel portrait viewport, no crop"
     },
     {
-      "seconds": 41.3,
+      "seconds": 41.9,
       "label": "Mobile accessible navigation drawer"
     },
     {
-      "seconds": 44.3,
-      "label": "Mobile native-script search finds the sourced real recording"
+      "seconds": 44.6,
+      "label": "Mobile native-title search: real sourced recording"
     },
     {
-      "seconds": 46.2,
-      "label": "Mobile sourced credit view: honest no-lyrics gate"
+      "seconds": 47,
+      "label": "Mobile full recording heading and credited people"
     },
     {
-      "seconds": 48.6,
-      "label": "Mobile dark reading folio and text versions"
+      "seconds": 51,
+      "label": "Controlled page scroll: readable commercial-lyrics rights gate"
     },
     {
-      "seconds": 50.8,
-      "label": "Mobile practice room stays ad-free and readable"
+      "seconds": 54.1,
+      "label": "Mobile English rendering at its clean URL"
+    },
+    {
+      "seconds": 57,
+      "label": "Mobile practice: intact header, artwork, language tabs and scrollable text"
+    },
+    {
+      "seconds": 59.9,
+      "label": "Scroll within the room: playback controls remain reachable, close stays sticky"
+    },
+    {
+      "seconds": 63.6,
+      "label": "Return to intact reader header without zoom or clipping"
     }
   ],
   "externalRequests": [],
   "runtimeErrors": [],
-  "recordedAtIst": "8 November 2026 at 11:09 pm IST",
+  "recordedAtIst": "8 November 2026 at 11:19 pm IST",
   "probe": {
     "programs": [],
     "stream_groups": [],
@@ -105,8 +256,8 @@
       }
     ],
     "format": {
-      "duration": "54.266667",
-      "size": "1643507"
+      "duration": "65.300000",
+      "size": "2014701"
     }
   },
   "notice": "Actual local Playwright interaction capture; silent, no generated footage, no external service or commercial media. Requires human video review; no claim of watching made."
