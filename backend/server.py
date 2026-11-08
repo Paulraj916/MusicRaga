@@ -104,7 +104,7 @@ def main():
     with connect(args.db, readonly=True) as db:
         if db.execute("SELECT value FROM meta WHERE key='schema_version'").fetchone()[0] != "1":
             parser.error("unsupported database schema")
-    print(f"PowerWords read-only catalogue http://{args.host}:{args.port}; no production TLS/auth/rate-limit proxy configured", flush=True)
+    print(f"Music Raga read-only catalogue http://{args.host}:{args.port}; no production TLS/auth/rate-limit proxy configured", flush=True)
     with make_server(args.host, args.port, app_factory(args.db, args.static), server_class=ThreadedServer) as http:
         http.serve_forever()
 

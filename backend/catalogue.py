@@ -242,6 +242,7 @@ CREATE TABLE IF NOT EXISTS credits(
  artist_id TEXT NOT NULL REFERENCES artists(id), role TEXT NOT NULL,
  name TEXT, PRIMARY KEY(track_id,artist_id,role));
 CREATE INDEX IF NOT EXISTS credits_role_artist ON credits(role,artist_id,track_id);
+CREATE INDEX IF NOT EXISTS credits_role_track ON credits(role,track_id,artist_id);
 CREATE INDEX IF NOT EXISTS credits_artist ON credits(artist_id,track_id);
 CREATE TABLE IF NOT EXISTS languages(
  track_id TEXT NOT NULL REFERENCES tracks(id) ON DELETE CASCADE, language TEXT NOT NULL,

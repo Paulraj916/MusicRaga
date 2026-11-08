@@ -137,3 +137,8 @@ class RoleTests(unittest.TestCase):
             self.assertEqual(search(d,{'role':'composer','kind':'recording'})['total'],1)
             self.assertEqual(d.execute('SELECT count(*) FROM role_credit_proofs').fetchone()[0],1)
             self.assertGreater(d.execute('SELECT count(*) FROM work_recordings').fetchone()[0],0)
+
+    def test_role_only_query_uses_both_role_and_track_index_keys(self):
+        with connect(self.db,True)as d:
+            plans=[r[3]for r in d.execute("EXPLAIN QUERY PLAN SELECT count(*) FROM tracks t WHERE t.kind=? AND EXISTS(SELECT 1 FROM credits c WHERE c.track_id=t.id AND c.role=?)",('recording','composer'))]
+            self.assertTrue(any('credits_role_track' in p and 'role=? AND track_id=?' in p for p in plans),plans)
