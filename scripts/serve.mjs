@@ -1,3 +1,4 @@
+import { loadEnv } from 'vite';
 import http from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
 import { resolve, extname, sep } from 'node:path';
@@ -5,7 +6,8 @@ const args = process.argv.slice(2);
 const arg = (key, fallback) => args[args.lastIndexOf(key) + 1] ?? fallback;
 const host = args.includes('--host') ? arg('--host', '0.0.0.0') : '0.0.0.0';
 const port = Number(args.includes('--port') ? arg('--port', '4173') : (process.env.PORT ?? 4173));
-const root = resolve('dist');
+const root = resolve(args.includes('--dir') ? arg('--dir', 'dist') : 'dist');
+const base = loadEnv('production', process.cwd(), '').VITE_BASE_PATH || '/';
 const mime = {
   '.html': 'text/html; charset=utf-8',
   '.js': 'text/javascript; charset=utf-8',
@@ -32,7 +34,20 @@ const server = http.createServer(async (req, res) => {
       res.writeHead(405, security);
       return res.end('Method not allowed');
     }
-    const path = decodeURIComponent(new URL(req.url, 'http://localhost').pathname);
+    let path = decodeURIComponent(new URL(req.url, 'http://localhost').pathname);
+    if (base !== '/') {
+      if (path === base.slice(0, -1)) {
+        res.writeHead(301, { Location: base });
+        res.end();
+        return;
+      }
+      if (!path.startsWith(base)) {
+        res.writeHead(404);
+        res.end('Not found');
+        return;
+      }
+      path = '/' + path.slice(base.length);
+    }
     let file = resolve(root, '.' + path);
     if (file !== root && !file.startsWith(root + sep)) {
       res.writeHead(403, security);
@@ -43,7 +58,7 @@ const server = http.createServer(async (req, res) => {
       const info = await stat(file);
       if (info.isDirectory()) {
         if (!path.endsWith('/')) {
-          res.writeHead(308, { ...security, Location: path + '/' });
+          res.writeHead(308, { ...security, Location: base.replace(/\/$/, '') + path + '/' });
           return res.end();
         }
         file = resolve(file, 'index.html');
@@ -56,6 +71,9 @@ const server = http.createServer(async (req, res) => {
     const data = await readFile(file);
     res.writeHead(code, {
       ...security,
+      ...(path.startsWith('/catalogue/') || path === '/ads-config.json'
+        ? { 'X-Robots-Tag': 'noindex, nofollow' }
+        : {}),
       'Content-Type': mime[extname(file)] ?? 'application/octet-stream',
       'Cache-Control': file.includes('/assets/') ? 'public,max-age=31536000,immutable' : 'no-cache',
     });
@@ -67,7 +85,7 @@ const server = http.createServer(async (req, res) => {
 });
 server.listen(port, host, () =>
   console.log(
-    `PowerWords static preview ready at http://${host}:${port}/ (real clean-route files, 404s and security headers)`,
+    `Music Raga static preview ready at http://${host}:${port}/ (real clean-route files, 404s and security headers)`,
   ),
 );
 server.on('error', (error) => {

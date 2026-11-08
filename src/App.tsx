@@ -1,4 +1,7 @@
+import { appHref, logicalPath } from './deployment';
 import { useEffect, useRef, useState } from 'react';
+import IndiaIndex from './IndiaIndex';
+import SongSearchHome from './SongSearchHome';
 import type { ReactNode } from 'react';
 import {
   ArrowDownUp,
@@ -536,11 +539,18 @@ function Reader({
 
 export default function App({ initialPath }: { initialPath?: string } = {}) {
   const [path, setPath] = useState(
-    initialPath ?? (typeof window !== 'undefined' ? window.location.pathname : '/'),
+    initialPath ?? (typeof window !== 'undefined' ? logicalPath(window.location.pathname) : '/'),
   );
   const route = resolveRoute(path);
+  const [workspace, setWorkspace] = useState(
+    () =>
+      typeof window !== 'undefined' &&
+      new URLSearchParams(window.location.search).get('workspace') === '1',
+  );
   const [scope, setScope] = useState('all');
   const [view, setView] = useState<View>('discover');
+  const simpleHome = view === 'discover' && route.kind === 'home' && !workspace;
+  const [showIndiaIndex, setShowIndiaIndex] = useState(false);
   const [query, setQuery] = useState('');
   const [filters, setFilters] = useState<Filters>({});
   const [sort, setSort] = useState('newest');
@@ -628,7 +638,8 @@ export default function App({ initialPath }: { initialPath?: string } = {}) {
   }, [selected]);
   useEffect(() => {
     const sync = () => {
-      setPath(window.location.pathname);
+      setWorkspace(new URLSearchParams(window.location.search).get('workspace') === '1');
+      setPath(logicalPath(window.location.pathname));
       setView('discover');
     };
     window.addEventListener('popstate', sync);
@@ -719,7 +730,7 @@ export default function App({ initialPath }: { initialPath?: string } = {}) {
     else setMetadataPreview(song);
   };
   const navigatePath = (nextPath: string) => {
-    window.history.pushState(null, '', nextPath);
+    window.history.pushState(null, '', appHref(nextPath));
     setPath(nextPath);
     setView('discover');
     setSelected(null);
@@ -733,7 +744,7 @@ export default function App({ initialPath }: { initialPath?: string } = {}) {
   };
   const navigate = (next: View) => {
     if (path !== '/') {
-      window.history.pushState(null, '', '/');
+      window.history.pushState(null, '', appHref('/'));
       setPath('/');
     }
     setScope('all');
@@ -765,7 +776,7 @@ export default function App({ initialPath }: { initialPath?: string } = {}) {
     }
   }
   return (
-    <div className="app-shell">
+    <div className={'app-shell' + (simpleHome ? ' simple-home' : '')}>
       <a className="skip-link" href="#main">
         Skip to content
       </a>
@@ -776,18 +787,18 @@ export default function App({ initialPath }: { initialPath?: string } = {}) {
         aria-label={menu ? 'Navigation' : undefined}
       >
         <a
-          href="/"
+          href={appHref('/')}
           className="brand"
           onClick={(e) => {
             e.preventDefault();
             navigate('discover');
           }}
-          aria-label="PowerWords home"
+          aria-label="Music Raga home"
         >
           <span className="brand-symbol">
-            p<span>✳</span>
+            m<span>✳</span>
           </span>
-          powerwords<span className="brand-dot">.</span>
+          Music Raga<span className="brand-dot">.</span>
         </a>
         <button
           className="mobile-close icon-button"
@@ -916,7 +927,45 @@ export default function App({ initialPath }: { initialPath?: string } = {}) {
           </div>
         </header>
         <main id="main" tabIndex={-1}>
-          {view === 'discover' && route.kind !== 'home' ? (
+          {!simpleHome && (
+            <section className="index-entry" aria-label="Growing catalogue">
+              <span>
+                Real India-associated discovery{' '}
+                <small>
+                  Source-backed recordings, artists and language evidence · metadata only
+                </small>
+              </span>
+              <button className="button" onClick={() => setShowIndiaIndex(true)}>
+                Open India index
+              </button>
+              <button
+                className="text-button"
+                onClick={() => {
+                  setWorkspace(false);
+                  setView('discover');
+                  setPath('/');
+                  window.history.pushState(null, '', appHref('/'));
+                }}
+              >
+                Back to simple song search
+              </button>
+            </section>
+          )}
+          {simpleHome ? (
+            <SongSearchHome
+              theme={theme}
+              onTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              onTools={() => {
+                setWorkspace(true);
+                const u = new URL(window.location.href);
+                u.searchParams.set('workspace', '1');
+                u.searchParams.delete('song');
+                window.history.pushState(null, '', u.pathname + u.search);
+              }}
+              onExample={() => setSelected(DEMO_SONGS[0])}
+              onPolicy={setInfo}
+            />
+          ) : view === 'discover' && route.kind !== 'home' ? (
             <CataloguePage
               key={path}
               route={route}
@@ -962,7 +1011,7 @@ export default function App({ initialPath }: { initialPath?: string } = {}) {
                       <div className="floating-glyph glyph-two">आ</div>
                       <div className="record">
                         <div className="record-label">
-                          <span>POWERWORDS</span>
+                          <span>MUSIC RAGA</span>
                           <span className="record-mark">✳</span>
                           <small>SIDE A / FEEL SOMETHING</small>
                         </div>
@@ -1283,7 +1332,7 @@ export default function App({ initialPath }: { initialPath?: string } = {}) {
                           {CATALOGUE.some((s) => s.id === song.id) ? (
                             <a
                               className="song-title"
-                              href={songPath(song)}
+                              href={appHref(songPath(song))}
                               onClick={(e) => follow(e, songPath(song), navigatePath)}
                             >
                               {song.title}
@@ -1298,10 +1347,12 @@ export default function App({ initialPath }: { initialPath?: string } = {}) {
                         {CATALOGUE.some((s) => s.id === song.id) ? (
                           <a
                             className="artist-link"
-                            href={artistPath(
-                              song.credits?.find((c) => c.role === 'singer')?.name ??
-                                song.credits?.[0]?.name ??
-                                song.artist,
+                            href={appHref(
+                              artistPath(
+                                song.credits?.find((c) => c.role === 'singer')?.name ??
+                                  song.credits?.[0]?.name ??
+                                  song.artist,
+                              ),
                             )}
                             onClick={(e) =>
                               follow(
@@ -1422,20 +1473,22 @@ export default function App({ initialPath }: { initialPath?: string } = {}) {
               )}
             </>
           )}
-          <footer>
-            <div className="footer-brand">
-              powerwords<span>.</span>
-              <small>Made for a deeper listen.</small>
-            </div>
-            <div>
-              <button onClick={() => setInfo('rights')}>Content & rights</button>
-              <button onClick={() => setInfo('privacy')}>Privacy</button>
-              <button onClick={() => setInfo('guide')}>About this demo</button>
-            </div>
-            <span>
-              LESS NOISE. MORE MEANING. <span className="footer-star">✳</span>
-            </span>
-          </footer>
+          {!simpleHome && (
+            <footer>
+              <div className="footer-brand">
+                Music Raga<span>.</span>
+                <small>Made for a deeper listen.</small>
+              </div>
+              <div>
+                <button onClick={() => setInfo('rights')}>Content & rights</button>
+                <button onClick={() => setInfo('privacy')}>Privacy</button>
+                <button onClick={() => setInfo('guide')}>About this demo</button>
+              </div>
+              <span>
+                LESS NOISE. MORE MEANING. <span className="footer-star">✳</span>
+              </span>
+            </footer>
+          )}
         </main>
       </div>
       <div className={`global-status ${status ? 'visible' : ''}`} role="status">
@@ -1461,6 +1514,11 @@ export default function App({ initialPath }: { initialPath?: string } = {}) {
           collections={collections}
           onAdd={addCollection}
         />
+      )}
+      {showIndiaIndex && (
+        <Dialog title="The growing India index" onClose={() => setShowIndiaIndex(false)} wide>
+          <IndiaIndex />
+        </Dialog>
       )}
       {showFilters && (
         <Dialog
@@ -1590,7 +1648,7 @@ export default function App({ initialPath }: { initialPath?: string } = {}) {
                   Words help you find it.
                 </h3>
                 <p>
-                  PowerWords is a working, local-first foundation for discovering Indian music.
+                  Music Raga is a working, local-first foundation for discovering Indian music.
                   Browse sourced credits and original demos, refine by metadata, save a collection,
                   then slow down in the lyric room.
                 </p>
@@ -1664,7 +1722,7 @@ export default function App({ initialPath }: { initialPath?: string } = {}) {
                   logs.
                 </p>
                 <p>
-                  You can clear PowerWords preferences and library without affecting other websites.
+                  You can clear Music Raga preferences and library without affecting other websites.
                 </p>
                 <button
                   className="button"
@@ -1683,11 +1741,11 @@ export default function App({ initialPath }: { initialPath?: string } = {}) {
                     setFont(24);
                     setImported([]);
                     setStatus(
-                      'PowerWords library, imports and preferences cleared. Default theme and text size may be saved again.',
+                      'Music Raga library, imports and preferences cleared. Default theme and text size may be saved again.',
                     );
                   }}
                 >
-                  Clear PowerWords local data
+                  Clear Music Raga local data
                 </button>
                 <p className="small-note">
                   A production deployment needs an operator identity, real contact/takedown route,
@@ -1755,7 +1813,7 @@ export default function App({ initialPath }: { initialPath?: string } = {}) {
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url;
-                    a.download = 'powerwords-catalogue.json';
+                    a.download = 'music-raga-catalogue.json';
                     a.click();
                     setTimeout(() => URL.revokeObjectURL(url), 1000);
                   }}

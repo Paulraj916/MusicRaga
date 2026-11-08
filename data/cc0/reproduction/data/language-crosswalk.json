@@ -1,0 +1,167 @@
+[
+  {
+    "wikidata": "Q13955",
+    "name": "Arabic",
+    "codes": {
+      "iso639_1": ["ar"],
+      "iso639_2": ["ara"],
+      "iso639_3": ["ara"]
+    },
+    "sourceUrl": "https://www.wikidata.org/wiki/Q13955",
+    "license": "CC0-1.0"
+  },
+  {
+    "wikidata": "Q1568",
+    "name": "Hindi",
+    "codes": {
+      "iso639_1": ["hi"],
+      "iso639_2": ["hin"],
+      "iso639_3": ["hin"]
+    },
+    "sourceUrl": "https://www.wikidata.org/wiki/Q1568",
+    "license": "CC0-1.0"
+  },
+  {
+    "wikidata": "Q1617",
+    "name": "Urdu",
+    "codes": {
+      "iso639_1": ["ur"],
+      "iso639_2": ["urd"],
+      "iso639_3": ["urd"]
+    },
+    "sourceUrl": "https://www.wikidata.org/wiki/Q1617",
+    "license": "CC0-1.0"
+  },
+  {
+    "wikidata": "Q1860",
+    "name": "English",
+    "codes": {
+      "iso639_1": ["en"],
+      "iso639_2": ["eng"],
+      "iso639_3": ["eng"]
+    },
+    "sourceUrl": "https://www.wikidata.org/wiki/Q1860",
+    "license": "CC0-1.0"
+  },
+  {
+    "wikidata": "Q29401",
+    "name": "Assamese",
+    "codes": {
+      "iso639_1": ["as"],
+      "iso639_2": ["asm"],
+      "iso639_3": ["asm"]
+    },
+    "sourceUrl": "https://www.wikidata.org/wiki/Q29401",
+    "license": "CC0-1.0"
+  },
+  {
+    "wikidata": "Q29579",
+    "name": "Awadhi",
+    "codes": {
+      "iso639_1": [],
+      "iso639_2": ["awa"],
+      "iso639_3": ["awa"]
+    },
+    "sourceUrl": "https://www.wikidata.org/wiki/Q29579",
+    "license": "CC0-1.0"
+  },
+  {
+    "wikidata": "Q33268",
+    "name": "Bhojpuri",
+    "codes": {
+      "iso639_1": [],
+      "iso639_2": ["bho"],
+      "iso639_3": ["bho"]
+    },
+    "sourceUrl": "https://www.wikidata.org/wiki/Q33268",
+    "license": "CC0-1.0"
+  },
+  {
+    "wikidata": "Q33810",
+    "name": "Odia",
+    "codes": {
+      "iso639_1": ["or"],
+      "iso639_2": ["ori"],
+      "iso639_3": ["ory"]
+    },
+    "sourceUrl": "https://www.wikidata.org/wiki/Q33810",
+    "license": "CC0-1.0"
+  },
+  {
+    "wikidata": "Q34239",
+    "name": "Konkani",
+    "codes": {
+      "iso639_1": [],
+      "iso639_2": ["kok"],
+      "iso639_3": ["kok"]
+    },
+    "sourceUrl": "https://www.wikidata.org/wiki/Q34239",
+    "license": "CC0-1.0"
+  },
+  {
+    "wikidata": "Q36236",
+    "name": "Malayalam",
+    "codes": {
+      "iso639_1": ["ml"],
+      "iso639_2": ["mal"],
+      "iso639_3": ["mal"]
+    },
+    "sourceUrl": "https://www.wikidata.org/wiki/Q36236",
+    "license": "CC0-1.0"
+  },
+  {
+    "wikidata": "Q5137",
+    "name": "Gujarati",
+    "codes": {
+      "iso639_1": ["gu"],
+      "iso639_2": ["guj"],
+      "iso639_3": ["guj"]
+    },
+    "sourceUrl": "https://www.wikidata.org/wiki/Q5137",
+    "license": "CC0-1.0"
+  },
+  {
+    "wikidata": "Q58635",
+    "name": "Punjabi",
+    "codes": {
+      "iso639_1": ["pa"],
+      "iso639_2": ["pan"],
+      "iso639_3": ["pan"]
+    },
+    "sourceUrl": "https://www.wikidata.org/wiki/Q58635",
+    "license": "CC0-1.0"
+  },
+  {
+    "wikidata": "Q5885",
+    "name": "Tamil",
+    "codes": {
+      "iso639_1": ["ta"],
+      "iso639_2": ["tam"],
+      "iso639_3": ["tam"]
+    },
+    "sourceUrl": "https://www.wikidata.org/wiki/Q5885",
+    "license": "CC0-1.0"
+  },
+  {
+    "wikidata": "Q8097",
+    "name": "Telugu",
+    "codes": {
+      "iso639_1": ["te"],
+      "iso639_2": ["tel"],
+      "iso639_3": ["tel"]
+    },
+    "sourceUrl": "https://www.wikidata.org/wiki/Q8097",
+    "license": "CC0-1.0"
+  },
+  {
+    "wikidata": "Q9610",
+    "name": "Bangla",
+    "codes": {
+      "iso639_1": ["bn"],
+      "iso639_2": ["ben"],
+      "iso639_3": ["ben"]
+    },
+    "sourceUrl": "https://www.wikidata.org/wiki/Q9610",
+    "license": "CC0-1.0"
+  }
+]

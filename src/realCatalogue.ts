@@ -8,7 +8,7 @@ const song = (s: Omit<Song, 'rights'>): Song => ({
   ...s,
   rights: {
     status: 'metadata-only',
-    holder: 'Not licensed by PowerWords',
+    holder: 'Not licensed by Music Raga',
     evidence:
       'Only independently stated factual title/credit/year metadata is included. No commercial lyric text, translation, transliteration, cover photo or audio is reproduced. Source facts and disagreements are documented in docs/REAL_CATALOGUE.md.',
   },
@@ -340,7 +340,7 @@ export const PUBLIC_VERSE: Song = {
   duration: 36,
   kind: 'verse',
   description:
-    'Read the first three couplets of the ancient Tamil Tirukkural in their original script, alongside a new PowerWords English rendering and readable Latin transliteration. This is a text edition, not the lyrics or audio of a modern recorded adaptation. The ancient date is uncertain and is not presented as a modern release year.',
+    'Read the first three couplets of the ancient Tamil Tirukkural in their original script, alongside a new Music Raga English rendering and readable Latin transliteration. This is a text edition, not the lyrics or audio of a modern recorded adaptation. The ancient date is uncertain and is not presented as a modern release year.',
   lyrics: {
     original: [
       { time: 0, text: 'அகர முதல எழுத்தெல்லாம் ஆதி' },
@@ -380,7 +380,7 @@ export const PUBLIC_VERSE: Song = {
     audioAvailable: 'User-provided only',
     script: 'Tamil',
     translationLanguage: 'English',
-    transliterationSystem: 'PowerWords readable Latin',
+    transliterationSystem: 'Music Raga readable Latin',
     readingLevel: 'Classical Tamil',
     karaoke: 'Silent recitation / local media',
   },

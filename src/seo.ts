@@ -1,6 +1,7 @@
 import { CATALOGUE, isDemo } from './realCatalogue';
 import {
   artistPath,
+  ALL_ROUTES,
   contributors,
   indexableRoute,
   resolveRoute,
@@ -12,8 +13,13 @@ import { lyricLanguage } from './lib';
 export interface SeoConfig {
   baseUrl: string;
   allowIndexing: boolean;
+  reviewedPaths: string[];
 }
-export function siteConfig(baseUrl = 'http://localhost:4173', allowIndexing = false): SeoConfig {
+export function siteConfig(
+  baseUrl = 'http://localhost:4173',
+  allowIndexing = false,
+  reviewedPaths: string[] = [],
+): SeoConfig {
   const u = new URL(baseUrl);
   if (
     !['http:', 'https:'].includes(u.protocol) ||
@@ -21,24 +27,30 @@ export function siteConfig(baseUrl = 'http://localhost:4173', allowIndexing = fa
     u.password ||
     u.search ||
     u.hash ||
-    u.pathname !== '/'
+    !/^\/(?:[A-Za-z0-9_-]+\/?)*$/.test(u.pathname)
   )
     throw new Error(
-      'SITE_URL must be a root HTTP(S) origin without credentials, path, query or fragment.',
+      'SITE_URL must be a HTTP(S) origin with an optional simple project path, without credentials, query or fragment.',
     );
   if (
     allowIndexing &&
     (u.protocol !== 'https:' || ['localhost', '127.0.0.1', '[::1]'].includes(u.hostname))
   )
     throw new Error('ALLOW_INDEXING requires an explicit real HTTPS origin, not localhost.');
-  return { baseUrl: u.origin, allowIndexing };
+  if (reviewedPaths.some((path) => !ALL_ROUTES.includes(path)))
+    throw new Error('Reviewed indexing paths must be actual curated routes.');
+  return {
+    baseUrl: u.origin + u.pathname.replace(/\/$/, ''),
+    allowIndexing,
+    reviewedPaths: [...new Set(reviewedPaths)],
+  };
 }
 export function pageSeo(path: string, config: SeoConfig) {
   const route = resolveRoute(path);
   const canonical = config.baseUrl + (path === '/' ? '/' : path.replace(/\/*$/, '/'));
-  let title = 'PowerWords — Every word, a world.';
+  let title = 'Music Raga — Search songs, albums & artists';
   let description =
-    'Explore sourced Indian song credits, public-domain Tamil verse and clearly labelled original multilingual demos. A quiet place for the words behind music.';
+    'Search song titles, albums and artists. Explore source-backed recording credits with clear lyric availability. Real-song native and romanized lyrics are not yet cleared for display.';
   let lang = 'en';
   if (route.kind === 'song') {
     const s = route.song;
@@ -52,7 +64,7 @@ export function pageSeo(path: string, config: SeoConfig) {
             : s.kind === 'verse'
               ? 'Tamil text & sources'
               : 'original demo lyrics';
-    title = `${s.title} — ${suffix} | PowerWords`;
+    title = `${s.title} — ${suffix} | Music Raga`;
     description =
       s.description?.slice(0, 190) ??
       `Read ${s.title}, a fictional ${s.language} original demo by ${s.artist}. Explore original script, English and Latin text. Not a real commercial release.`;
@@ -61,16 +73,16 @@ export function pageSeo(path: string, config: SeoConfig) {
     lang = s.rights.status === 'metadata-only' ? 'en' : lyricLanguage(s.language, route.variant);
   }
   if (route.kind === 'artist') {
-    title = `${route.name} — songs & credited roles | PowerWords`;
+    title = `${route.name} — songs & credited roles | Music Raga`;
     const list = routeSongs(route);
     description = `Explore ${list.length} ${list.every(isDemo) ? 'fictional demo' : 'catalogued'} entries crediting ${route.name}. Browse songs, albums and credited roles with individual source and lyric-rights notes.`;
   }
   if (route.kind === 'language') {
-    title = `${route.name} — song credits & readable texts | PowerWords`;
-    description = `Browse ${route.name} recordings and texts in the PowerWords catalogue. Distinguish sourced metadata, public-domain verse and original fictional demos before opening a reader.`;
+    title = `${route.name} — song credits & readable texts | Music Raga`;
+    description = `Browse ${route.name} recordings and texts in the Music Raga catalogue. Distinguish sourced metadata, public-domain verse and original fictional demos before opening a reader.`;
   }
   if (route.kind === 'not-found') {
-    title = 'Page not found | PowerWords';
+    title = 'Page not found | Music Raga';
     description =
       'This catalogue page does not exist. Return to discovery to find a sourced song, artist or language.';
   }
@@ -88,7 +100,10 @@ export function pageSeo(path: string, config: SeoConfig) {
     description,
     lang,
     canonical,
-    robots: config.allowIndexing && indexableRoute(route) ? 'index,follow' : 'noindex,follow',
+    robots:
+      config.allowIndexing && config.reviewedPaths.includes(path) && indexableRoute(route)
+        ? 'index,follow'
+        : 'noindex,follow',
     alternates,
     structured: structuredData(route, canonical, config),
   };
@@ -109,13 +124,13 @@ export function structuredData(
           ? route.name
           : route.kind === 'language'
             ? `${route.name} catalogue`
-            : 'PowerWords',
+            : 'Music Raga',
   };
   if (route.kind === 'home')
     return {
       '@context': 'https://schema.org',
       '@type': 'WebSite',
-      name: 'PowerWords',
+      name: 'Music Raga',
       url: config.baseUrl + '/',
       description:
         'Sourced song metadata, ancient public-domain verse and explicitly fictional original demos.',
@@ -152,7 +167,7 @@ export function structuredData(
       }));
     if (s.rights.status === 'public-domain') {
       work.copyrightNotice =
-        'Ancient underlying Tamil verse: public domain. New PowerWords renderings: CC0-1.0. No modern recording or adaptation rights conveyed.';
+        'Ancient underlying Tamil verse: public domain. New Music Raga renderings: CC0-1.0. No modern recording or adaptation rights conveyed.';
       work.text = s.lyrics[route.variant]?.map((l) => l.text).join('\n');
     }
     return { ...webpage, mainEntity: work };

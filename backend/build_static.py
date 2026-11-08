@@ -1,0 +1,147 @@
+"""Offline page/facet/token shards for free static hosting; never bundle all records in JS."""
+import gzip
+import hashlib
+import json
+import unicodedata
+from collections import defaultdict
+from pathlib import Path
+from .bootstrap import bootstrap
+from .catalogue import canonical, connect, coverage, mode, file_hash, ValidationError
+from .enrich_roles import evidence_summary
+
+
+def tokens(value):
+    current=[]
+    for char in unicodedata.normalize("NFC",value).lower():
+        if unicodedata.category(char)[0] in {"L","N","M"}:
+            current.append(char)
+        elif current:
+            yield "".join(current)
+            current=[]
+    if current:
+        yield "".join(current)
+
+
+def load_editions(directory="data/cc0-editions"):
+    root=Path(directory)
+    if not root.exists():return {},''
+    manifest=json.loads((root/'manifest.json').read_text());path=root/manifest['file']
+    if manifest['file']!='preferred-india-associated-releases-v2.jsonl.gz' or manifest['license']!='CC0-1.0' or file_hash(path)!=manifest['compressed_sha256']:
+        raise ValidationError('edition source hash/license mismatch')
+    digest=hashlib.sha256();result={};count=0
+    with gzip.open(path,'rb')as stream:
+        for line in stream:
+            digest.update(line);count+=1;raw=json.loads(line)
+            sid=raw['id'].removeprefix('mb-release:');proof=raw['provenance'][0]
+            if proof['license']!='CC0-1.0' or proof['sourceUrl']!='https://musicbrainz.org/release/'+sid:
+                raise ValidationError('invalid source edition evidence')
+            result[sid]={'title':raw['title'],'source_url':proof['sourceUrl']}
+    if digest.hexdigest()!=manifest['uncompressed_sha256'] or count!=manifest['records']:
+        raise ValidationError('edition uncompressed source mismatch')
+    return result,manifest['compressed_sha256']
+
+
+def export(database, output="dist/catalogue"):
+    root=Path(output)
+    root.mkdir(parents=True,exist_ok=True)
+    editions,edition_digest=load_editions()
+    with connect(database,True) as db:
+        db.execute("BEGIN")
+        digest=hashlib.sha256(b"music-raga-search-first-index-v1")
+        digest.update(edition_digest.encode())
+        for row in db.execute("SELECT id,fingerprint FROM tracks ORDER BY id"):
+            digest.update(canonical(list(row)).encode())
+        for row in db.execute("SELECT id,payload FROM artist_profiles ORDER BY id"):
+            digest.update(canonical(list(row)).encode())
+        for row in db.execute("SELECT track_id,artist_id,role,name FROM credits ORDER BY track_id,artist_id,role"):
+            digest.update(canonical(list(row)).encode())
+        for row in db.execute("SELECT recording_id,work_id FROM work_recordings ORDER BY recording_id,work_id"):
+            digest.update(canonical(list(row)).encode())
+        for row in db.execute("SELECT key,value FROM meta WHERE key IN ('role_enrichment_digest','v4_expansion_digest') ORDER BY key"):
+            digest.update(canonical(list(row)).encode())
+        if db.execute("SELECT 1 FROM sqlite_master WHERE name='role_credit_proofs'").fetchone():
+            for row in db.execute("SELECT id,payload FROM role_credit_proofs ORDER BY id"):
+                digest.update(canonical(list(row)).encode())
+        for row in db.execute("SELECT recording_id,native_ref,romanized_ref,rights_evidence,review_state FROM lyric_pair_clearances ORDER BY recording_id"):
+            digest.update(canonical(list(row)).encode())
+        version=digest.hexdigest()[:24]
+        target=root/version
+        target.mkdir(exist_ok=True)
+        manifest={"mode":mode(db),"version":version,"page_size":100,"coverage":coverage(db),"entities":{},
+                  "search":"NFC lowercase Unicode exact tokens; final token prefix, maximum 128 expansions. Not semantic/fuzzy or lyric search."}
+        def write(path,value):
+            dest=target/path
+            dest.parent.mkdir(parents=True,exist_ok=True)
+            dest.write_text(canonical(value),encoding="utf-8")
+        proof_buckets=defaultdict(dict)
+        if db.execute("SELECT 1 FROM sqlite_master WHERE name='role_credit_proofs'").fetchone():
+            for row in db.execute("SELECT DISTINCT recording_id FROM role_credit_proofs ORDER BY recording_id"):
+                key=hashlib.sha256(row[0].encode()).hexdigest()[:2]
+                proof_buckets[key][row[0]]=evidence_summary(db,row[0])
+            for key,value in proof_buckets.items():
+                write(f"proofs/{key}.json",value)
+        for entity in ["tracks","artists"]:
+            buckets=defaultdict(lambda:defaultdict(list))
+            facets=defaultdict(list)
+            page=[]
+            lookup=defaultdict(dict)
+            count=0
+            rows=db.execute("SELECT id,payload FROM tracks ORDER BY sort_year DESC,id" if entity=="tracks" else "SELECT id,payload FROM artist_profiles ORDER BY id")
+            for row in rows:
+                item=json.loads(row["payload"])
+                if entity=="tracks":
+                    item["id"]=row["id"]
+                    lookup[hashlib.sha256(row['id'].encode()).hexdigest()[:2]][row['id']]=count
+                    item['edition_titles']=list({e['source_url']:e for rid in item.get('association_evidence',{}).get('release_ids',[]) if (e:=editions.get(rid))}.values())[:10]
+                    item["lyrics_available"]=False
+                    item["credits"]=[dict(r) for r in db.execute("SELECT artist_id,name,role FROM credits WHERE track_id=? ORDER BY role,name",(row["id"],))]
+                    item["linked_recordings"]=db.execute("SELECT count(*) FROM work_recordings WHERE work_id=?",(row["id"],)).fetchone()[0]
+                    if item['kind']=='recording':
+                        item['role_proof_count']=db.execute("SELECT count(*) FROM role_credit_proofs WHERE recording_id=?",(row['id'],)).fetchone()[0] if proof_buckets else 0
+                        item['associated_work_ids']=sorted({r[0].split(':')[-1] for r in db.execute("SELECT work_id FROM work_recordings WHERE recording_id=?",(row['id'],))})
+                    body=" ".join([item["title"],*item["aliases"],item["album"] or "",*(c["name"] or "" for c in item["credits"]),*(e["title"] for e in item["edition_titles"])])
+                    keys={"source:"+item["source"],"kind:"+item["kind"]}
+                    keys.update("language:"+v for v in item["languages"])
+                    keys.update("association_language:"+v for key in ["work_languages","release_text_languages"] for v in item.get("association_evidence",{}).get(key,[]))
+                    keys.update("role:"+c["role"] for c in item["credits"])
+                    keys.update("artist:"+c["artist_id"] for c in item["credits"])
+                    keys.update("artistrole:"+c["artist_id"]+"|"+c["role"] for c in item["credits"])
+                    keys.update("work:musicbrainz:work:"+v for v in item["associated_work_ids"])
+                    for key in keys:
+                        facets[key].append(count)
+                else:
+                    body=" ".join([item["name"],*item.get("aliases",[])])
+                searchable=set(tokens(body))
+                if entity=='tracks':
+                    # Whitespace-insensitive source-edition normalization, not invented song aliases.
+                    searchable.update(''.join(tokens(e['title'])) for e in item['edition_titles'])
+                for token in filter(None,searchable):
+                    buckets[format(ord(token[0]),"x")][token].append(count)
+                page.append(item)
+                count+=1
+                if len(page)==100:
+                    write(f"{entity}/pages/{(count-1)//100}.json",page)
+                    page=[]
+            if page:
+                write(f"{entity}/pages/{(count-1)//100}.json",page)
+            for bucket,index in lookup.items():
+                write(f"lookup/{bucket}.json",dict(index))
+            for bucket,index in buckets.items():
+                write(f"{entity}/terms/{bucket}.json",dict(index))
+            facet_buckets=defaultdict(dict)
+            for key,positions in facets.items():
+                fingerprint=hashlib.sha256(key.encode()).hexdigest()[:32]
+                facet_buckets[fingerprint[:2]][fingerprint]=positions
+            for bucket,values in facet_buckets.items():
+                write(f"{entity}/facets/{bucket}.json",values)
+            manifest["entities"][entity]={"count":count,"term_buckets":sorted(buckets)}
+        (root/"manifest.json").write_text(canonical(manifest),encoding="utf-8")
+        size=sum(f.stat().st_size for f in root.rglob("*.json"))
+        print(json.dumps({"static_catalogue_version":version,"entities":manifest["entities"],"json_bytes":size,"note":"Only query-specific postings and requested pages are fetched by the frontend; no catalogue array is bundled."}))
+        return manifest
+
+
+if __name__=="__main__":
+    database=".catalogue-build-final/catalogue.sqlite"
+    bootstrap(database,report_path=".catalogue-build-final/coverage.json")
+    export(database)

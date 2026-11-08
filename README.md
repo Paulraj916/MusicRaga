@@ -1,10 +1,16 @@
-# PowerWords · Every word, a world.
+# Music Raga · Every word, a world.
+
+**Current user-selected brand: Music Raga** (formerly PowerWords). Canonical repo: https://github.com/Paulraj916/MusicRaga ; project preview target: https://paulraj916.github.io/MusicRaga/ . Same history/data/PR preserved; verify the release deployment/HTTP before claiming live. Old Pages path may NOT redirect. Read `docs/RELEASES.md`.
 
 A distinctive, local-first Indian music discovery and multilingual reading foundation. Warm paper, after-hours themes, original record-inspired artwork, source-led listening paths, quiet reading folios, rich filters and private karaoke practice. **Working software with sourced credits and reusable ancient text—not a complete licensed commercial lyrics business.**
 
+## Search comes first
+
+Open `/`, enter a song/album/artist, and choose a clearly labelled result. Tamil/English-letter source titles and actual edition names are searchable; `Alaipayuthey songs` finds 28 source recording IDs in this release. Real-song native + romanized lyric pairs remain **0**: the reader clearly says **Lyrics not yet available**, not fake lyrics/playback. Verified existing album destinations and local-only audio are optional. Detailed filters/evidence and original practice remain secondary under **More tools** (`?workspace=1`). [Release details and limitations](docs/SEARCH_FIRST_RELEASE.md).
+
 ## Run the finished production version
 
-Node **22.12+** (Node 24 recommended), npm. No paid service, account, API key or database required.
+Node **22.12+** (Node 24 recommended), npm, and **Python 3.11+ with SQLite FTS5** for the full catalogue build. No paid service/account/API key is required. `npm run build:curated` remains the smaller Node-only reading build, but does not produce bulk search shards; the normal full build is required for standalone root catalogue search.
 
 ```sh
 npm ci
@@ -40,12 +46,12 @@ Playwright starts the production preview on 4173 if needed; build first. An alre
 
 Every listed route is an actual prebuilt HTML file. Titles, descriptions, OG, canonical, reciprocal text-version hreflang and factual JSON-LD are present **before JavaScript**. Real links/text work with JavaScript disabled. Interactive filters, saved library and practice require JavaScript. Unknown paths return 404 in the supplied preview; static hosts must preserve that behaviour.
 
-## What actually works
+## Retained curated reader — what works
 
 - **18 entries:** 5 individually sourced real recording metadata pages, 1 ancient public-domain verse edition, 12 clearly fictional original demos. No commercial lyric, audio, translation, transliteration or album artwork is bundled. [Per-item facts and rights](docs/REAL_CATALOGUE.md).
 - Native-script/title/alias/credit and permitted-text search. Tamil query `முன்பே வா lyrics` finds Munbe Vaa. A query containing `Vadachennai` plus an unverified quote returns **explicitly related album entries**, never a fabricated lyric identification. No ranking guarantee or keyword stuffing.
 - **96 schema-driven dimensions** in 8 groups. **50 currently have values; 46 remain unavailable.** All use real matching when values exist; unavailable fields are disabled and marked unknown. Populated demo fields are not claimed to be verified real-song attributes. Contributor filters match individual duet singers; active selections combine with AND.
-- Root collections: All entries / Sources first / Read freely / Original demos. Artist collection chronology, album and singer controls. Unknown ancient dates remain last, not disguised as a modern year.
+- Secondary workspace (`/?workspace=1`) collections: All entries / Sources first / Read freely / Original demos. Artist collection chronology, album and singer controls. Unknown ancient dates remain last, not disguised as a modern year.
 - Mobile-first source-led collection pages, music-credit pages and line-numbered reading folios, plus a distraction-free native-dialog practice room.
 - Original/English/Latin tabs (Thanglish for Tamil), keyboard tab navigation, text sizing, copy, line seeking, focus restoration and reduced-motion support.
 - Silent timed rehearsal; local audio ≤50 MB; LRC ≤256 KB / 500 lines / 4 hours; manual −10…+10 second sync. Files never upload and are discarded on close. No included copyrighted audio, microphone, recording or streaming.
@@ -56,13 +62,13 @@ Every listed route is an actual prebuilt HTML file. Titles, descriptions, OG, ca
 
 ## SEO launch configuration
 
-Default builds use the honest preview origin `http://localhost:4173`, `noindex,follow` and robots `Disallow: /`. No fictional production domain is shipped. Copy `.env.example` to `.env`, set **your actual HTTPS root origin** as `SITE_URL`, review rights/content/operator readiness, and only then explicitly set `ALLOW_INDEXING=true` and rebuild.
+Default builds use the honest preview origin `http://localhost:4173`, `noindex,follow` and robots `Disallow: /`. No fictional production domain is shipped. Copy `.env.example` to `.env`, set **your actual HTTPS origin and optional simple project path** as `SITE_URL`, review rights/content/operator readiness, and only then explicitly set `ALLOW_INDEXING=true` **and `REVIEWED_INDEX_PATHS` to an individually reviewed list of substantive eligible routes** and rebuild. An enabled indexing build without that list fails closed.
 
 `dist/sitemap.xml`, `dist/robots.txt`, canonical/OG/hreflang and `dist/build-manifest.json` derive from the configured origin. Fictional-only routes **always stay noindex and outside the sitemap**, even when indexing is enabled. See [SEO](docs/SEO.md) and [deployment](docs/DEPLOYMENT.md). These mechanisms do not promise rankings, rich results, AdSense approval or revenue.
 
 ## Architecture and project map
 
-React 19 + strict TypeScript + Vite; no application backend. One shared component tree is rendered to static HTML at build time, then client-rendered for personalised preferences without hydration mismatch. Local font assets (Inter and Noto Tamil/Devanagari/Telugu; OFL notices in `docs/licenses/`) and generated art make no runtime CDN calls. Catalogue operations run in memory. Only `pw:` preferences/IDs persist; imported catalogue/media stay in session memory.
+React 19 + strict TypeScript + Vite, complemented by a stdlib Python/SQLite catalogue backend and free-static shard exporter. No runtime backend is required for the full static build. One shared component tree is rendered to static HTML at build time, then client-rendered for personalised preferences without hydration mismatch. Local font assets (Inter and Noto Tamil/Devanagari/Telugu; OFL notices in `docs/licenses/`) and generated art make no runtime CDN calls. The retained 18-entry reader operates in memory; the bulk index fetches only query-specific shards or paged API responses. Only `pw:` preferences/IDs persist; imported catalogue/media stay in session memory.
 
 | Location                                                       | Responsibility                                                                 |
 | -------------------------------------------------------------- | ------------------------------------------------------------------------------ |
@@ -85,14 +91,34 @@ React 19 + strict TypeScript + Vite; no application backend. One shared componen
 
 ## Honest boundaries / continuation
 
-No complete discography, commercial lyric licence, broad independent catalogue, backend/editorial admin, cross-device account sync, provider integration, full fuzzy/semantic search or live ads. Search is Unicode-normalised terms and known aliases; related-album recovery is labelled. Filters are single exact selections, not ranges/multiselect. Native-language writing/renderings need human editorial review. Automated axe/Chromium tests are not screen-reader certification, real-device QA or a zero-bug guarantee. Static metadata-only pages and a small text edition do not make the business launch-ready.
+No complete discography, commercial lyric licence, broad independent catalogue, production editorial/admin system, cross-device account sync, provider integration, full fuzzy/semantic search or live ads. Search is Unicode-normalised terms and known aliases; related-album recovery is labelled. Filters are single exact selections, not ranges/multiselect. Native-language writing/renderings need human editorial review. Automated axe/Chromium tests are not screen-reader certification, real-device QA or a zero-bug guarantee. Static metadata-only pages and a small text edition do not make the business launch-ready.
+
+## Growing India catalogue — active lakh-scale v2 checkpoint
+
+**127,064 distinct MusicBrainz recordings**, **21,096 source compositions**, **212 Wikidata music entities**, and **21,406 separate source artist profiles** are available through **Open India index**, above the curated shelf. These are not additive unique-song/unique-person counts, nationality proof, licensed lyrics or all Indian music. Eight older recording IDs are preserved. **13,902 recordings / 2,464 source artist IDs** have explicit vocal evidence; generic credited artists are not inferred singers or composers.
+
+The **Language association (not sung language)** filter distinguishes work/release-text association from actual unknown recording language. Source roles/attributes/proofs, artist credit filtering, native aliases and work→recording exploration work on paged API or **free static query-specific shards**, without a giant client catalogue array. Standard full builds require Python; default bootstrap is offline and hash-verified. See [exact v2 scope/metrics/deferred work](docs/V2_LAKH_CATALOGUE.md).
+
+Configured ad-free project preview target: **https://paulraj916.github.io/MusicRaga/**. Actual availability depends on a successful `free-pages-preview` job, not this README alone. Project-prefix clean routes/assets/native discovery have a dedicated desktop/mobile regression. Default builds remain root-host compatible; `.env.example` describes `VITE_BASE_PATH`. HTML indexing and live ads remain off.
+
+```sh
+npm run catalogue:bootstrap          # optional local SQLite catalogue
+npm run catalogue:serve              # optional actual read-only API, port 4180
+npm run test:backend                 # source/rights/import/native-search regressions
+npm run test:ads                     # empty/default-off publisher validation
+npm run test:project-host            # separate /PowerWords/ local build on port 4174
+```
+
+Read [SOURCE_PIPELINE](docs/SOURCE_PIPELINE.md), [SCALABLE_ARCHITECTURE](docs/SCALABLE_ARCHITECTURE.md), [24-hour checkpoints](docs/24_HOUR_CHECKPOINT_PLAN.md), [free hosting/search/ads](docs/FREE_HOSTING_SEARCH_ADS.md) and V2_LAKH_CATALOGUE. Actual v2 report: `artifacts/catalogue-v2-coverage.json`. The separate **100,000-row SYNTHETIC benchmark** is capacity evidence, never real song coverage. V3 evidence from the legacy-named `data/pending-v3` directory is now active. Read [V3/V4 release](docs/V3_V4_RELEASE.md): 20,893 recording composer / 17,787 lyricist coverage, durable nondeleting proofs, plus 3,812 v4 recording additions. The UI exposes **0 cleared recording-linked native+romanized lyric pairs**, a **2,000,000 goal**, **1,872,936 metadata gap**, and **2,000,000 cleared-pair gap**. Not English translation; demos/ancient verse do not count. No clearance import is enabled.
+
+No all-India completion, uninterrupted subscription-independent 24-hour run, #1 ranking, instant indexing, AdSense approval or earnings guarantee. GitHub Pages is an ad-free open-source preview, not a commercial-hosting promise; its terms/limits, project-root ads.txt and header restrictions are documented. No paid resources/accounts or Google submissions were created. Real operator/legal/native review, protected-lyrics permissions and approved consent-safe publisher setup remain.
 
 ## Public source repository
 
-**https://github.com/Paulraj916/PowerWords** · default/source branch **`main`**. The owner explicitly approved creating this public repository and publishing the website. Authenticated CLI identity was verified as Paulraj916; the exact repository was absent before approved creation. The complete original local commit history is retained; no force push or history rewrite is needed. Historical discovery failures are preserved and labelled in the repository research docs, not current blockers.
+**https://github.com/Paulraj916/MusicRaga** · default/source branch **`main`**. The owner explicitly approved creating this public repository and publishing the website. Authenticated CLI identity was verified as Paulraj916; the exact repository was absent before approved creation. The complete original local commit history is retained; no force push or history rewrite is needed. Historical discovery failures are preserved and labelled in the repository research docs, not current blockers.
 
 ```sh
-git clone https://github.com/Paulraj916/PowerWords.git
+git clone https://github.com/Paulraj916/MusicRaga.git
 cd PowerWords
 npm ci
 npm run build
@@ -104,3 +130,5 @@ GitHub is the **source** URL, not a deployed website or production canonical ori
 Continue with: **“Read AI_HANDOVER.md and NEXT_STEPS.md, run the checks, preserve existing work, and implement the next unblocked item without inventing facts or licences.”**
 
 Code: [MIT](LICENSE). Original project demo text and new project renderings: CC0-1.0; ancient underlying Tamil text and edition caveats: [rights](docs/REAL_CATALOGUE.md). No third-party music/recording/trademark rights are granted.
+
+Production indexing now also requires explicit `REVIEWED_INDEX_PATHS` (comma-separated real curated routes). `ALLOW_INDEXING=true` alone is insufficient: builds fail without a reviewed list; client navigation and sitemap enforce the same per-page list. Defaults remain noindex. Do not put bulk JSON or fabricated metadata pages in this list.

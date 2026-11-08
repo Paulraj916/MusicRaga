@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "notice": "Preferred v2 recordings upsert over the previous work-linked batch, retaining eight older absent IDs. Language association is not sung language or nationality; all source entities overlap.",
+  "files": [
+    {
+      "file": "indian-language-song-works.jsonl.gz",
+      "kind": "works",
+      "records": 14884,
+      "uncompressed_sha256": "3d71a9a64cfe1510d950981443df9d6ee4ed7cf095ac9714954b9ff96b2c0b92",
+      "compressed_sha256": "4958208486789cbdab1f61aa61c6ece439cbe147ff2143628ca239dc0abc79a4",
+      "compressed_bytes": 1801019
+    },
+    {
+      "file": "indian-language-song-recordings.jsonl.gz",
+      "kind": "recordings",
+      "records": 17130,
+      "uncompressed_sha256": "ebf182f81c549026d1098e6cf4850a210054aeb95f3219b8d3ccd6e8675c39dc",
+      "compressed_sha256": "4c3c886e7826f2fdcdce0d240a939aa14a3572b0feb9d659550bacd0afa6c5f3",
+      "compressed_bytes": 1308716
+    },
+    {
+      "file": "wikidata-songs.jsonl.gz",
+      "kind": "wikidata-songs",
+      "records": 213,
+      "uncompressed_sha256": "ca983243319bab7fea7b6511d78bbe4a028dde3385945bfeedbfa511799250f9",
+      "compressed_sha256": "526080fe14f2abf9859ddd1c0ddcc44e1ae913b1e2f378474f7cc9ad6e2595b3",
+      "compressed_bytes": 22956
+    },
+    {
+      "file": "wikidata-artists.jsonl.gz",
+      "kind": "artist-profiles",
+      "records": 2446,
+      "uncompressed_sha256": "63095a3541f6cb227a85eb8824b6cd91cb9f1199255e0fce5af56bf2b5343a35",
+      "compressed_sha256": "a33c3aae92b5704ec15b58193c59e014d10ff7d093af60d88e55bce257b320f3",
+      "compressed_bytes": 101747
+    },
+    {
+      "file": "preferred-india-associated-recordings-v2.jsonl.gz",
+      "kind": "recordings",
+      "records": 123244,
+      "uncompressed_sha256": "f74b75a7edfaf615d03d7fc264676ba3050ba729cba367dcd8a5061a7c703d74",
+      "compressed_sha256": "aabb6dd8a44255a4524928f7f65035b6cfa9d9cddfc60b046421b07e0bac29e7",
+      "compressed_bytes": 14762319
+    },
+    {
+      "file": "preferred-india-associated-artists-v2.jsonl.gz",
+      "kind": "artist-profiles-v2",
+      "records": 17475,
+      "uncompressed_sha256": "0ba3f5b2213449aa09496971a6595c2a86e98a2a004a67b01c12ad69cd167eb4",
+      "compressed_sha256": "87fa77dc7b2434df683f1397665cfe2ad06a17f0a6a24dd4b576451121bbf117",
+      "compressed_bytes": 1026650
+    }
+  ]
+}

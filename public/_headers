@@ -4,3 +4,8 @@
   Permissions-Policy: camera=(), microphone=(), geolocation=()
   X-Frame-Options: DENY
   Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'
+
+/catalogue/*
+  X-Robots-Tag: noindex, nofollow
+/catalogue/manifest.json
+  Cache-Control: no-cache

@@ -1,11 +1,11 @@
 {
-  "name": "powerwords",
+  "name": "music-raga",
   "private": true,
   "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
-    "build": "tsc -b && vite build && vite build --ssr scripts/entry-prerender.tsx --outDir .prerender && node scripts/prerender.mjs",
+    "build": "tsc -b && vite build && vite build --ssr scripts/entry-prerender.tsx --outDir .prerender && node scripts/prerender.mjs && python3 -m backend.build_static && node scripts/prepare-ads.mjs",
     "preview": "node scripts/serve.mjs",
     "typecheck": "tsc -b",
     "test": "vitest run",
@@ -14,7 +14,14 @@
     "format:check": "prettier --check .",
     "record:demo": "node scripts/record-demo.mjs",
     "test:seo": "node scripts/check-prerender.mjs",
-    "test:video": "node scripts/check-mobile-video.mjs"
+    "test:video": "node scripts/check-mobile-video.mjs",
+    "test:backend": "python3 -m unittest discover -s backend/tests -v",
+    "catalogue:serve": "python3 -m backend.server",
+    "build:curated": "tsc -b && vite build && vite build --ssr scripts/entry-prerender.tsx --outDir .prerender && node scripts/prerender.mjs && node scripts/prepare-ads.mjs",
+    "catalogue:bootstrap": "python3 -m backend.bootstrap",
+    "test:ads": "node --test scripts/ads.test.mjs",
+    "test:seo:policy": "node --test scripts/seo-policy.test.mjs",
+    "test:project-host": "node scripts/check-project-host.mjs"
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.3.0",

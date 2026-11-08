@@ -1,3 +1,4 @@
+import { appHref } from './deployment';
 import { useState } from 'react';
 import type { MouseEvent } from 'react';
 import { lyricLanguage, valuesFor } from './lib';
@@ -72,7 +73,7 @@ export function CuratedShelves({ onNavigate }: { onNavigate: (p: string) => void
         <a
           key={link.path}
           className={`curated-shelf ${link.className}`}
-          href={link.path}
+          href={appHref(link.path)}
           onClick={(e) => follow(e, link.path, onNavigate)}
         >
           <svg className="shelf-mark" aria-hidden="true" focusable="false" viewBox="0 0 240 160">
@@ -117,7 +118,7 @@ export function CataloguePage({
   const [album, setAlbum] = useState('');
   const [voice, setVoice] = useState('');
   const link = (path: string, label: string) => (
-    <a href={path} onClick={(e) => follow(e, path, onNavigate)}>
+    <a href={appHref(path)} onClick={(e) => follow(e, path, onNavigate)}>
       {label}
     </a>
   );
@@ -240,7 +241,7 @@ export function CataloguePage({
                 .map((v) => (
                   <a
                     key={v}
-                    href={songPath(s, v)}
+                    href={appHref(songPath(s, v))}
                     aria-current={route.variant === v ? 'page' : undefined}
                     onClick={(e) => follow(e, songPath(s, v), onNavigate)}
                   >
@@ -273,7 +274,7 @@ export function CataloguePage({
             </div>
             <p className="text-edition-note">
               {s.rights.status === 'public-domain'
-                ? 'The original is ancient public-domain verse, not a modern song adaptation. English and readable Latin are new PowerWords renderings (CC0), not quotations from modern translations. Practice timing is artificial, with no included recording.'
+                ? 'The original is ancient public-domain verse, not a modern song adaptation. English and readable Latin are new Music Raga renderings (CC0), not quotations from modern translations. Practice timing is artificial, with no included recording.'
                 : 'Original project writing, translated and romanised for this fictional demo. CC0 dedication; artificial practice timing.'}
             </p>
           </section>
@@ -354,7 +355,7 @@ export function CataloguePage({
   const factual = all.filter((s) => !isDemo(s));
   return (
     <section className="route-page collection-page">
-      <a className="back-link" href="/" onClick={(e) => follow(e, '/', onNavigate)}>
+      <a className="back-link" href={appHref('/')} onClick={(e) => follow(e, '/', onNavigate)}>
         <ArrowLeft size={14} />
         Back to discovery
       </a>

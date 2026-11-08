@@ -39,3 +39,5 @@ Native Unicode marks are retained; terms include known native titles, manually s
 ## Verification
 
 `npm run test:seo` audits every built HTML file, unique titles, metadata/canonical/OG, JSON syntax, semantic content, noindex gates, commercial text absence, native verse, hreflang, configured sitemap and robots. Browser tests disable JavaScript to follow/read real text, exercise reload/back, native/related search, 404/slash status, response headers and light/dark mobile accessibility. No claim of search ranking, rich-result eligibility, Google indexing or AdSense approval follows from passing tests. Production needs actual host/Search Console/robots/canonical/network checks after an explicitly authorised deployment.
+
+Production indexing now also requires explicit `REVIEWED_INDEX_PATHS` (comma-separated real curated routes). `ALLOW_INDEXING=true` alone is insufficient: builds fail without a reviewed list; client navigation and sitemap enforce the same per-page list. Defaults remain noindex. Do not put bulk JSON or fabricated metadata pages in this list.

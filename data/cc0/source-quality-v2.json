@@ -1,0 +1,51 @@
+{
+  "generatedAt": "2026-11-09T01:10:21.211390+05:30",
+  "preferredReleaseGroups": 21629,
+  "preferredArtistsWithExplicitVocalRelations": 2411,
+  "preferredRecordingsWithExplicitVocalRelations": 10956,
+  "preferredVocalRelationshipOccurrences": 17315,
+  "preferredGraphReferences": "passed",
+  "primaryGzipRoundtripSHA256": "passed",
+  "tamilReleaseTextMetadataExamples": [
+    {
+      "title": "Chikku Bukku Rayile",
+      "artistCredits": ["Suresh Peters", "G.V. Prakash Kumar"],
+      "sourceUrl": "https://musicbrainz.org/recording/668ddfb6-63ac-43a5-915e-46242e11a720"
+    },
+    {
+      "title": "Paarkadhe Paarkadhe",
+      "artistCredits": ["Minmini"],
+      "sourceUrl": "https://musicbrainz.org/recording/6a5bd480-a714-4a2c-a3a1-cc7bcb01a023"
+    },
+    {
+      "title": "Usilambatti",
+      "artistCredits": ["Shahul Hameed", "Swarnalatha"],
+      "sourceUrl": "https://musicbrainz.org/recording/8654c20d-6f64-4c5b-afe8-1b7ac301dc37"
+    },
+    {
+      "title": "Rakita Rakita Rakita",
+      "artistCredits": ["Santhosh Narayanan", "Dhanush", "Dhee"],
+      "sourceUrl": "https://musicbrainz.org/recording/d1f7effe-d4f2-4ce0-b202-6dc9e378aed8"
+    },
+    {
+      "title": "Bujji",
+      "artistCredits": ["Santhosh Narayanan", "Anirudh Ravichander"],
+      "sourceUrl": "https://musicbrainz.org/recording/c66c8c00-7811-402a-8c33-4512369a9b8e"
+    },
+    {
+      "title": "Nethu",
+      "artistCredits": ["Dhanush"],
+      "sourceUrl": "https://musicbrainz.org/recording/3248d31d-0100-4fb9-a893-0da7853687b5"
+    },
+    {
+      "title": "Aala Ola",
+      "artistCredits": ["Santhosh Narayanan", "Anthony Daasan"],
+      "sourceUrl": "https://musicbrainz.org/recording/9a456cf3-2767-413f-9133-db97ecbff545"
+    },
+    {
+      "title": "Theengu Thaakka",
+      "artistCredits": ["Santhosh Narayanan", "Arivu", "GKB"],
+      "sourceUrl": "https://musicbrainz.org/recording/a7b43271-acc1-445e-833f-06c02d5257d7"
+    }
+  ]
+}

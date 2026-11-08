@@ -1,0 +1,28 @@
+{
+  "passed": true,
+  "local_url": "http://localhost:4177/MusicRaga/",
+  "states": [
+    {
+      "viewport": "desktop",
+      "clean_route_reload": 200,
+      "root_search_and_source_album_reader_reload": true,
+      "canonical": "https://paulraj916.github.io/MusicRaga/songs/tirukkural-invocation/",
+      "native_source_index": true,
+      "explicit_vocal_and_association_filter": true,
+      "composer_proofs_and_zero_cleared_pair_counter": true,
+      "axe_violations": 0,
+      "runtime_errors": 0
+    },
+    {
+      "viewport": "mobile",
+      "clean_route_reload": 200,
+      "root_search_and_source_album_reader_reload": true,
+      "canonical": "https://paulraj916.github.io/MusicRaga/songs/tirukkural-invocation/",
+      "native_source_index": true,
+      "explicit_vocal_and_association_filter": true,
+      "composer_proofs_and_zero_cleared_pair_counter": true,
+      "axe_violations": 0,
+      "runtime_errors": 0
+    }
+  ]
+}

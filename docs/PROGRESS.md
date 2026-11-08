@@ -1,3 +1,23 @@
+# Current scalable catalogue checkpoint · 09 November 2026 (IST)
+
+## Active v2 lakh-scale checkpoint (supersedes v1 counts below)
+
+Read `docs/V2_LAKH_CATALOGUE.md` first. Active index: **123,252 distinct MusicBrainz recordings** (preferred 123,244 + eight older retained), **14,884 works**, **212 Wikidata music entities** = **138,348 source music entities**, plus **19,921 source artist profiles**, not deduplicated songs/people. Explicit vocal coverage: **10,956 recordings / 2,411 source artist IDs**. Work/release-text language associations are separately filtered and NEVER treated as sung language or nationality. Roles/attributes retain exact source evidence. Root and `/PowerWords/` static builds work; free default-noindex Pages preview target is https://paulraj916.github.io/PowerWords/ (check actual deployment status). Main is not merged or overwritten.
+
+V3 normalized evidence/handoff is preserved in `data/pending-v3` for portable continuation; it is NOT imported or claimed active yet. Follow its exact sidecar→proof→nondeleting overlay order next; no new recording count. Never infer vocalist from artist credit, equate edition appearances to songs, delete old IDs/evidence, scrape protected lyrics or promise Google/AdSense results. No uninterrupted 24-hour job exists.
+
+New work is on `feat/scalable-india-catalogue`, preserving published main `7bbb59650f3e0b864c13a1da3169ec26cc9bc327`. Actual implementation: durable SQLite FTS5 core/staging/provenance/identities/graph/profiles; optional read-only API; immutable free-static query/page/facet shards; source rights and bounded fetch tooling; all-India language taxonomy with observed/unknown coverage; original reader/SEO retained.
+
+Real accepted bulk index: **14,884 compositions; 17,130 linked recordings; 212 Wikidata song/single entities; 2,446 source artist profiles**. These are not additive unique songs/people. 19 matching source-selection languages, 3,059 source credit identities, 17,332 graph edges, zero missing work targets, 32,085 unknown years and 17,154 unknown-language entities. One missing-title source item is quarantined. Actual reports: `artifacts/catalogue-real-coverage.json` and compressed-source manifest. Original curated 18 entries are separate and can overlap.
+
+Validation for this checkpoint: **58 frontend unit tests**, **29 backend integration tests**, **4 ad-config tests + 4 production indexing policy tests**, **61 browser passes + one expected desktop skip**, 68 prerendered-route SEO audit, build/typecheck/format/audit and independent synthetic scale evidence. See final delivery/CI for the final exact statuses; local browser run after integration passed in 19.7s. New browser coverage exercises real native `எஞ்சாய்` discovery, A. R. Rahman source profile → MusicBrainz credit works → linked recordings, plus source API mocks, honest unavailable state and mobile/axe bounds. No live Google ad requests occur; ad configuration and ads.txt are inert/default-empty.
+
+`npm run build` needs Python and emits real sharded data for free root-host static deployment; no running API required. Original 68 HTML routes and text/SEO gates remain. No thin bulk song pages, fabricated metadata, protected lyrics/audio/art, paid service or deployment. Full details: SOURCE_PIPELINE, SCALABLE_ARCHITECTURE, FREE_HOSTING_SEARCH_ADS and 24_HOUR_CHECKPOINT_PLAN. The 100,000-row benchmark is explicitly **synthetic**, separate from real counts, and not concurrent-production certification: staging 5.378s, publication 15.827s, 50 warm full-count + 25-result queries p50 164.092ms / p95 183.536ms, database 282,959,872 bytes. No all-India completion, perpetual 24-hour execution, ranking, indexing, ad approval or earnings guarantee.
+
+Preview: http://localhost:4173/ (static shards); http://localhost:4180/ (actual optional SQLite API + same frontend). Local QA, not public hosting. Prior reviewed video covers the previous reader checkpoint, not this expansion. New screenshot/test evidence and PR are reported at delivery.
+
+## Historical previous delivery (preserved)
+
 # Current delivery status · 09 November 2026, 00:11 IST
 
 ## Corrective follow-up completed

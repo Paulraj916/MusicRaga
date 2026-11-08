@@ -1,0 +1,54 @@
+{
+  "passed": true,
+  "targetRecordings": 123244,
+  "files": {
+    "role-artists-v3.jsonl": {
+      "records": 5460,
+      "bytes": 4907774,
+      "sha256": "4a98bb955d4a50044e39a6b8831671ac8f8a732c6c131822fb4870cdbafbf8fd"
+    },
+    "role-works-v3.jsonl": {
+      "records": 20784,
+      "bytes": 15128986,
+      "sha256": "54a8ee2a6f5f399205a38edd7b0aeeb59a49049ea100f913592c5a55a86ad644"
+    },
+    "recording-work-evidence-v3.jsonl": {
+      "records": 24268,
+      "bytes": 23666631,
+      "sha256": "1eeddf1e6ded9784967238a362c0374f6dd484a6e963f73cea1a8b6cf62da363"
+    },
+    "artist-work-evidence-v3.jsonl": {
+      "records": 36395,
+      "bytes": 34616323,
+      "sha256": "1a09679bbb91fa697be4b72de345ed5c9c4333b2bf543a840c67c8d353d0aed5"
+    },
+    "artist-recording-evidence-v3.jsonl": {
+      "records": 18785,
+      "bytes": 18537898,
+      "sha256": "08bc8fdc5576efb09289170dd60e2974390442cb070c08bd4e857bad129815a0"
+    },
+    "recording-role-enrichment-v3.jsonl": {
+      "records": 123244,
+      "bytes": 156361362,
+      "sha256": "04bb431a8f6780754cfc7a575a3262e62c9f561e56a620837ed21eef0965e90c"
+    },
+    "role-artist-crosswalk-v3.jsonl": {
+      "records": 442,
+      "bytes": 413743,
+      "sha256": "ecd346068afd9dd0f9ccc1c00fb3f6ea9878cd5e9fe731fd4acd458fdb9e9041"
+    }
+  },
+  "creditProofChainsValidated": 61158,
+  "checks": [
+    "immutable target MBID universe",
+    "unique stable row/credit/evidence IDs",
+    "source table and endpoint referential integrity",
+    "typed creator/performance/vocal chain integrity",
+    "generic writer/performer not promoted",
+    "attribute and role UUID preservation",
+    "recursive forbidden-field exclusion",
+    "CC0 provenance with IST retrieval timestamps",
+    "exact role coverage/people/credit counts and denominator percentages",
+    "deduplicated source-asserted artist crosswalk identities"
+  ]
+}

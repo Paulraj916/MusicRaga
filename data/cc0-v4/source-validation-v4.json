@@ -1,0 +1,90 @@
+{
+  "passed": true,
+  "identityType": "distinct canonical MusicBrainz Recording MBIDs; no independent audio-performance dedup guarantee",
+  "newAcceptedRecordingIds": 3812,
+  "preferredRecordingIdsIncludingEightNewerPreserved": 127064,
+  "gapMetadataSourceRecordingIdsToTwoMillion": 1872936,
+  "newWorkLanguageEvidenceRecordings": 117,
+  "newIndiaPrimaryArtistAreaAndMusicalPerformanceEvidenceRecordings": 3790,
+  "newBothEvidenceBuckets": 95,
+  "newScopeAreaEntityCount": 13,
+  "newArtistSidecarIds": 428,
+  "artistIdsNotAlreadyInV2V3ArtistSidecars": 179,
+  "explicitMusicalRelationshipOccurrences": {
+    "vocal": 2948,
+    "instrument": 944
+  },
+  "identityQuarantineReasonOccurrences": {
+    "shared-ISRC-with-existing-or-other-new-MBID": 2,
+    "same-title-duration-credited-artist-fingerprint-needs-review": 8,
+    "video-performance-identity-needs-review": 5
+  },
+  "matchedLicensedNativeAndRomanizedLyricPairsImportedByThisPack": 0,
+  "lyricPairTargetGap": 2000000,
+  "regionalAnonymousRowsNotCounted": 340,
+  "files": {
+    "additional-preferred-recordings-v4.jsonl": {
+      "records": 3812,
+      "bytes": 10314763,
+      "sha256": "dec5e991fb7f389cb7b72459bfe658d3bb60ea2d2066a2b0c6f3a90e238fba0a"
+    },
+    "additional-artists-v4.jsonl": {
+      "records": 428,
+      "bytes": 307542,
+      "sha256": "3ccf893477c86e44005302ea1e64cab5388f49a4c56852078cb9a22affd01e7a"
+    },
+    "recording-work-evidence-v4.jsonl": {
+      "records": 152,
+      "bytes": 195440,
+      "sha256": "176dfdd075a921a0c19535fd026150ea6734fc0e5f1adebcae4663ebb2f3054b"
+    },
+    "india-geographic-containment-evidence-v4.jsonl": {
+      "records": 400,
+      "bytes": 316552,
+      "sha256": "77e955426a6ab17885e979a3c83d198d80ed8fb0180fe0b6e32d130090d73d1c"
+    },
+    "india-associated-areas-v4.jsonl": {
+      "records": 401,
+      "bytes": 265303,
+      "sha256": "e60a7b8ecf7fd4c78f336963bd96d9cae13226bed43444eaff8a4b0e8da0177a"
+    },
+    "identity-review-v4.jsonl": {
+      "records": 15,
+      "bytes": 8679,
+      "sha256": "aa8c9052353d94f65d39e09e212df33a52553154b0352120db6566457c49b846"
+    },
+    "scope-review-sample-v4.jsonl": {
+      "records": 1000,
+      "bytes": 730798,
+      "sha256": "36be74cc0472c31940b5dca999983a0a798f4bcaf9fc7c1934c836235d3f6d8b"
+    },
+    "preserved-newer-recordings-v4.jsonl": {
+      "records": 8,
+      "bytes": 6352,
+      "sha256": "5baa7031c302ab3d1e077f43310949c1a32e1a5cf035dcc43bbf37fb1b96f234"
+    },
+    "regional-dataset-audit-rows-v4.jsonl": {
+      "records": 340,
+      "bytes": 370094,
+      "sha256": "50890845252fc7a8fc3da63687eb7c7c8e0c475fe5bba0a57bb40e326a282460"
+    },
+    "preferred-india-associated-recordings-v4.jsonl": {
+      "records": 127064,
+      "bytes": 211882412,
+      "sha256": "8fa86722eba684689be1033abb47995c0a167b10ccc4391ec236c59401cf73ff"
+    }
+  },
+  "checks": [
+    "baseline and newer eight records unchanged as source objects",
+    "exact source recording universe union and no repeated MBIDs",
+    "new work/performance/artist/area proof references resolve",
+    "geographic containment chains reach country IN with no inferred nationality",
+    "primary artist equals explicitly musically credited artist",
+    "no shared new/existing ISRCs or exact title-duration-artist fingerprints",
+    "new video identity ambiguities excluded",
+    "unknown sung language and dates preserved",
+    "recursive supplementary/media/lyric-field exclusion",
+    "CC0 metadata and segregated attribution-licensed audit rows",
+    "exact source-unit coverage and gap arithmetic"
+  ]
+}

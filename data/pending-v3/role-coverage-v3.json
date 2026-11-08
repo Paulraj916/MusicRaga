@@ -1,0 +1,127 @@
+{
+  "sourceSnapshot": "20261104-002222",
+  "sourceArchiveSha256": "fa3ed54bb6371c1737959f3631c8e5001a79e72c2376433697950c1185470cf1",
+  "targetPreferredRecordings": 123244,
+  "newRecordingIdsAdded": 0,
+  "recordingsWithPerformanceWorkBindings": 23822,
+  "performanceWorkBindingCoveragePercent": 19.3291,
+  "recordingsWithAnyIncludedRoleEvidence": 25420,
+  "anyRoleEvidenceCoveragePercent": 20.6258,
+  "distinctAssociatedWorkIds": 20784,
+  "distinctRoleArtistIds": 5460,
+  "sourceArtistTypeCounts": {
+    "Unknown": 1081,
+    "Person": 4199,
+    "Group": 166,
+    "Choir": 11,
+    "Other": 3
+  },
+  "distinctSourcePersonIds": 4199,
+  "relationshipFacts": {
+    "recordingWorkPerformance": 24268,
+    "artistWorkCreator": 36395,
+    "artistRecordingVocalOrPerformer": 18785
+  },
+  "roles": {
+    "composer": {
+      "recordingsWithEvidence": 20885,
+      "recordingCoveragePercent": 16.9461,
+      "denominatorPreferredRecordings": 123244,
+      "distinctArtistIds": 1673,
+      "creditOccurrencesAcrossRecordings": 21939,
+      "sourceArtistTypeCounts": {
+        "Person": 1191,
+        "Unknown": 359,
+        "Group": 120,
+        "Other": 3
+      },
+      "distinctSourcePersonIds": 1191
+    },
+    "lyricist": {
+      "recordingsWithEvidence": 17781,
+      "recordingCoveragePercent": 14.4275,
+      "denominatorPreferredRecordings": 123244,
+      "distinctArtistIds": 2026,
+      "creditOccurrencesAcrossRecordings": 18797,
+      "sourceArtistTypeCounts": {
+        "Person": 1508,
+        "Unknown": 490,
+        "Group": 25,
+        "Other": 3
+      },
+      "distinctSourcePersonIds": 1508
+    },
+    "writer": {
+      "recordingsWithEvidence": 880,
+      "recordingCoveragePercent": 0.714,
+      "denominatorPreferredRecordings": 123244,
+      "distinctArtistIds": 314,
+      "creditOccurrencesAcrossRecordings": 1340,
+      "sourceArtistTypeCounts": {
+        "Person": 291,
+        "Group": 9,
+        "Unknown": 13,
+        "Other": 1
+      },
+      "distinctSourcePersonIds": 291
+    },
+    "authorship": {
+      "recordingsWithEvidence": 0,
+      "recordingCoveragePercent": 0.0,
+      "denominatorPreferredRecordings": 123244,
+      "distinctArtistIds": 0,
+      "creditOccurrencesAcrossRecordings": 0,
+      "sourceArtistTypeCounts": {},
+      "distinctSourcePersonIds": 0
+    },
+    "vocal": {
+      "recordingsWithEvidence": 10956,
+      "recordingCoveragePercent": 8.8897,
+      "denominatorPreferredRecordings": 123244,
+      "distinctArtistIds": 2411,
+      "creditOccurrencesAcrossRecordings": 17315,
+      "sourceArtistTypeCounts": {
+        "Unknown": 329,
+        "Person": 2027,
+        "Group": 43,
+        "Other": 1,
+        "Choir": 11
+      },
+      "distinctSourcePersonIds": 2027
+    },
+    "performer": {
+      "recordingsWithEvidence": 1254,
+      "recordingCoveragePercent": 1.0175,
+      "denominatorPreferredRecordings": 123244,
+      "distinctArtistIds": 360,
+      "creditOccurrencesAcrossRecordings": 1470,
+      "sourceArtistTypeCounts": {
+        "Person": 331,
+        "Unknown": 19,
+        "Group": 9,
+        "Choir": 1
+      },
+      "distinctSourcePersonIds": 331
+    }
+  },
+  "otherCompositionRoleOccurrences": {
+    "arranger": 186,
+    "instrument arranger": 19,
+    "vocal arranger": 13,
+    "adapter": 56,
+    "translator": 11,
+    "reconstructed by": 3,
+    "orchestrator": 6,
+    "revised by": 3
+  },
+  "excludedArtistWorkRelationshipTypes": {
+    "publishing": 12,
+    "dedication": 2
+  },
+  "excludedNonPerformanceRecordingWorkTypes": {},
+  "artistCrosswalkRows": 442,
+  "baselineDefinition": "Composer/lyricist/writer/authorship: v2 associatedWorkIds joined to earlier 7-Nov CC0 Song work credits. Vocal/performer: v2 direct explicitArtistRelationships in the same 4-Nov core snapshot. All coverage denominators are the identical 123244 preferred recording IDs.",
+  "comparisonWarning": "v3 core snapshot is older than the previous work JSON snapshot; missing older assertions are not deletions and must not erase existing source evidence.",
+  "containsLyrics": false,
+  "networkRequests": 0
+}

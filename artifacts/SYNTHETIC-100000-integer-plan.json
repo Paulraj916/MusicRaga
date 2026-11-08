@@ -1,0 +1,17 @@
+{
+  "label": "SYNTHETIC benchmark; zero real songs imported",
+  "rows": 100000,
+  "changed": 100000,
+  "stage_seconds": 5.184,
+  "publish_seconds": 16.109,
+  "query_iterations": 50,
+  "query_p50_ms": 180.135,
+  "query_p95_ms": 206.709,
+  "db_bytes": 281817088,
+  "languages": {
+    "hin": 50000,
+    "tam": 50000
+  },
+  "timestamp": "2026-11-08T19:13:48.854299+00:00",
+  "limitations": "Single local writer, warm-cache bounded search+count; not production concurrency, network, fuzzy or all-source coverage."
+}
