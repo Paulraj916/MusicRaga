@@ -341,7 +341,7 @@ export const DEMO_SONGS: Song[] = seeds.map(
     album,
     artist,
     composer: i % 3 === 0 ? 'Mira Vaan' : artist,
-    lyricist: 'PowerWords Studio',
+    lyricist: 'Music Raga Studio',
     year,
     language,
     artwork,
@@ -392,7 +392,7 @@ export const DEMO_SONGS: Song[] = seeds.map(
       audioAvailable: 'User-provided only',
       karaoke: 'Timed text ready',
       rightsStatus: 'Original demo',
-      rightsHolder: 'PowerWords demo contributors',
+      rightsHolder: 'Music Raga demo contributors',
       sourceType: 'Original writing',
       commercialUse: 'CC0 dedication',
       translationRights: 'Original demo — CC0',
@@ -400,7 +400,7 @@ export const DEMO_SONGS: Song[] = seeds.map(
     },
     rights: {
       status: 'original-demo',
-      holder: 'PowerWords demo contributors',
+      holder: 'Music Raga demo contributors',
       evidence:
         'Original text created for this project; CC0-1.0 dedication in docs/CONTENT_RIGHTS.md.',
     },

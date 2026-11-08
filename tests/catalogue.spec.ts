@@ -12,7 +12,7 @@ test('real clean routes expose crawlable metadata before JavaScript', async ({
   const response = await request.get('/songs/ennadi-maayavi-nee/');
   expect(response.status()).toBe(200);
   const html = await response.text();
-  expect(html).toContain('<title>Ennadi Maayavi Nee — credits &amp; sources | PowerWords</title>');
+  expect(html).toContain('<title>Ennadi Maayavi Nee — credits &amp; sources | Music Raga</title>');
   expect(html).toContain('rel="canonical" href="http://localhost:4173/songs/ennadi-maayavi-nee/"');
   expect(html).toContain('Santhosh Narayanan');
   const context = await browser.newContext({ javaScriptEnabled: false });
@@ -57,7 +57,7 @@ test('Rahman artist collection chronology album and individual singer are real f
   await expect(page.locator('.route-record-list article')).toHaveCount(1);
   await expect(page.locator('.route-record-list h2')).toHaveText('Pudhu Vellai Mazhai');
   await page.getByRole('link', { name: 'Pudhu Vellai Mazhai', exact: true }).click();
-  await expect(page).toHaveTitle('Pudhu Vellai Mazhai — credits & sources | PowerWords');
+  await expect(page).toHaveTitle('Pudhu Vellai Mazhai — credits & sources | Music Raga');
   await page.goBack();
   await expect(page.getByRole('heading', { level: 1 })).toContainText('A. R. Rahman');
   await overflow(page);

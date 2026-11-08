@@ -274,7 +274,7 @@ export function CataloguePage({
             </div>
             <p className="text-edition-note">
               {s.rights.status === 'public-domain'
-                ? 'The original is ancient public-domain verse, not a modern song adaptation. English and readable Latin are new PowerWords renderings (CC0), not quotations from modern translations. Practice timing is artificial, with no included recording.'
+                ? 'The original is ancient public-domain verse, not a modern song adaptation. English and readable Latin are new Music Raga renderings (CC0), not quotations from modern translations. Practice timing is artificial, with no included recording.'
                 : 'Original project writing, translated and romanised for this fictional demo. CC0 dedication; artificial practice timing.'}
             </p>
           </section>

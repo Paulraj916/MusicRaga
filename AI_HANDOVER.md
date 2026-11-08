@@ -1,8 +1,10 @@
 # AI / developer continuation handover
 
+**Current user-selected brand: Music Raga** (formerly PowerWords). Canonical repo: https://github.com/Paulraj916/MusicRaga ; project preview target: https://paulraj916.github.io/MusicRaga/ . Same history/data/PR preserved; verify the release deployment/HTTP before claiming live. Old Pages path may NOT redirect. Read `docs/RELEASES.md`.
+
 ## Active v2 lakh-scale checkpoint (supersedes v1 counts below)
 
-Read `docs/V2_LAKH_CATALOGUE.md` first. Active index: **123,252 distinct MusicBrainz recordings** (preferred 123,244 + eight older retained), **14,884 works**, **212 Wikidata music entities** = **138,348 source music entities**, plus **19,921 source artist profiles**, not deduplicated songs/people. Explicit vocal coverage: **10,956 recordings / 2,411 source artist IDs**. Work/release-text language associations are separately filtered and NEVER treated as sung language or nationality. Roles/attributes retain exact source evidence. Root and `/PowerWords/` static builds work; free default-noindex Pages preview target is https://paulraj916.github.io/PowerWords/ (check actual deployment status). Main is not merged or overwritten.
+Read `docs/V2_LAKH_CATALOGUE.md` first. Active index: **123,252 distinct MusicBrainz recordings** (preferred 123,244 + eight older retained), **14,884 works**, **212 Wikidata music entities** = **138,348 source music entities**, plus **19,921 source artist profiles**, not deduplicated songs/people. Explicit vocal coverage: **10,956 recordings / 2,411 source artist IDs**. Work/release-text language associations are separately filtered and NEVER treated as sung language or nationality. Roles/attributes retain exact source evidence. Root and `/MusicRaga/` static builds work; free default-noindex Pages preview target is https://paulraj916.github.io/MusicRaga/ (check actual deployment status). Main is not merged or overwritten.
 
 V3 normalized evidence/handoff is preserved in `data/pending-v3` for portable continuation; it is NOT imported or claimed active yet. Follow its exact sidecar→proof→nondeleting overlay order next; no new recording count. Never infer vocalist from artist credit, equate edition appearances to songs, delete old IDs/evidence, scrape protected lyrics or promise Google/AdSense results. No uninterrupted 24-hour job exists.
 
@@ -63,7 +65,7 @@ App.tsx is still large; extract tested feature modules gradually. Filters are si
 
 ## GitHub / preservation
 
-Canonical public source: **https://github.com/Paulraj916/PowerWords**, branch **`main`**. Local working source remains `/workspace/powerwords-20261108-standalone`; current expansion branch is `feat/scalable-india-catalogue`, pending PR review/merge into main. The owner explicitly approved public creation and code publication; CLI identity was verified as Paulraj916, then the absent exact repository was created. `origin` is the HTTPS URL of that repository. Initial foundation `4785f04cdd11e18a656224def290f96df6291ade`, sourced upgrade `08a475c35964689a621f38f6d31e601beb59678c`, and mobile correction `06d0014af3e05e089f22e01ed478f56a66cd24b3` are retained unchanged. Use `git log` / `git rev-parse HEAD` for the latest publication documentation commit.
+Canonical public source: **https://github.com/Paulraj916/MusicRaga**, branch **`main`**. Local working source remains `/workspace/powerwords-20261108-standalone`; current expansion branch is `feat/scalable-india-catalogue`, pending PR review/merge into main. The owner explicitly approved public creation and code publication; CLI identity was verified as Paulraj916, then the absent exact repository was created. `origin` is the HTTPS URL of that repository. Initial foundation `4785f04cdd11e18a656224def290f96df6291ade`, sourced upgrade `08a475c35964689a621f38f6d31e601beb59678c`, and mobile correction `06d0014af3e05e089f22e01ed478f56a66cd24b3` are retained unchanged. Use `git log` / `git rev-parse HEAD` for the latest publication documentation commit.
 
 Commit attribution uses a command-scoped Grok Bot / non-deliverable localhost build identity, not verified owner authorship; global identity was not changed. All reachable historical blobs and tracked publication files were audited for accidental secrets/private data before publication; see PUBLICATION.md for scope/limitations. Do not add `.env`, credential stores, local imported files, raw recordings or delivery ZIPs. Existing UI screenshots are deterministic local test artifacts, not personal sessions.
 
@@ -71,7 +73,7 @@ Previous wrong-account/404 research is historical, not an active access blocker.
 
 ## Continuation prompt
 
-“Read AI_HANDOVER and NEXT_STEPS; run unit/build/static-SEO/browser/audit checks. Preserve current source/history. Use the confirmed Paulraj916/PowerWords repository; inspect its current remote state before changes. Prioritise independent-artist permissions, native editorial review and a trusted publication model. Existing prerender SEO is implemented; extend it without fake metadata or protected text. Keep demos clearly marked/noindex and ads outside reading. Report measured outcomes and remaining blockers.”
+“Read AI_HANDOVER and NEXT_STEPS; run unit/build/static-SEO/browser/audit checks. Preserve current source/history. Use the confirmed Paulraj916/MusicRaga repository; inspect its current remote state before changes. Prioritise independent-artist permissions, native editorial review and a trusted publication model. Existing prerender SEO is implemented; extend it without fake metadata or protected text. Keep demos clearly marked/noindex and ads outside reading. Report measured outcomes and remaining blockers.”
 
 ## Mobile capture correction
 

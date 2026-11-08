@@ -1,4 +1,4 @@
-name: PowerWords checks
+name: Music Raga checks
 on:
   push:
   pull_request:
@@ -29,6 +29,12 @@ jobs:
       - run: npm audit --audit-level=moderate
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e
+      - name: Reuse verified origin-independent catalogue for project preview
+        uses: actions/upload-artifact@v4
+        with:
+          name: verified-catalogue-shards
+          path: dist/catalogue/
+          retention-days: 2
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -54,8 +60,8 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     env:
-      VITE_BASE_PATH: /PowerWords/
-      SITE_URL: https://paulraj916.github.io/PowerWords
+      VITE_BASE_PATH: /MusicRaga/
+      SITE_URL: https://paulraj916.github.io/MusicRaga
       ALLOW_INDEXING: 'false'
     steps:
       - uses: actions/checkout@v4
@@ -67,7 +73,11 @@ jobs:
         with:
           python-version: '3.13'
       - run: npm ci
-      - run: npm run build
+      - run: npm run build:curated
+      - uses: actions/download-artifact@v4
+        with:
+          name: verified-catalogue-shards
+          path: dist/catalogue
       - run: npm run test:seo
       - run: npx playwright install --with-deps chromium
       - name: Verify actual project-host discovery before deploying

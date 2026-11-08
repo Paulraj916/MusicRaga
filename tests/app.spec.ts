@@ -234,7 +234,7 @@ test('privacy clearing removes only app library and preserves other storage', as
   await page.evaluate(() => localStorage.setItem('unrelated-site-key', 'keep'));
   await page.getByRole('button', { name: 'Save A little light', exact: true }).click();
   await page.getByRole('button', { name: 'Privacy', exact: true }).click();
-  await page.getByRole('button', { name: 'Clear PowerWords local data' }).click();
+  await page.getByRole('button', { name: 'Clear Music Raga local data' }).click();
   await page.keyboard.press('Escape');
   expect(await page.evaluate(() => localStorage.getItem('pw:favorites'))).toBe(null);
   expect(await page.evaluate(() => localStorage.getItem('unrelated-site-key'))).toBe('keep');

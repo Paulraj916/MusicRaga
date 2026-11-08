@@ -11,14 +11,14 @@ export default class ErrorBoundary extends Component<{ children: ReactNode }, { 
     if (this.state.failed)
       return (
         <main className="fatal-state">
-          <span className="eyebrow">POWERWORDS</span>
+          <span className="eyebrow">MUSIC RAGA</span>
           <h1>A quiet pause.</h1>
           <p>
             Something interrupted this page. Your saved songs remain in this browser. Reload to try
             again; session-only imports will need to be selected again.
           </p>
           <button className="button primary" onClick={() => window.location.reload()}>
-            Reload PowerWords
+            Reload Music Raga
           </button>
         </main>
       );

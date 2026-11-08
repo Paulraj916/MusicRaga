@@ -48,7 +48,7 @@ export function siteConfig(
 export function pageSeo(path: string, config: SeoConfig) {
   const route = resolveRoute(path);
   const canonical = config.baseUrl + (path === '/' ? '/' : path.replace(/\/*$/, '/'));
-  let title = 'PowerWords — Every word, a world.';
+  let title = 'Music Raga — Every word, a world.';
   let description =
     'Explore sourced Indian song credits, public-domain Tamil verse and clearly labelled original multilingual demos. A quiet place for the words behind music.';
   let lang = 'en';
@@ -64,7 +64,7 @@ export function pageSeo(path: string, config: SeoConfig) {
             : s.kind === 'verse'
               ? 'Tamil text & sources'
               : 'original demo lyrics';
-    title = `${s.title} — ${suffix} | PowerWords`;
+    title = `${s.title} — ${suffix} | Music Raga`;
     description =
       s.description?.slice(0, 190) ??
       `Read ${s.title}, a fictional ${s.language} original demo by ${s.artist}. Explore original script, English and Latin text. Not a real commercial release.`;
@@ -73,16 +73,16 @@ export function pageSeo(path: string, config: SeoConfig) {
     lang = s.rights.status === 'metadata-only' ? 'en' : lyricLanguage(s.language, route.variant);
   }
   if (route.kind === 'artist') {
-    title = `${route.name} — songs & credited roles | PowerWords`;
+    title = `${route.name} — songs & credited roles | Music Raga`;
     const list = routeSongs(route);
     description = `Explore ${list.length} ${list.every(isDemo) ? 'fictional demo' : 'catalogued'} entries crediting ${route.name}. Browse songs, albums and credited roles with individual source and lyric-rights notes.`;
   }
   if (route.kind === 'language') {
-    title = `${route.name} — song credits & readable texts | PowerWords`;
-    description = `Browse ${route.name} recordings and texts in the PowerWords catalogue. Distinguish sourced metadata, public-domain verse and original fictional demos before opening a reader.`;
+    title = `${route.name} — song credits & readable texts | Music Raga`;
+    description = `Browse ${route.name} recordings and texts in the Music Raga catalogue. Distinguish sourced metadata, public-domain verse and original fictional demos before opening a reader.`;
   }
   if (route.kind === 'not-found') {
-    title = 'Page not found | PowerWords';
+    title = 'Page not found | Music Raga';
     description =
       'This catalogue page does not exist. Return to discovery to find a sourced song, artist or language.';
   }
@@ -124,13 +124,13 @@ export function structuredData(
           ? route.name
           : route.kind === 'language'
             ? `${route.name} catalogue`
-            : 'PowerWords',
+            : 'Music Raga',
   };
   if (route.kind === 'home')
     return {
       '@context': 'https://schema.org',
       '@type': 'WebSite',
-      name: 'PowerWords',
+      name: 'Music Raga',
       url: config.baseUrl + '/',
       description:
         'Sourced song metadata, ancient public-domain verse and explicitly fictional original demos.',
@@ -167,7 +167,7 @@ export function structuredData(
       }));
     if (s.rights.status === 'public-domain') {
       work.copyrightNotice =
-        'Ancient underlying Tamil verse: public domain. New PowerWords renderings: CC0-1.0. No modern recording or adaptation rights conveyed.';
+        'Ancient underlying Tamil verse: public domain. New Music Raga renderings: CC0-1.0. No modern recording or adaptation rights conveyed.';
       work.text = s.lyrics[route.variant]?.map((l) => l.text).join('\n');
     }
     return { ...webpage, mainEntity: work };

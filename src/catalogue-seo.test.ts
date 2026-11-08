@@ -171,9 +171,9 @@ it('production indexing needs an explicit page review list, never just a real-me
 });
 
 it('supports factual project-host canonicals without changing logical routes', () => {
-  const config = siteConfig('https://paulraj916.github.io/PowerWords/', false);
-  expect(config.baseUrl).toBe('https://paulraj916.github.io/PowerWords');
+  const config = siteConfig('https://paulraj916.github.io/MusicRaga/', false);
+  expect(config.baseUrl).toBe('https://paulraj916.github.io/MusicRaga');
   expect(pageSeo('/songs/tirukkural-invocation/', config).canonical).toBe(
-    'https://paulraj916.github.io/PowerWords/songs/tirukkural-invocation/',
+    'https://paulraj916.github.io/MusicRaga/songs/tirukkural-invocation/',
   );
 });

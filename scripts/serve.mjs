@@ -85,7 +85,7 @@ const server = http.createServer(async (req, res) => {
 });
 server.listen(port, host, () =>
   console.log(
-    `PowerWords static preview ready at http://${host}:${port}/ (real clean-route files, 404s and security headers)`,
+    `Music Raga static preview ready at http://${host}:${port}/ (real clean-route files, 404s and security headers)`,
   ),
 );
 server.on('error', (error) => {

@@ -1,4 +1,6 @@
-# PowerWords · Every word, a world.
+# Music Raga · Every word, a world.
+
+**Current user-selected brand: Music Raga** (formerly PowerWords). Canonical repo: https://github.com/Paulraj916/MusicRaga ; project preview target: https://paulraj916.github.io/MusicRaga/ . Same history/data/PR preserved; verify the release deployment/HTTP before claiming live. Old Pages path may NOT redirect. Read `docs/RELEASES.md`.
 
 A distinctive, local-first Indian music discovery and multilingual reading foundation. Warm paper, after-hours themes, original record-inspired artwork, source-led listening paths, quiet reading folios, rich filters and private karaoke practice. **Working software with sourced credits and reusable ancient text—not a complete licensed commercial lyrics business.**
 
@@ -93,7 +95,7 @@ No complete discography, commercial lyric licence, broad independent catalogue, 
 
 The **Language association (not sung language)** filter distinguishes work/release-text association from actual unknown recording language. Source roles/attributes/proofs, artist credit filtering, native aliases and work→recording exploration work on paged API or **free static query-specific shards**, without a giant client catalogue array. Standard full builds require Python; default bootstrap is offline and hash-verified. See [exact v2 scope/metrics/deferred work](docs/V2_LAKH_CATALOGUE.md).
 
-Configured ad-free project preview target: **https://paulraj916.github.io/PowerWords/**. Actual availability depends on a successful `free-pages-preview` job, not this README alone. Project-prefix clean routes/assets/native discovery have a dedicated desktop/mobile regression. Default builds remain root-host compatible; `.env.example` describes `VITE_BASE_PATH`. HTML indexing and live ads remain off.
+Configured ad-free project preview target: **https://paulraj916.github.io/MusicRaga/**. Actual availability depends on a successful `free-pages-preview` job, not this README alone. Project-prefix clean routes/assets/native discovery have a dedicated desktop/mobile regression. Default builds remain root-host compatible; `.env.example` describes `VITE_BASE_PATH`. HTML indexing and live ads remain off.
 
 ```sh
 npm run catalogue:bootstrap          # optional local SQLite catalogue
@@ -109,10 +111,10 @@ No all-India completion, uninterrupted subscription-independent 24-hour run, #1 
 
 ## Public source repository
 
-**https://github.com/Paulraj916/PowerWords** · default/source branch **`main`**. The owner explicitly approved creating this public repository and publishing the website. Authenticated CLI identity was verified as Paulraj916; the exact repository was absent before approved creation. The complete original local commit history is retained; no force push or history rewrite is needed. Historical discovery failures are preserved and labelled in the repository research docs, not current blockers.
+**https://github.com/Paulraj916/MusicRaga** · default/source branch **`main`**. The owner explicitly approved creating this public repository and publishing the website. Authenticated CLI identity was verified as Paulraj916; the exact repository was absent before approved creation. The complete original local commit history is retained; no force push or history rewrite is needed. Historical discovery failures are preserved and labelled in the repository research docs, not current blockers.
 
 ```sh
-git clone https://github.com/Paulraj916/PowerWords.git
+git clone https://github.com/Paulraj916/MusicRaga.git
 cd PowerWords
 npm ci
 npm run build

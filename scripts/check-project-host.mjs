@@ -3,7 +3,7 @@ import { chromium, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import assert from 'node:assert/strict';
 import { mkdir, writeFile } from 'node:fs/promises';
-const origin = process.env.PROJECT_TEST_URL ?? 'http://localhost:4174/PowerWords/';
+const origin = process.env.PROJECT_TEST_URL ?? 'http://localhost:4174/MusicRaga/';
 const url = new URL(origin);
 if (!['localhost', '127.0.0.1'].includes(url.hostname) || url.protocol !== 'http:')
   throw Error('Local project preview only');
@@ -33,12 +33,12 @@ try {
     await page.goto(origin);
     await expect(page.getByRole('heading', { level: 1 })).toContainText('Every word');
     await page.getByRole('link', { name: /The Tamil reading room/ }).click();
-    await expect(page).toHaveURL(new RegExp('/PowerWords/songs/tirukkural-invocation/$'));
+    await expect(page).toHaveURL(new RegExp('/MusicRaga/songs/tirukkural-invocation/$'));
     const reload = await page.reload();
     assert.equal(reload.status(), 200);
     await expect(page.getByRole('heading', { level: 1 })).toContainText('Tirukkural');
     const canonical = await page.locator('link[rel=canonical]').getAttribute('href');
-    assert.equal(canonical, 'https://paulraj916.github.io/PowerWords/songs/tirukkural-invocation/');
+    assert.equal(canonical, 'https://paulraj916.github.io/MusicRaga/songs/tirukkural-invocation/');
     await page.goto(origin);
     await page.getByRole('button', { name: 'Open India index', exact: true }).click();
     const dialog = page.getByRole('dialog', { name: 'The growing India index', exact: true });
@@ -66,7 +66,7 @@ try {
       .getByRole('heading', { name: 'Paarkadhe Paarkadhe', exact: true })
       .first()
       .scrollIntoViewIfNeeded();
-    await page.screenshot({ path: 'artifacts/project-v2-' + name + '.png' });
+    await page.screenshot({ path: 'artifacts/project-musicraga-' + name + '.png' });
     assert.deepEqual(errors, []);
     report.push({
       viewport: name,

@@ -785,12 +785,12 @@ export default function App({ initialPath }: { initialPath?: string } = {}) {
             e.preventDefault();
             navigate('discover');
           }}
-          aria-label="PowerWords home"
+          aria-label="Music Raga home"
         >
           <span className="brand-symbol">
-            p<span>✳</span>
+            m<span>✳</span>
           </span>
-          powerwords<span className="brand-dot">.</span>
+          Music Raga<span className="brand-dot">.</span>
         </a>
         <button
           className="mobile-close icon-button"
@@ -974,7 +974,7 @@ export default function App({ initialPath }: { initialPath?: string } = {}) {
                       <div className="floating-glyph glyph-two">आ</div>
                       <div className="record">
                         <div className="record-label">
-                          <span>POWERWORDS</span>
+                          <span>MUSIC RAGA</span>
                           <span className="record-mark">✳</span>
                           <small>SIDE A / FEEL SOMETHING</small>
                         </div>
@@ -1438,7 +1438,7 @@ export default function App({ initialPath }: { initialPath?: string } = {}) {
           )}
           <footer>
             <div className="footer-brand">
-              powerwords<span>.</span>
+              Music Raga<span>.</span>
               <small>Made for a deeper listen.</small>
             </div>
             <div>
@@ -1609,7 +1609,7 @@ export default function App({ initialPath }: { initialPath?: string } = {}) {
                   Words help you find it.
                 </h3>
                 <p>
-                  PowerWords is a working, local-first foundation for discovering Indian music.
+                  Music Raga is a working, local-first foundation for discovering Indian music.
                   Browse sourced credits and original demos, refine by metadata, save a collection,
                   then slow down in the lyric room.
                 </p>
@@ -1683,7 +1683,7 @@ export default function App({ initialPath }: { initialPath?: string } = {}) {
                   logs.
                 </p>
                 <p>
-                  You can clear PowerWords preferences and library without affecting other websites.
+                  You can clear Music Raga preferences and library without affecting other websites.
                 </p>
                 <button
                   className="button"
@@ -1702,11 +1702,11 @@ export default function App({ initialPath }: { initialPath?: string } = {}) {
                     setFont(24);
                     setImported([]);
                     setStatus(
-                      'PowerWords library, imports and preferences cleared. Default theme and text size may be saved again.',
+                      'Music Raga library, imports and preferences cleared. Default theme and text size may be saved again.',
                     );
                   }}
                 >
-                  Clear PowerWords local data
+                  Clear Music Raga local data
                 </button>
                 <p className="small-note">
                   A production deployment needs an operator identity, real contact/takedown route,
@@ -1774,7 +1774,7 @@ export default function App({ initialPath }: { initialPath?: string } = {}) {
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url;
-                    a.download = 'powerwords-catalogue.json';
+                    a.download = 'music-raga-catalogue.json';
                     a.click();
                     setTimeout(() => URL.revokeObjectURL(url), 1000);
                   }}

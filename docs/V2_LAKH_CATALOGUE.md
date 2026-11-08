@@ -24,7 +24,7 @@ The worker also produced 154,937 edition appearances, 25,574 releases/21,629 gro
 
 ## Free project preview, not a monetised production launch
 
-Configured target: **https://paulraj916.github.io/PowerWords/**. Check the actual successful `free-pages-preview` job before asserting it is live. The feature branch can publish a default-noindex open-source preview after the verify job and desktop/mobile project-prefix regression pass; main remains unchanged until reviewed. Source/API/asset links and clean route reloads honour `/PowerWords/`. Original root-host builds still work.
+Configured target: **https://paulraj916.github.io/MusicRaga/**. Check the actual successful `free-pages-preview` job before asserting it is live. The feature branch can publish a default-noindex open-source preview after the verify job and desktop/mobile project-prefix regression pass; main remains unchanged until reviewed. Source/API/asset links and clean route reloads honour `/MusicRaga/`. Original root-host builds still work.
 
 GitHub Pages ignores `_headers`, does not run the Python API and does not offer custom response-header controls. Metadata-only JSON is not promoted through an indexable bulk sitemap. HTML noindex is explicit. Provider logs may retain requests/IPs; no library/audio uploads occur. A production host must supply real header/security/privacy review.
 
