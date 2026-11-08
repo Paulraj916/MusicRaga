@@ -1,0 +1,113 @@
+{
+  "output": "/workspace/powerwords-upgraded-20261108-demo-1794159527860.mp4",
+  "mobileOutput": "/workspace/powerwords-upgraded-20261108-mobile-1794159527860.mp4",
+  "desktopWebm": "/workspace/powerwords-20261108-standalone/recordings/demo-1794159527860/page@1f9e3d038a3319e47f4ba8ca7dadb890.webm",
+  "mobileWebm": "/workspace/powerwords-20261108-standalone/recordings/demo-1794159527860/page@e7afa8d4a1bcfe2c3566366279ae1e93.webm",
+  "origin": "http://127.0.0.1:4173",
+  "events": [
+    {
+      "seconds": 0.4,
+      "label": "Desktop: warm-paper discovery with original record artwork"
+    },
+    {
+      "seconds": 2.9,
+      "label": "Curated source-led paths: Rahman, Vada Chennai and Tamil reading room"
+    },
+    {
+      "seconds": 5.2,
+      "label": "Clean Rahman artist page: sourced works, newest to oldest"
+    },
+    {
+      "seconds": 8.9,
+      "label": "Chronology, album and individual duet-singer filters combine"
+    },
+    {
+      "seconds": 10.9,
+      "label": "Factual recording credits and visible commercial-lyrics boundary"
+    },
+    {
+      "seconds": 13.2,
+      "label": "Per-record source ledger and permission statement"
+    },
+    {
+      "seconds": 15.6,
+      "label": "Mixed Tamil query returns explicitly RELATED album entries; unknown quote is not verified"
+    },
+    {
+      "seconds": 18.3,
+      "label": "Vada Chennai composer is Santhosh Narayanan, not Rahman"
+    },
+    {
+      "seconds": 22.8,
+      "label": "Ancient public-domain Tamil text: actual clean reading page"
+    },
+    {
+      "seconds": 25.4,
+      "label": "Separate crawlable English rendering URL"
+    },
+    {
+      "seconds": 27.7,
+      "label": "Separate readable Latin / Thanglish version"
+    },
+    {
+      "seconds": 30,
+      "label": "Private silent rehearsal: line seeking and live active-line clock"
+    },
+    {
+      "seconds": 32.5,
+      "label": "Manual sync offset without hosted copyrighted audio"
+    },
+    {
+      "seconds": 34.3,
+      "label": "Local favourites and personal collection"
+    },
+    {
+      "seconds": 36.2,
+      "label": "After-hours theme and local saved library"
+    },
+    {
+      "seconds": 39.1,
+      "label": "Mobile segment: actual 412px phone viewport, responsive home"
+    },
+    {
+      "seconds": 41.3,
+      "label": "Mobile accessible navigation drawer"
+    },
+    {
+      "seconds": 44.3,
+      "label": "Mobile native-script search finds the sourced real recording"
+    },
+    {
+      "seconds": 46.2,
+      "label": "Mobile sourced credit view: honest no-lyrics gate"
+    },
+    {
+      "seconds": 48.6,
+      "label": "Mobile dark reading folio and text versions"
+    },
+    {
+      "seconds": 50.8,
+      "label": "Mobile practice room stays ad-free and readable"
+    }
+  ],
+  "externalRequests": [],
+  "runtimeErrors": [],
+  "recordedAtIst": "8 November 2026 at 11:09 pm IST",
+  "probe": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 1280,
+        "height": 900,
+        "r_frame_rate": "30/1"
+      }
+    ],
+    "format": {
+      "duration": "54.266667",
+      "size": "1643507"
+    }
+  },
+  "notice": "Actual local Playwright interaction capture; silent, no generated footage, no external service or commercial media. Requires human video review; no claim of watching made."
+}

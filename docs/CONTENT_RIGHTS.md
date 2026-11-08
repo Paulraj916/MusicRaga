@@ -2,11 +2,13 @@
 
 ## What is bundled
 
-All 12 track records, artist names, album names, release dates and sonic descriptions in `DEMO_SONGS` are explicitly fictional examples. Similarity to existing names is coincidental and does not establish a credit, affiliation, endorsement or release fact. There is no real A.R. Rahman entry, no scraped catalogue and no commercial lyric excerpt. Cover artwork is original CSS geometry. Icons come from Lucide (ISC).
+All 12 track records, artist names, album names, release dates and sonic descriptions in `DEMO_SONGS` are explicitly fictional examples. Similarity to existing names is coincidental and does not establish a credit, affiliation, endorsement or release fact. Separately, `realCatalogue.ts` includes 5 sourced real recording metadata-only entries and 1 ancient public-domain verse edition. See [per-item facts and rights](REAL_CATALOGUE.md). No commercial lyric excerpt is included. Cover artwork is original CSS geometry. Icons come from Lucide (ISC).
 
 The four-line lyric exercise, English text, Tamil/Hindi/Telugu versions and their Latin renderings were created specifically as project demonstration writing. The exercise is deliberately reused for multiple fictional tracks; it is not twelve claimed real songs. Timestamps are artificial practice timing, not alignment to recordings. The displayed years are synthetic catalogue values. Translations and transliterations should receive a native-editor quality pass before a real release.
 
 To the extent permitted by law, the project contributors waive copyright and related rights in this original demonstration text under **CC0 1.0 Universal**, including these project-created translations and transliterations. Full legal tool: https://creativecommons.org/publicdomain/zero/1.0/legalcode . No warranty or rights to third-party names, trademarks, recordings or works are conveyed. Code remains MIT-licensed separately.
+
+New English/Latin renderings of the ancient Tirukkural excerpt are also project-created CC0; the underlying ancient words, modern source editions, jurisdictions and derivative rights are separately analysed in `REAL_CATALOGUE.md`. A commercial streaming listing never grants lyric permission.
 
 ## Real catalogue publication gate
 

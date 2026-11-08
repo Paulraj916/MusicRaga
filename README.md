@@ -1,82 +1,93 @@
 # PowerWords · Every word, a world.
 
-A polished, local-first foundation for a multilingual Indian music discovery and lyrics website. Warm-paper and after-hours themes, original generative cover art, meaningful discovery filters, a distraction-free lyric room, and local karaoke practice. **Working demo, not a licensed commercial music catalogue.**
+A distinctive, local-first Indian music discovery and multilingual reading foundation. Warm paper, after-hours themes, original record-inspired artwork, source-led listening paths, quiet reading folios, rich filters and private karaoke practice. **Working software with sourced credits and reusable ancient text—not a complete licensed commercial lyrics business.**
 
-## Run it
+## Run the finished production version
 
-Requirements: **Node.js 22.12+** (Node 24 recommended) and npm. No account, API key, database, paid service, or `.env` is needed.
+Node **22.12+** (Node 24 recommended), npm. No paid service, account, API key or database required.
 
 ```sh
 npm ci
-npm run dev -- --port 4173
-# http://localhost:4173
+npm run build
+npm run preview -- --host 0.0.0.0 --port 4173
+# http://localhost:4173/
 ```
+
+`npm run dev -- --port 5173` is the fast editing server. Use the production preview above for crawlable HTML, security headers, directory routes and genuine HTTP 404 testing.
 
 ```sh
-npm test                 # unit tests
-npm run typecheck        # strict TypeScript
-npm run build            # production files → dist/
+npm test                        # pure unit/data/rights/search/SEO checks
+npm run typecheck               # strict TypeScript
+npm run build                   # client + React static prerender → dist/
+npm run test:seo                # every generated HTML page + sitemap/robots
 npx playwright install chromium
-npm run test:e2e          # desktop + mobile Chromium; axe checks; screenshots
-npm run preview -- --port 4173  # serve an existing production build
-npm audit
+npm run test:e2e -- --workers=4  # production desktop/mobile workflows + axe
+npm audit                       # lockfile vulnerability check
+npm run record:demo             # actual local browser-action recording; ffmpeg required
 ```
 
-Playwright starts a dev server automatically on 4173 unless one is already running. CI starts a clean one. Test reports are in `playwright-report/`; visual evidence is in `artifacts/`. Screenshot tests are visual-review aids, **not pixel-baseline assertions**. Never expose Vite dev/preview servers as a production service.
+Playwright starts the production preview on 4173 if needed; build first. An already running preview must serve this build. Reports: `playwright-report/`; screenshots: `artifacts/`. Screenshots are review evidence, not pixel-baseline assertions. See [progress](docs/PROGRESS.md) for measured results and [recording](docs/DEMO_RECORDING.md) for the actual capture.
+
+## Explore
+
+- `/artists/a-r-rahman/` — 3 sourced recordings, newest/oldest, album and individual singer filtering.
+- `/artists/santhosh-narayanan/` — Vada Chennai credits, correctly attributed to Santhosh Narayanan.
+- `/songs/ennadi-maayavi-nee/` — factual credits, citations and a transparent commercial-lyrics rights gate.
+- `/songs/tirukkural-invocation/` — ancient Tamil verse, with separate `/translation/` and `/transliteration/` pages.
+- `/languages/tamil/` — language collection; Hindi/Telugu contain labelled original demos.
+- `/songs/a-little-light/` — an explicitly fictional CC0 practice exercise.
+
+Every listed route is an actual prebuilt HTML file. Titles, descriptions, OG, canonical, reciprocal text-version hreflang and factual JSON-LD are present **before JavaScript**. Real links/text work with JavaScript disabled. Interactive filters, saved library and practice require JavaScript. Unknown paths return 404 in the supplied preview; static hosts must preserve that behaviour.
 
 ## What actually works
 
-- Responsive discovery: title, original-script title, artist, composer, lyricist, album, language and metadata search; newest/oldest/title sorting; exact multi-dimensional AND filters.
-- **96 distinct metadata dimensions** across 8 groups. 48 populated dimensions filter the bundled demo; 48 are unavailable until data is supplied. Missing raga, film, collaborator and other metadata is **disabled with an honest explanation**, not fabricated. This is not a claim that all 96 have complete production data.
-- 12 explicitly **fictional** tracks across Tamil, Hindi and Telugu. Original project writing, English translations and readable Latin transliteration; Tamil’s Latin tab is called Thanglish. The same short lyric exercise is reused intentionally. Other Indian languages are supported by the Unicode data model, not populated in this demo.
-- Accessible native-modal lyric reader: language tabs, arrow-key tab navigation, adjustable text size, copy, click-to-seek lines, and no ads inside the reader.
-- Silent timed karaoke rehearsal; local audio import up to 50 MB; local `.lrc` import up to 256 KB / 500 lines / 4 hours; manual −10…+10 second sync offset. **No copyrighted audio, microphone access, recording, or streaming.**
-- Saved songs and named collections in browser local storage, including reload persistence. Add a song to a collection in its reader.
-- Light/dark theme and reader font-size persistence; reduced-motion support; keyboard shortcut `/` for discovery search; skip link, focus styles, modal Escape/focus restoration, mobile navigation trap.
-- Spotify, YouTube and Apple Music **external search links** only. Fictional titles may have no results. No account linkage or live synchronisation is claimed.
-- Validated session-only JSON catalogue import/export in **Make it yours**; rights assertions required. Validation is a technical gate, not proof of a licence.
-- Non-interruptive, clearly labelled **disabled advertising placeholder** below discovery, outside reading and playback controls. No ad SDK, auto ads, overlays, autoplay ad, fake publisher ID, tracking or CMP is loaded.
-- Privacy/content-rights/about views; scoped local-data reset; bounded file inputs; render-error recovery screen; React text escaping; restrictive example security headers; web metadata and generic WebSite JSON-LD.
-- Direct demo reader links: `/#song=a-little-light`. These are client-side links, **not production indexable song routes**.
+- **18 entries:** 5 individually sourced real recording metadata pages, 1 ancient public-domain verse edition, 12 clearly fictional original demos. No commercial lyric, audio, translation, transliteration or album artwork is bundled. [Per-item facts and rights](docs/REAL_CATALOGUE.md).
+- Native-script/title/alias/credit and permitted-text search. Tamil query `முன்பே வா lyrics` finds Munbe Vaa. A query containing `Vadachennai` plus an unverified quote returns **explicitly related album entries**, never a fabricated lyric identification. No ranking guarantee or keyword stuffing.
+- **96 schema-driven dimensions** in 8 groups. **50 currently have values; 46 remain unavailable.** All use real matching when values exist; unavailable fields are disabled and marked unknown. Populated demo fields are not claimed to be verified real-song attributes. Contributor filters match individual duet singers; active selections combine with AND.
+- Root collections: All entries / Sources first / Read freely / Original demos. Artist collection chronology, album and singer controls. Unknown ancient dates remain last, not disguised as a modern year.
+- Mobile-first source-led collection pages, music-credit pages and line-numbered reading folios, plus a distraction-free native-dialog practice room.
+- Original/English/Latin tabs (Thanglish for Tamil), keyboard tab navigation, text sizing, copy, line seeking, focus restoration and reduced-motion support.
+- Silent timed rehearsal; local audio ≤50 MB; LRC ≤256 KB / 500 lines / 4 hours; manual −10…+10 second sync. Files never upload and are discarded on close. No included copyrighted audio, microphone, recording or streaming.
+- Local saved songs and named collections (including real credit-page actions), persistent themes/font settings; scoped privacy reset. Session-only validated catalogue JSON import/export. **Imported rights are uploader assertions, not clearance or publication.**
+- External provider search links only; real entries also link their actual cited catalogue listing. No OAuth/account sync is claimed.
+- Clearly labelled **disabled** advertising area outside reading; no SDK, overlay, audio ad, fake publisher ID, tracking or CMP. [Ads/privacy](docs/ADS_AND_PRIVACY.md).
+- Semantic HTML, local fonts, defensive file validation, React text escaping, error recovery, supplied restrictive response headers, CI, unit/browser/a11y regressions.
 
-## Honest boundaries
+## SEO launch configuration
 
-This is a tested frontend MVP, not the complete all-India catalogue or an “AdSense-approved” business. No real-artist credits, lyrics, licensed translation, full recordings, backend, OAuth, accounts, cross-device sync, editorial workflow, server search, payments or ad network integration are included. Searching A.R. Rahman deliberately returns an explanation, not invented results. Content is **noindex** and robots-blocked pending real content and launch review. Translation/native typography deserves a native-language editorial pass. Browser and assistive-technology testing is not exhaustive; zero bugs cannot be guaranteed.
+Default builds use the honest preview origin `http://localhost:4173`, `noindex,follow` and robots `Disallow: /`. No fictional production domain is shipped. Copy `.env.example` to `.env`, set **your actual HTTPS root origin** as `SITE_URL`, review rights/content/operator readiness, and only then explicitly set `ALLOW_INDEXING=true` and rebuild.
 
-## Project map
+`dist/sitemap.xml`, `dist/robots.txt`, canonical/OG/hreflang and `dist/build-manifest.json` derive from the configured origin. Fictional-only routes **always stay noindex and outside the sitemap**, even when indexing is enabled. See [SEO](docs/SEO.md) and [deployment](docs/DEPLOYMENT.md). These mechanisms do not promise rankings, rich results, AdSense approval or revenue.
 
-| Location                                | Purpose                                                                          |
-| --------------------------------------- | -------------------------------------------------------------------------------- |
-| `src/App.tsx`                           | Discovery, navigation, library, reader, karaoke, import and informational views  |
-| `src/catalogue.ts`                      | Typed Song/LyricLine model, 96 filter registry, explicit fictional demos         |
-| `src/lib.ts`                            | Pure discovery, LRC parsing, storage safety and catalogue validation             |
-| `src/styles.css`                        | Design tokens, generated artwork, responsive layouts, themes, motion/print rules |
-| `src/lib.test.ts`                       | Data integrity, search/filter/sort, timing and import validation tests           |
-| `tests/app.spec.ts`                     | Chromium desktop/mobile workflows, accessibility and screenshots                 |
-| `docs/CATALOGUE.md`                     | Import contract and supported metadata                                           |
-| `docs/catalogue.schema.json`            | Machine-readable draft-2020-12 import schema                                     |
-| `docs/catalogue.example.json`           | Small importable original example (unique ID)                                    |
-| `docs/CONTENT_RIGHTS.md`                | Source, rights, translations and takedown requirements                           |
-| `docs/ADS_AND_PRIVACY.md`               | Safe monetisation plan and consent boundaries                                    |
-| `docs/DEPLOYMENT.md`                    | Static-host setup and launch checklist                                           |
-| `AI_HANDOVER.md`, `NEXT_STEPS.md`       | Continue with any developer or AI                                                |
-| `docs/DECISIONS.md`, `docs/PROGRESS.md` | Architecture rationale and delivery status                                       |
-| `.github/workflows/ci.yml`              | Reproducible build, tests, audit and browser checks                              |
+## Architecture and project map
 
-## Architecture
+React 19 + strict TypeScript + Vite; no application backend. One shared component tree is rendered to static HTML at build time, then client-rendered for personalised preferences without hydration mismatch. Local font assets (Inter and Noto Tamil/Devanagari/Telugu; OFL notices in `docs/licenses/`) and generated art make no runtime CDN calls. Catalogue operations run in memory. Only `pw:` preferences/IDs persist; imported catalogue/media stay in session memory.
 
-React + TypeScript + Vite; no server to operate. Lucide icons; all illustration/cover art is CSS-generated. Inter and Noto Tamil/Devanagari/Telugu fonts are bundled locally (OFL licences in `docs/licenses/`). There are **no runtime CDN fonts or image requests**. Catalogue/filter operations run in memory. Persistent preferences use only keys prefixed `pw:`; imported catalogue and media are session memory only. Local audio uses revocable object URLs, never a file upload.
+| Location                                                       | Responsibility                                                                 |
+| -------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `src/App.tsx`, `src/styles.css`                                | Discovery, library, practice, personalisation, responsive design               |
+| `src/CataloguePage.tsx`                                        | Crawlable collection, source/credit and multilingual text folios               |
+| `src/catalogue.ts`                                             | Song model, 96 dimensions, explicitly fictional demos                          |
+| `src/realCatalogue.ts`                                         | Reviewed metadata, ancient verse, per-item source ledger                       |
+| `src/routes.ts`, `src/seo.ts`, `src/seoBrowser.ts`             | Clean route manifest, shared factual SEO, client navigation updates            |
+| `src/lib.ts`                                                   | Unicode search, honest related recovery, exact filters, validation/LRC/storage |
+| `scripts/entry-prerender.tsx`, `scripts/prerender.mjs`         | React prerender, per-route head, sitemap and robots generation                 |
+| `scripts/serve.mjs`                                            | Local static preview, canonical slash redirects, real 404s, security headers   |
+| `scripts/check-prerender.mjs`, `scripts/record-demo.mjs`       | Static SEO audit and reproducible real-action demo capture                     |
+| `src/*.test.ts`, `tests/*.spec.ts`                             | Unit/data/SEO and desktop/mobile/browser/a11y regressions                      |
+| `docs/CATALOGUE.md`, `docs/catalogue.schema.json`              | Safe session import contract and example                                       |
+| `docs/REAL_CATALOGUE.md`, `docs/CONTENT_RIGHTS.md`             | Individual provenance and rights reasoning                                     |
+| `docs/SEO.md`, `docs/DEPLOYMENT.md`, `docs/ADS_AND_PRIVACY.md` | Production setup and honest launch gates                                       |
+| `AI_HANDOVER.md`, `NEXT_STEPS.md`, `docs/PROGRESS.md`          | Continuation, backlog and verified delivery status                             |
+| `docs/REPOSITORY_ACCESS.md`                                    | Literal read-only GitHub discovery commands/results                            |
+| `.github/workflows/ci.yml`                                     | Reproducible validation workflow                                               |
 
-Current filter matching is exact equality; search combines whitespace-separated terms across the text metadata, not the lyric body. This avoids pretending to offer semantic search or fuzzy credit resolution. Imported array limits are per batch; use a backend search index and publication workflow before scaling. A production credit model should use stable contributor IDs and many-to-many roles instead of the intentionally small demo’s display strings.
+## Honest boundaries / continuation
 
-## Deploy or hand over
+No complete discography, commercial lyric licence, broad independent catalogue, backend/editorial admin, cross-device account sync, provider integration, full fuzzy/semantic search or live ads. Search is Unicode-normalised terms and known aliases; related-album recovery is labelled. Filters are single exact selections, not ranges/multiselect. Native-language writing/renderings need human editorial review. Automated axe/Chromium tests are not screen-reader certification, real-device QA or a zero-bug guarantee. Static metadata-only pages and a small text edition do not make the business launch-ready.
 
-`npm run build` produces a static `dist/` folder that can be hosted on an HTTPS static host. Read [deployment](docs/DEPLOYMENT.md) before publishing. Nothing is deployed or bought by this repository. Security headers in `public/_headers` require a host supporting that file format or equivalent host configuration; Vite does not apply them by itself.
+The exact PowerWords GitHub repository is still unconfirmed. Authenticated Navina0 read-only own/collaborator/organisation matching found no exact PowerWords variant; the literal `Navina0/PowerWords` endpoint returned HTTP 404. **No remote repository was created, unrelated repository cloned, code pushed or PR opened.** Source, local history, archive and continuation docs are usable independently. Integrate only after confirming the target; preserve its existing work on a feature branch.
 
-Start a continuation with: **“Read AI_HANDOVER.md and NEXT_STEPS.md. Preserve existing work, run the tests, and implement the next unblocked item without inventing catalogue facts or licences.”**
+Continue with: **“Read AI_HANDOVER.md and NEXT_STEPS.md, run the checks, preserve existing work, and implement the next unblocked item without inventing facts or licences.”**
 
-Repository integration is intentionally pending confirmation of the exact PowerWords GitHub URL. Never overwrite an existing repository to install this standalone app; use a feature branch and preserve its history.
-
-## Licences
-
-Code: [MIT](LICENSE). Original demo lyric text and its project-created translations/transliterations: CC0-1.0 dedication described in [content rights](docs/CONTENT_RIGHTS.md). Third-party dependencies retain their own licences. Real music, artist branding and copyrighted lyrics are not sublicensed by this project.
+Code: [MIT](LICENSE). Original project demo text and new project renderings: CC0-1.0; ancient underlying Tamil text and edition caveats: [rights](docs/REAL_CATALOGUE.md). No third-party music/recording/trademark rights are granted.

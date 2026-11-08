@@ -5,6 +5,8 @@ export const normalize = (s: string) =>
     .normalize('NFKD')
     .replace(/[\u0300-\u036f]/g, '')
     .toLocaleLowerCase()
+    .replace(/[\p{P}\p{S}]+/gu, ' ')
+    .replace(/\s+/g, ' ')
     .trim();
 export function valueFor(song: Song, key: string): string {
   const direct: Record<string, string> = {
@@ -12,10 +14,23 @@ export function valueFor(song: Song, key: string): string {
     composer: song.composer,
     lyricist: song.lyricist,
     album: song.album,
-    year: String(song.year),
+    year: song.year === null ? '' : String(song.year),
     language: song.language,
   };
   return direct[key] ?? song.metadata[key] ?? '';
+}
+export function valuesFor(song: Song, key: string): string[] {
+  const role =
+    key === 'artist'
+      ? 'singer'
+      : key === 'composer'
+        ? 'composer'
+        : key === 'lyricist'
+          ? 'lyricist'
+          : null;
+  const names = role ? song.credits?.filter((c) => c.role === role).map((c) => c.name) : [];
+  if (role && song.credits) return names ?? [];
+  return [valueFor(song, key)].filter(Boolean);
 }
 export function filterSongs(
   songs: Song[],
@@ -23,7 +38,9 @@ export function filterSongs(
   filters: Filters,
   sort: string = 'newest',
 ): Song[] {
-  const terms = normalize(query).split(/\s+/).filter(Boolean);
+  const terms = normalize(query)
+    .split(/\s+/)
+    .filter((term) => term && !['song', 'songs', 'lyrics', 'பாடல்', 'வரிகள்'].includes(term));
   return songs
     .filter((song) => {
       const haystack = normalize(
@@ -36,24 +53,60 @@ export function filterSongs(
           song.lyricist,
           song.language,
           ...Object.values(song.metadata),
+          ...(song.aliases ?? []),
+          ...(song.credits?.map((c) => c.name) ?? []),
+          ...Object.values(song.lyrics).flatMap((lines) => lines?.map((l) => l.text) ?? []),
         ].join(' '),
       );
       return (
         terms.every((term) => haystack.includes(term)) &&
-        Object.entries(filters).every(([key, value]) => !value || valueFor(song, key) === value)
+        Object.entries(filters).every(
+          ([key, value]) => !value || valuesFor(song, key).includes(value),
+        )
       );
     })
-    .sort((a, b) =>
-      sort === 'oldest'
-        ? a.year - b.year
-        : sort === 'title'
-          ? a.title.localeCompare(b.title)
-          : b.year - a.year || a.title.localeCompare(b.title),
-    );
+    .sort((a, b) => {
+      if (sort === 'title') return a.title.localeCompare(b.title);
+      if (a.year === null) return b.year === null ? a.title.localeCompare(b.title) : 1;
+      if (b.year === null) return -1;
+      return (
+        (sort === 'oldest' ? a.year - b.year : b.year - a.year) || a.title.localeCompare(b.title)
+      );
+    });
 }
 export function optionsFor(songs: Song[], key: string): string[] {
-  return [...new Set(songs.map((s) => valueFor(s, key)).filter(Boolean))].sort();
+  return [...new Set(songs.flatMap((s) => valuesFor(s, key)).filter(Boolean))].sort();
 }
+/** Partial contextual recovery is explicit: an album match never verifies an unknown lyric quote. */
+export function discoverMatches(
+  songs: Song[],
+  query: string,
+  filters: Filters,
+  sort = 'newest',
+): { songs: Song[]; related: boolean; message: string } {
+  const exact = filterSongs(songs, query, filters, sort);
+  if (exact.length || !query.trim()) return { songs: exact, related: false, message: '' };
+  const compact = (v: string) => normalize(v).replace(/\s+/g, '');
+  const q = compact(query);
+  const albums = [...new Set(songs.map((s) => s.album))].filter(
+    (album) => compact(album).length >= 5 && q.includes(compact(album)),
+  );
+  if (!albums.length) return { songs: [], related: false, message: '' };
+  const related = filterSongs(
+    songs.filter((s) => albums.includes(s.album)),
+    '',
+    filters,
+    sort,
+  );
+  return {
+    songs: related,
+    related: related.length > 0,
+    message: related.length
+      ? `No exact match for the full phrase. Related ${albums.join(', ')} entries follow; the quoted words have not been verified.`
+      : '',
+  };
+}
+
 export function formatTime(t: number): string {
   const n = Math.max(0, Math.floor(Number.isFinite(t) ? t : 0));
   return `${Math.floor(n / 60)}:${String(n % 60).padStart(2, '0')}`;
@@ -126,7 +179,7 @@ export function validateCatalogue(raw: unknown): Song[] {
     if (!/^[a-z0-9-]{1,80}$/.test(s.id) || ids.has(s.id))
       throw new Error('Song IDs must be unique lowercase slugs.');
     ids.add(s.id);
-    if (!Number.isInteger(s.year) || s.year < 1800 || s.year > 2100)
+    if (s.year !== null && (!Number.isInteger(s.year) || s.year < 1800 || s.year > 2100))
       throw new Error('Year must be between 1800 and 2100.');
     if (!Number.isFinite(s.duration) || s.duration < 1 || s.duration > 14400)
       throw new Error('Duration must be 1–14400 seconds.');
@@ -134,15 +187,79 @@ export function validateCatalogue(raw: unknown): Song[] {
       throw new Error('Use a supported artwork and six-digit hex color.');
     if (
       !s.rights ||
-      !['licensed', 'original-demo'].includes(s.rights.status) ||
+      !['licensed', 'original-demo', 'metadata-only', 'public-domain'].includes(s.rights.status) ||
       typeof s.rights.holder !== 'string' ||
       !s.rights.holder.trim() ||
+      s.rights.holder.length > 300 ||
       typeof s.rights.evidence !== 'string' ||
-      !s.rights.evidence.trim()
+      !s.rights.evidence.trim() ||
+      s.rights.evidence.length > 4000
     )
       throw new Error('Rights holder and licence evidence are required.');
-    if (!s.lyrics || typeof s.lyrics !== 'object' || !Object.keys(s.lyrics).length)
+    if (
+      !s.lyrics ||
+      typeof s.lyrics !== 'object' ||
+      Array.isArray(s.lyrics) ||
+      (!Object.keys(s.lyrics).length && s.rights.status !== 'metadata-only')
+    )
       throw new Error('At least one lyric variant is required.');
+    if (s.rights.status === 'metadata-only' && Object.keys(s.lyrics).length)
+      throw new Error('Metadata-only entries must not include lyric text.');
+    if (
+      s.aliases &&
+      (!Array.isArray(s.aliases) ||
+        s.aliases.length > 30 ||
+        s.aliases.some((a) => typeof a !== 'string' || a.length > 300))
+    )
+      throw new Error('Invalid search aliases.');
+    if (
+      s.credits &&
+      (!Array.isArray(s.credits) ||
+        s.credits.length > 30 ||
+        s.credits.some(
+          (c) =>
+            !c ||
+            !['singer', 'composer', 'lyricist'].includes(c.role) ||
+            typeof c.name !== 'string' ||
+            !c.name.trim() ||
+            c.name.length > 300,
+        ))
+    )
+      throw new Error('Invalid contributor roles.');
+    if (
+      s.sources &&
+      (!Array.isArray(s.sources) ||
+        s.sources.length > 20 ||
+        s.sources.some((source) => {
+          try {
+            const url = new URL(source.url);
+            return (
+              url.protocol !== 'https:' ||
+              typeof source.url !== 'string' ||
+              source.url.length > 2000 ||
+              !!url.username ||
+              !!url.password ||
+              typeof source.label !== 'string' ||
+              !source.label.trim() ||
+              source.label.length > 300 ||
+              typeof source.supports !== 'string' ||
+              !source.supports.trim() ||
+              source.supports.length > 1000 ||
+              !/^\d{4}-\d{2}-\d{2}$/.test(source.checked)
+            );
+          } catch {
+            return true;
+          }
+        }))
+    )
+      throw new Error('Invalid source citations; use HTTPS URLs and checked dates.');
+    if (s.kind !== undefined && !['recording', 'verse'].includes(s.kind))
+      throw new Error('Invalid work kind.');
+    if (
+      s.description !== undefined &&
+      (typeof s.description !== 'string' || s.description.length > 2000)
+    )
+      throw new Error('Invalid description.');
     for (const [key, lines] of Object.entries(s.lyrics)) {
       if (
         !['original', 'translation', 'transliteration'].includes(key) ||
@@ -155,6 +272,7 @@ export function validateCatalogue(raw: unknown): Song[] {
       for (const line of lines) {
         if (
           typeof line?.text !== 'string' ||
+          !line.text.trim() ||
           line.text.length > 2000 ||
           !Number.isFinite(line.time) ||
           line.time < 0 ||

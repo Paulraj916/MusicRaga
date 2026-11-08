@@ -65,7 +65,7 @@
         "pattern": "^[a-z0-9-]{1,80}$"
       },
       "year": {
-        "type": "integer",
+        "type": ["integer", "null"],
         "minimum": 1800,
         "maximum": 2100
       },
@@ -96,21 +96,22 @@
         "required": ["status", "holder", "evidence"],
         "properties": {
           "status": {
-            "enum": ["original-demo", "licensed"]
+            "enum": ["original-demo", "licensed", "metadata-only", "public-domain"]
           },
           "holder": {
             "type": "string",
-            "minLength": 1
+            "minLength": 1,
+            "maxLength": 300
           },
           "evidence": {
             "type": "string",
-            "minLength": 1
+            "minLength": 1,
+            "maxLength": 4000
           }
         }
       },
       "lyrics": {
         "type": "object",
-        "minProperties": 1,
         "additionalProperties": false,
         "properties": {
           "original": {
@@ -128,7 +129,8 @@
                 },
                 "text": {
                   "type": "string",
-                  "maxLength": 2000
+                  "maxLength": 2000,
+                  "minLength": 1
                 }
               }
             }
@@ -148,7 +150,8 @@
                 },
                 "text": {
                   "type": "string",
-                  "maxLength": 2000
+                  "maxLength": 2000,
+                  "minLength": 1
                 }
               }
             }
@@ -168,13 +171,105 @@
                 },
                 "text": {
                   "type": "string",
-                  "maxLength": 2000
+                  "maxLength": 2000,
+                  "minLength": 1
                 }
               }
             }
           }
         }
+      },
+      "kind": {
+        "enum": ["recording", "verse"]
+      },
+      "description": {
+        "type": "string",
+        "maxLength": 2000
+      },
+      "aliases": {
+        "type": "array",
+        "maxItems": 30,
+        "items": {
+          "type": "string",
+          "maxLength": 300
+        }
+      },
+      "credits": {
+        "type": "array",
+        "maxItems": 30,
+        "items": {
+          "type": "object",
+          "required": ["name", "role"],
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 300
+            },
+            "role": {
+              "enum": ["singer", "composer", "lyricist"]
+            }
+          }
+        }
+      },
+      "sources": {
+        "type": "array",
+        "maxItems": 20,
+        "items": {
+          "type": "object",
+          "required": ["label", "url", "supports", "checked"],
+          "properties": {
+            "label": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 300
+            },
+            "url": {
+              "type": "string",
+              "pattern": "^https://",
+              "maxLength": 2000
+            },
+            "supports": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1000
+            },
+            "checked": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            }
+          }
+        }
       }
-    }
+    },
+    "allOf": [
+      {
+        "if": {
+          "properties": {
+            "rights": {
+              "properties": {
+                "status": {
+                  "const": "metadata-only"
+                }
+              }
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "lyrics": {
+              "maxProperties": 0
+            }
+          }
+        },
+        "else": {
+          "properties": {
+            "lyrics": {
+              "minProperties": 1
+            }
+          }
+        }
+      }
+    ]
   }
 }

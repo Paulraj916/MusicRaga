@@ -2,7 +2,7 @@
 
 ## Current behaviour
 
-Advertising is **off**. No publisher ID, ad unit, ads.txt claim, ad-network request, cookie banner, analytics or consent record is fabricated. A static placeholder is labelled “Advertisements” and “Advertising disabled in demo”. This demo’s noindex/robots state and tiny fictional catalogue are **not an AdSense application-ready property**.
+Advertising is **off**. No publisher ID, ad unit, ads.txt claim, ad-network request, cookie banner, analytics or consent record is fabricated. A static placeholder is labelled “Advertisements” and “Advertising disabled in demo”. This demo’s noindex/robots state and small metadata/verse/demo catalogue are **not an AdSense application-ready property**.
 
 Ads must never appear in the lyric modal, between verse lines, over search/navigation, around seek/play/import/copy controls, as anchor/sticky overlays, or as audio interruptions. No automatic ad refresh, click encouragement, false download buttons or pre-roll gating. Reserve ad dimensions to avoid layout shift and separate an eventual ad unit clearly from editorial material. The placeholder copy must be replaced with the legitimate ad implementation; do not disguise live ads under editorial slogans.
 

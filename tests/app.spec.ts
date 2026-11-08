@@ -13,19 +13,22 @@ test.beforeEach(async ({ page }) => {
   await page.goto('/');
 });
 test('discovery search filter sort and clear work', async ({ page }) => {
-  await expect(page.locator('.song-card')).toHaveCount(12);
+  await expect(page.locator('.song-card')).toHaveCount(18);
   await page.getByRole('button', { name: 'Tamil', exact: true }).click();
-  await expect(page.locator('.song-card')).toHaveCount(7);
+  await expect(page.locator('.song-card')).toHaveCount(13);
   await page.getByRole('combobox', { name: 'Sort songs' }).selectOption('oldest');
-  await expect(page.locator('.song-title').first()).toHaveText('Evening postcard');
+  await expect(page.locator('.song-title').first()).toHaveText('Chinna Chinna Asai');
   await page.getByRole('button', { name: 'Clear all', exact: true }).click();
   await page
     .getByRole('textbox', { name: 'Search songs, artists, albums and lyrics metadata' })
     .fill('Rahman');
+  await expect(page.locator('.song-card')).toHaveCount(3);
+  await page
+    .getByRole('textbox', { name: 'Search songs, artists, albums and lyrics metadata' })
+    .fill('unfindable-song-name');
   await expect(page.getByText('No words found. Yet.')).toBeVisible();
-  await expect(page.getByText('A.R. Rahman is part of our future catalogue vision.')).toBeVisible();
   await page.getByRole('button', { name: 'Reset discovery' }).click();
-  await expect(page.locator('.song-card')).toHaveCount(12);
+  await expect(page.locator('.song-card')).toHaveCount(18);
 });
 test('advanced schema filters are honest and functional', async ({ page }) => {
   await page.getByRole('button', { name: 'Filters', exact: true }).click();
@@ -137,7 +140,7 @@ test('catalogue import validates then filters new session content', async ({ pag
   await page.keyboard.press('Escape');
   if (await page.getByRole('button', { name: 'Close navigation', exact: true }).isVisible())
     await page.getByRole('button', { name: 'Close navigation', exact: true }).click();
-  await expect(page.locator('.song-card')).toHaveCount(13);
+  await expect(page.locator('.song-card')).toHaveCount(19);
 });
 test('direct song URL opens the right reader', async ({ page }) => {
   await page.goto('/#song=blue-hour');
@@ -161,11 +164,14 @@ test('captures visual QA and has no runtime errors', async ({ page }, testInfo) 
   await page.reload();
   await expect(page.getByRole('heading', { level: 1 })).toContainText('Every word');
   await page.screenshot({
-    path: `artifacts/${testInfo.project.name}-discovery.png`,
+    path: `artifacts/upgraded-${testInfo.project.name}-discovery.png`,
     fullPage: true,
   });
   await page.getByRole('button', { name: 'Read A little light', exact: true }).click();
-  await page.screenshot({ path: `artifacts/${testInfo.project.name}-reader.png`, fullPage: false });
+  await page.screenshot({
+    path: `artifacts/upgraded-${testInfo.project.name}-reader.png`,
+    fullPage: false,
+  });
   expect(errors).toEqual([]);
 });
 

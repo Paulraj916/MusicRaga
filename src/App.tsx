@@ -34,10 +34,14 @@ import {
 } from 'lucide-react';
 import { DEMO_SONGS, FILTER_DIMENSIONS } from './catalogue';
 import type { Song, Variant } from './catalogue';
+import { CATALOGUE, isDemo, isReadable, recordLabel } from './realCatalogue';
+import { resolveRoute, songPath, artistPath } from './routes';
+import { CataloguePage, CuratedShelves, follow } from './CataloguePage';
+import { applySeo } from './seoBrowser';
 import {
   activeLine,
   lyricLanguage,
-  filterSongs,
+  discoverMatches,
   formatTime,
   optionsFor,
   parseLrc,
@@ -61,7 +65,7 @@ function Cover({ song, small = false }: { song: Song; small?: boolean }) {
       <span className="art-line" />
       <span className="cover-type">
         {song.album}
-        <b>PW / {String(song.year).slice(2)}</b>
+        <b>PW / {song.year === null ? 'TEXT' : String(song.year).slice(2)}</b>
       </span>
     </div>
   );
@@ -138,6 +142,8 @@ function Reader({
   onAdd: (name: string, id: string) => void;
 }) {
   const builtIn = DEMO_SONGS.some((item) => item.id === song.id);
+  const publicDomain =
+    CATALOGUE.some((item) => item.id === song.id) && song.rights.status === 'public-domain';
   const [extrasOpen, setExtrasOpen] = useState(() => window.innerWidth > 480);
   const [variant, setVariant] = useState<Variant>(
     song.lyrics.original ? 'original' : song.lyrics.translation ? 'translation' : 'transliteration',
@@ -234,8 +240,12 @@ function Reader({
         <aside className="reader-info">
           <Cover song={song} />
           <span className="eyebrow">
-            {builtIn ? 'ORIGINAL DEMO' : 'SESSION IMPORT · UNVERIFIED'} ·{' '}
-            {song.language.toUpperCase()}
+            {publicDomain
+              ? 'PUBLIC-DOMAIN VERSE'
+              : builtIn
+                ? 'ORIGINAL DEMO'
+                : 'SESSION IMPORT · UNVERIFIED'}{' '}
+            · {song.language.toUpperCase()}
           </span>
           <h3>{song.title}</h3>
           <p>
@@ -260,9 +270,11 @@ function Reader({
               <dd>{song.lyricist}</dd>
             </dl>
             <p className="small-note">
-              {builtIn
-                ? 'Fictional credits. These original demo words are shared across example tracks; this is not a commercial release.'
-                : 'Imported credits and rights are uploader assertions, not independently verified. This session preview is not publication.'}
+              {publicDomain
+                ? 'Ancient original Tamil text; new project English/Latin renderings. Practice timing is artificial. See the clean text page for sources.'
+                : builtIn
+                  ? 'Fictional credits. These original demo words are shared across example tracks; this is not a commercial release.'
+                  : 'Imported credits and rights are uploader assertions, not independently verified. This session preview is not publication.'}
             </p>
             <label className="field-label">
               Add to a collection
@@ -398,11 +410,13 @@ function Reader({
             <span>
               {custom
                 ? 'Your local LRC'
-                : !builtIn
-                  ? 'Imported text · rights unverified'
-                  : variant === 'translation'
-                    ? 'Original demo translation'
-                    : 'Original writing · CC0'}
+                : publicDomain
+                  ? 'Ancient text · project renderings'
+                  : !builtIn
+                    ? 'Imported text · rights unverified'
+                    : variant === 'translation'
+                      ? 'Original demo translation'
+                      : 'Original writing · CC0'}
             </span>
           </div>
           <div
@@ -520,18 +534,26 @@ function Reader({
   );
 }
 
-export default function App() {
+export default function App({ initialPath }: { initialPath?: string } = {}) {
+  const [path, setPath] = useState(
+    initialPath ?? (typeof window !== 'undefined' ? window.location.pathname : '/'),
+  );
+  const route = resolveRoute(path);
+  const [scope, setScope] = useState('all');
   const [view, setView] = useState<View>('discover');
   const [query, setQuery] = useState('');
   const [filters, setFilters] = useState<Filters>({});
   const [sort, setSort] = useState('newest');
   const [showFilters, setShowFilters] = useState(false);
   const [filterSearch, setFilterSearch] = useState('');
-  const [selected, setSelected] = useState<Song | null>(
-    () =>
-      DEMO_SONGS.find(
-        (song) => song.id === new URLSearchParams(window.location.hash.slice(1)).get('song'),
-      ) ?? null,
+  const [selected, setSelected] = useState<Song | null>(() =>
+    typeof window === 'undefined'
+      ? null
+      : (CATALOGUE.find(
+          (song) =>
+            isReadable(song) &&
+            song.id === new URLSearchParams(window.location.hash.slice(1)).get('song'),
+        ) ?? null),
   );
   const [favorites, setFavorites] = useState<string[]>(() => safeLoad('pw:favorites', []));
   const [theme, setTheme] = useState(() => safeLoad('pw:theme', 'light'));
@@ -561,22 +583,40 @@ export default function App() {
   const [menu, setMenu] = useState(false);
   const [status, setStatus] = useState('');
   const [imported, setImported] = useState<Song[]>([]);
+  const [metadataPreview, setMetadataPreview] = useState<Song | null>(null);
   const search = useRef<HTMLInputElement>(null);
   const importFile = useRef<HTMLInputElement>(null);
-  const songs = [...DEMO_SONGS, ...imported];
+  const songs = [...CATALOGUE, ...imported];
   const librarySongs =
     activeCollection === 'all'
       ? songs.filter((s) => favorites.includes(s.id))
       : songs.filter((s) =>
           collections.find((c) => c.name === activeCollection)?.ids.includes(s.id),
         );
-  const results = filterSongs(view === 'library' ? librarySongs : songs, query, filters, sort);
+  const scoped = songs.filter((s) =>
+    scope === 'sourced'
+      ? CATALOGUE.some((item) => item.id === s.id) && !isDemo(s)
+      : scope === 'readable'
+        ? isReadable(s)
+        : scope === 'demo'
+          ? isDemo(s)
+          : true,
+  );
+  const outcome = discoverMatches(
+    view === 'library' ? librarySongs : view === 'studio' ? songs.filter(isReadable) : scoped,
+    query,
+    filters,
+    sort,
+  );
+  const results = outcome.songs;
   const activeCount = Object.values(filters).filter(Boolean).length;
   useEffect(() => {
     const sync = () =>
       setSelected(
-        DEMO_SONGS.find(
-          (song) => song.id === new URLSearchParams(window.location.hash.slice(1)).get('song'),
+        CATALOGUE.find(
+          (song) =>
+            isReadable(song) &&
+            song.id === new URLSearchParams(window.location.hash.slice(1)).get('song'),
         ) ?? null,
       );
     window.addEventListener('hashchange', sync);
@@ -585,10 +625,18 @@ export default function App() {
   useEffect(() => {
     const hash = selected ? `#song=${encodeURIComponent(selected.id)}` : '';
     window.history.replaceState(null, '', window.location.pathname + window.location.search + hash);
-    document.title = selected
-      ? `${selected.title} — PowerWords demo`
-      : 'PowerWords — Every word, a world.';
   }, [selected]);
+  useEffect(() => {
+    const sync = () => {
+      setPath(window.location.pathname);
+      setView('discover');
+    };
+    window.addEventListener('popstate', sync);
+    return () => window.removeEventListener('popstate', sync);
+  }, []);
+  useEffect(() => {
+    applySeo(path);
+  }, [path]);
   useEffect(() => {
     if (!menu) return;
     const previous = document.activeElement as HTMLElement;
@@ -665,7 +713,30 @@ export default function App() {
     persistCollections(
       collections.map((c) => (c.name === name ? { ...c, ids: [...new Set([...c.ids, id])] } : c)),
     );
+  const openSong = (song: Song) => {
+    if (isReadable(song)) setSelected(song);
+    else if (CATALOGUE.some((item) => item.id === song.id)) navigatePath(songPath(song));
+    else setMetadataPreview(song);
+  };
+  const navigatePath = (nextPath: string) => {
+    window.history.pushState(null, '', nextPath);
+    setPath(nextPath);
+    setView('discover');
+    setSelected(null);
+    setMenu(false);
+    setQuery('');
+    setFilters({});
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    requestAnimationFrame(() =>
+      document.querySelector<HTMLElement>('main')?.focus({ preventScroll: true }),
+    );
+  };
   const navigate = (next: View) => {
+    if (path !== '/') {
+      window.history.pushState(null, '', '/');
+      setPath('/');
+    }
+    setScope('all');
     setView(next);
     setMenu(false);
     setQuery('');
@@ -705,7 +776,7 @@ export default function App() {
         aria-label={menu ? 'Navigation' : undefined}
       >
         <a
-          href="#"
+          href="/"
           className="brand"
           onClick={(e) => {
             e.preventDefault();
@@ -845,440 +916,511 @@ export default function App() {
           </div>
         </header>
         <main id="main" tabIndex={-1}>
-          {view === 'discover' && (
+          {view === 'discover' && route.kind !== 'home' ? (
+            <CataloguePage
+              key={path}
+              route={route}
+              onNavigate={navigatePath}
+              onOpen={setSelected}
+              font={font}
+              setFont={setFont}
+              saved={route.kind === 'song' && favorites.includes(route.song.id)}
+              onToggleSave={toggleSave}
+              collections={collections}
+              onAddCollection={addCollection}
+            />
+          ) : (
             <>
-              <section className="hero">
-                <div className="hero-text">
-                  <div className="eyebrow">
-                    <span className="orange-dot" /> A HOME FOR EVERY VERSE
-                  </div>
-                  <h1>
-                    Every word,
-                    <br />a <em>world.</em>
-                  </h1>
-                  <p>
-                    Go beyond the song. Find the words that move you,
-                    <br className="desktop-break" /> in the language that feels like home.
-                  </p>
-                  <div className="hero-bottom">
-                    <span className="script-word">தமிழ்</span>
-                    <span className="script-word">हिन्दी</span>
-                    <span className="script-word">తెలుగు</span>
-                    <span className="more-languages">
-                      Built for every Indian language <ArrowUpRightTiny />
-                    </span>
-                  </div>
-                </div>
-                <div className="hero-art" aria-hidden="true">
-                  <div className="hero-orbit orbit-one" />
-                  <div className="hero-orbit orbit-two" />
-                  <div className="floating-glyph glyph-one">அ</div>
-                  <div className="floating-glyph glyph-two">आ</div>
-                  <div className="record">
-                    <div className="record-label">
-                      <span>POWERWORDS</span>
-                      <span className="record-mark">✳</span>
-                      <small>SIDE A / FEEL SOMETHING</small>
-                    </div>
-                  </div>
-                  <div className="art-caption">
-                    <span className="sound-bars">
-                      <i />
-                      <i />
-                      <i />
-                      <i />
-                      <i />
-                    </span>{' '}
-                    NOT JUST LYRICS. A FEELING.
-                  </div>
-                </div>
-              </section>
-              <div className="demo-banner">
-                <ShieldCheck size={15} />
-                <span>
-                  <strong>A small, honest beginning.</strong> Explore 12 fictional songs with
-                  original demo lyrics. Real artists and licensed catalogues are not included yet.
-                </span>
-                <button onClick={() => setInfo('rights')}>
-                  Why this matters <ArrowRight size={14} />
-                </button>
-              </div>
-            </>
-          )}
-          {view === 'library' && (
-            <section className="page-intro">
-              <span className="eyebrow">YOUR PERSONAL LINER NOTES</span>
-              <h1>
-                Keep the words
-                <br />
-                that <em>stay.</em>
-              </h1>
-              <p>Your favourites and collections, saved in this browser. No account needed.</p>
-              <div className="collections">
-                <button
-                  className={activeCollection === 'all' ? 'chip selected' : 'chip'}
-                  onClick={() => setActiveCollection('all')}
-                >
-                  <Heart size={14} />
-                  Saved songs · {favorites.length}
-                </button>
-                {collections.map((c) => (
-                  <button
-                    key={c.name}
-                    className={activeCollection === c.name ? 'chip selected' : 'chip'}
-                    onClick={() => setActiveCollection(c.name)}
-                  >
-                    {c.name} · {c.ids.length}
-                  </button>
-                ))}
-              </div>
-              <form
-                className="collection-form"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  const name = collectionName.trim();
-                  if (!name) return;
-                  if (collections.some((c) => c.name === name)) {
-                    setStatus('A collection with that name already exists.');
-                    return;
-                  }
-                  if (collections.length >= 30) {
-                    setStatus('Maximum 30 collections.');
-                    return;
-                  }
-                  persistCollections([...collections, { name, ids: [] }]);
-                  setCollectionName('');
-                  setStatus('Collection created. Open a song to add it.');
-                }}
-              >
-                <input
-                  aria-label="New collection name"
-                  placeholder="A name for your next collection"
-                  value={collectionName}
-                  maxLength={50}
-                  onChange={(e) => setCollectionName(e.target.value)}
-                />
-                <button className="button" type="submit">
-                  <FolderPlus size={16} />
-                  Create collection
-                </button>
-              </form>
-              {activeCollection !== 'all' && (
-                <button
-                  className="text-button"
-                  onClick={() => {
-                    persistCollections(collections.filter((c) => c.name !== activeCollection));
-                    setActiveCollection('all');
-                    setStatus('Collection removed. Saved songs are unchanged.');
-                  }}
-                >
-                  Remove this collection
-                </button>
-              )}
-            </section>
-          )}
-          {view === 'studio' && (
-            <section className="page-intro studio-intro">
-              <span className="eyebrow">FIND YOUR OWN RHYTHM</span>
-              <h1>
-                Your voice.
-                <br />
-                Your <em>moment.</em>
-              </h1>
-              <p>
-                Choose a demo song for silent timed rehearsal, or bring your own audio and LRC.
-                <br />
-                Everything stays on your device. No microphone access. No uploads.
-              </p>
-              <div className="studio-features">
-                <span>
-                  <Headphones size={18} />
-                  Local audio
-                </span>
-                <span>
-                  <AudioLines size={18} />
-                  Timed lyric highlighting
-                </span>
-                <span>
-                  <Settings2 size={18} />
-                  Manual sync control
-                </span>
-              </div>
-            </section>
-          )}
-          <section className="discovery-section" aria-labelledby="discovery-heading">
-            <div className="section-heading">
-              <div>
-                <span className="eyebrow">
-                  {view === 'library'
-                    ? 'THE ONES YOU CAME BACK TO'
-                    : view === 'studio'
-                      ? 'PICK YOUR PRACTICE TRACK'
-                      : 'FOLLOW YOUR CURIOSITY'}
-                </span>
-                <h2 id="discovery-heading">
-                  {view === 'library'
-                    ? 'Your collection'
-                    : view === 'studio'
-                      ? 'The rehearsal room'
-                      : 'Find your next favourite'}
-                  <span className="orange-dot" />
-                </h2>
-              </div>
-              <button className="text-button" onClick={() => setShowFilters(true)}>
-                Explore all {FILTER_DIMENSIONS.length} dimensions <ArrowRight size={16} />
-              </button>
-            </div>
-            <div className="search-row">
-              <div className="search-box">
-                <Search size={19} />
-                <input
-                  ref={search}
-                  aria-label="Search songs, artists, albums and lyrics metadata"
-                  placeholder="A song, an artist, a feeling…"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                />
-                {query ? (
-                  <button
-                    className="icon-button"
-                    aria-label="Clear search"
-                    onClick={() => setQuery('')}
-                  >
-                    <X size={15} />
-                  </button>
-                ) : (
-                  <kbd>/</kbd>
-                )}
-              </div>
-              <button
-                className={`filter-button ${activeCount ? 'is-active' : ''}`}
-                onClick={() => setShowFilters(true)}
-              >
-                <ListFilter size={17} />
-                Filters{activeCount > 0 && <span>{activeCount}</span>}
-              </button>
-            </div>
-            <div className="filter-row">
-              <div className="quick-filters">
-                {['Tamil', 'Hindi', 'Telugu'].map((language) => (
-                  <button
-                    key={language}
-                    className={`chip ${filters.language === language ? 'selected' : ''}`}
-                    onClick={() =>
-                      update('language', filters.language === language ? '' : language)
-                    }
-                  >
-                    <Globe2 size={13} />
-                    {language}
-                  </button>
-                ))}
-                <span className="chip-divider" />
-                <button
-                  className={`chip ${filters.independent ? 'selected' : ''}`}
-                  onClick={() => update('independent', filters.independent ? '' : 'Yes')}
-                >
-                  Independent
-                </button>
-                <button
-                  className={`chip ${filters.mood ? 'selected' : ''}`}
-                  onClick={() => update('mood', filters.mood ? '' : 'Hopeful')}
-                >
-                  A little hopeful <Sun size={13} />
-                </button>
-                <button className="chip more-chip" onClick={() => setShowFilters(true)}>
-                  <Plus size={14} />
-                  More
-                </button>
-              </div>
-              <label className="sort-label">
-                <ArrowDownUp size={13} />
-                <select
-                  aria-label="Sort songs"
-                  value={sort}
-                  onChange={(e) => setSort(e.target.value)}
-                >
-                  <option value="newest">Newest first</option>
-                  <option value="oldest">Oldest first</option>
-                  <option value="title">Title A–Z</option>
-                </select>
-                <ChevronDown size={13} />
-              </label>
-            </div>
-            {(activeCount > 0 || query) && (
-              <div className="active-filters">
-                <span>Refining your discovery</span>
-                {Object.entries(filters)
-                  .filter(([, v]) => v)
-                  .map(([key, value]) => (
-                    <button className="chip" key={key} onClick={() => update(key, '')}>
-                      {FILTER_DIMENSIONS.find((f) => f.key === key)?.label}: {value}
-                      <X size={12} />
-                    </button>
-                  ))}
-                <button className="text-button" onClick={reset}>
-                  Clear all
-                </button>
-              </div>
-            )}
-            <div className="results-summary" role="status">
-              <span>
-                {results.length}{' '}
-                {view === 'library' ? 'saved' : imported.length ? 'catalogue' : 'demo'}{' '}
-                {results.length === 1 ? 'song' : 'songs'}
-                {query && ` matching “${query}”`}
-              </span>
-              <span>ORIGINAL WORDS. OPEN POSSIBILITIES.</span>
-            </div>
-            {results.length > 0 ? (
-              <div className="song-grid">
-                {results.map((song) => (
-                  <article className="song-card" key={song.id}>
-                    <div className="cover-wrap">
-                      <button
-                        className="open-cover"
-                        onClick={() => setSelected(song)}
-                        aria-label={`Read ${song.title}`}
-                      >
-                        <Cover song={song} />
-                        <span className="cover-open">
-                          <BookOpen size={17} />
-                          Open lyrics
-                          <ArrowRight size={15} />
+              {view === 'discover' && (
+                <>
+                  <section className="hero">
+                    <div className="hero-text">
+                      <div className="eyebrow">
+                        <span className="orange-dot" /> A HOME FOR EVERY VERSE
+                      </div>
+                      <h1>
+                        Every word,
+                        <br />a <em>world.</em>
+                      </h1>
+                      <p>
+                        Go beyond the song. Find the words that move you,
+                        <br className="desktop-break" /> in the language that feels like home.
+                      </p>
+                      <div className="hero-bottom">
+                        <span className="script-word">தமிழ்</span>
+                        <span className="script-word">हिन्दी</span>
+                        <span className="script-word">తెలుగు</span>
+                        <span className="more-languages">
+                          Built for every Indian language <ArrowUpRightTiny />
                         </span>
-                      </button>
-                      <button
-                        className={`save-button ${favorites.includes(song.id) ? 'is-saved' : ''}`}
-                        aria-label={`${favorites.includes(song.id) ? 'Unsave' : 'Save'} ${song.title}`}
-                        aria-pressed={favorites.includes(song.id)}
-                        onClick={() => toggleSave(song.id)}
-                      >
-                        <Heart
-                          size={16}
-                          fill={favorites.includes(song.id) ? 'currentColor' : 'none'}
-                        />
-                      </button>
-                      <span className="demo-pill">
-                        {DEMO_SONGS.some((item) => item.id === song.id)
-                          ? 'ORIGINAL DEMO'
-                          : 'IMPORT · UNVERIFIED'}
-                      </span>
+                      </div>
                     </div>
-                    <div className="song-title-row">
-                      <button className="song-title" onClick={() => setSelected(song)}>
-                        {song.title}
-                      </button>
-                      <ArrowRight size={16} />
+                    <div className="hero-art" aria-hidden="true">
+                      <div className="hero-orbit orbit-one" />
+                      <div className="hero-orbit orbit-two" />
+                      <div className="floating-glyph glyph-one">அ</div>
+                      <div className="floating-glyph glyph-two">आ</div>
+                      <div className="record">
+                        <div className="record-label">
+                          <span>POWERWORDS</span>
+                          <span className="record-mark">✳</span>
+                          <small>SIDE A / FEEL SOMETHING</small>
+                        </div>
+                      </div>
+                      <div className="art-caption">
+                        <span className="sound-bars">
+                          <i />
+                          <i />
+                          <i />
+                          <i />
+                          <i />
+                        </span>{' '}
+                        NOT JUST LYRICS. A FEELING.
+                      </div>
                     </div>
+                  </section>
+                  <div className="demo-banner">
+                    <ShieldCheck size={15} />
+                    <span>
+                      <strong>Know what you’re opening.</strong> 5 sourced recordings · 1
+                      public-domain verse · 12 original demos. Commercial recordings have credits,
+                      not copied lyrics.
+                    </span>
+                    <button onClick={() => setInfo('rights')}>
+                      Why this matters <ArrowRight size={14} />
+                    </button>
+                  </div>
+                </>
+              )}
+              {view === 'library' && (
+                <section className="page-intro">
+                  <span className="eyebrow">YOUR PERSONAL LINER NOTES</span>
+                  <h1>
+                    Keep the words
+                    <br />
+                    that <em>stay.</em>
+                  </h1>
+                  <p>Your favourites and collections, saved in this browser. No account needed.</p>
+                  <div className="collections">
                     <button
-                      className="artist-link"
+                      className={activeCollection === 'all' ? 'chip selected' : 'chip'}
+                      onClick={() => setActiveCollection('all')}
+                    >
+                      <Heart size={14} />
+                      Saved songs · {favorites.length}
+                    </button>
+                    {collections.map((c) => (
+                      <button
+                        key={c.name}
+                        className={activeCollection === c.name ? 'chip selected' : 'chip'}
+                        onClick={() => setActiveCollection(c.name)}
+                      >
+                        {c.name} · {c.ids.length}
+                      </button>
+                    ))}
+                  </div>
+                  <form
+                    className="collection-form"
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      const name = collectionName.trim();
+                      if (!name) return;
+                      if (collections.some((c) => c.name === name)) {
+                        setStatus('A collection with that name already exists.');
+                        return;
+                      }
+                      if (collections.length >= 30) {
+                        setStatus('Maximum 30 collections.');
+                        return;
+                      }
+                      persistCollections([...collections, { name, ids: [] }]);
+                      setCollectionName('');
+                      setStatus('Collection created. Open a song to add it.');
+                    }}
+                  >
+                    <input
+                      aria-label="New collection name"
+                      placeholder="A name for your next collection"
+                      value={collectionName}
+                      maxLength={50}
+                      onChange={(e) => setCollectionName(e.target.value)}
+                    />
+                    <button className="button" type="submit">
+                      <FolderPlus size={16} />
+                      Create collection
+                    </button>
+                  </form>
+                  {activeCollection !== 'all' && (
+                    <button
+                      className="text-button"
                       onClick={() => {
-                        setView('discover');
-                        setQuery('');
-                        setFilters({ artist: song.artist });
+                        persistCollections(collections.filter((c) => c.name !== activeCollection));
+                        setActiveCollection('all');
+                        setStatus('Collection removed. Saved songs are unchanged.');
                       }}
                     >
-                      {song.artist}
+                      Remove this collection
                     </button>
-                    <div className="song-meta">
-                      <span>{song.language}</span>
-                      <span>·</span>
-                      <span>{song.year}</span>
-                      <span className="song-album">{song.album}</span>
-                    </div>
-                    {view === 'library' && activeCollection !== 'all' && (
-                      <button
-                        className="text-button"
-                        onClick={() => {
-                          persistCollections(
-                            collections.map((c) =>
-                              c.name === activeCollection
-                                ? { ...c, ids: c.ids.filter((id) => id !== song.id) }
-                                : c,
-                            ),
-                          );
-                          setStatus('Removed from collection. Saved songs are unchanged.');
-                        }}
-                      >
-                        Remove from collection
-                      </button>
-                    )}
-                  </article>
-                ))}
-              </div>
-            ) : (
-              <div className="empty-state">
-                <Search size={34} />
-                <h3>
-                  {view === 'library' && !favorites.length
-                    ? 'Your next favourite belongs here.'
-                    : 'No words found. Yet.'}
-                </h3>
-                <p>
-                  {view === 'library' && !favorites.length
-                    ? 'Tap the heart on any song to start your personal collection.'
-                    : 'Try fewer filters or a different search. This is a small fictional demo, not a complete Indian music catalogue.'}
-                </p>
-                {query.toLowerCase().includes('rahman') && (
-                  <p>
-                    A.R. Rahman is part of our future catalogue vision. We will only publish
-                    verified metadata and properly licensed lyrics.
-                  </p>
-                )}
-                <button
-                  className="button primary"
-                  onClick={() => {
-                    reset();
-                    if (view === 'library' && !favorites.length) navigate('discover');
-                  }}
-                >
-                  {' '}
-                  {view === 'library' && !favorites.length
-                    ? 'Explore demo songs'
-                    : 'Reset discovery'}
-                  <ArrowRight size={16} />
-                </button>
-              </div>
-            )}
-          </section>
-          {view === 'discover' && (
-            <section className="discovery-bottom">
-              <div className="editorial-card">
-                <div className="editorial-illustration" aria-hidden="true">
-                  <span>அ</span>
-                  <i>आ</i>
-                  <b>అ</b>
-                </div>
-                <div>
-                  <span className="eyebrow">SAME FEELING. DIFFERENT WORDS.</span>
-                  <h2>
-                    Music doesn’t need borders.
+                  )}
+                </section>
+              )}
+              {view === 'studio' && (
+                <section className="page-intro studio-intro">
+                  <span className="eyebrow">FIND YOUR OWN RHYTHM</span>
+                  <h1>
+                    Your voice.
                     <br />
-                    Neither should its words.
-                  </h2>
+                    Your <em>moment.</em>
+                  </h1>
                   <p>
-                    Original script, English translation, and readable transliteration.
+                    Choose a demo song for silent timed rehearsal, or bring your own audio and LRC.
                     <br />
-                    Three ways to get a little closer to a song.
+                    Everything stays on your device. No microphone access. No uploads.
                   </p>
-                  <button className="text-button" onClick={() => setSelected(DEMO_SONGS[0])}>
-                    Try the multilingual reader
-                    <ArrowRight size={16} />
+                  <div className="studio-features">
+                    <span>
+                      <Headphones size={18} />
+                      Local audio
+                    </span>
+                    <span>
+                      <AudioLines size={18} />
+                      Timed lyric highlighting
+                    </span>
+                    <span>
+                      <Settings2 size={18} />
+                      Manual sync control
+                    </span>
+                  </div>
+                </section>
+              )}
+              {view === 'discover' && <CuratedShelves onNavigate={navigatePath} />}
+              <section className="discovery-section" aria-labelledby="discovery-heading">
+                <div className="section-heading">
+                  <div>
+                    <span className="eyebrow">
+                      {view === 'library'
+                        ? 'THE ONES YOU CAME BACK TO'
+                        : view === 'studio'
+                          ? 'PICK YOUR PRACTICE TRACK'
+                          : 'FOLLOW YOUR CURIOSITY'}
+                    </span>
+                    <h2 id="discovery-heading">
+                      {view === 'library'
+                        ? 'Your collection'
+                        : view === 'studio'
+                          ? 'The rehearsal room'
+                          : 'Find your next favourite'}
+                      <span className="orange-dot" />
+                    </h2>
+                  </div>
+                  <button className="text-button" onClick={() => setShowFilters(true)}>
+                    Explore all {FILTER_DIMENSIONS.length} dimensions <ArrowRight size={16} />
                   </button>
                 </div>
-              </div>
-              <AdSpace />
-            </section>
-          )}
-          {view === 'studio' && (
-            <div className="studio-note">
-              <ShieldCheck size={20} />
-              <p>
-                Only import audio and timed lyrics you have permission to use. Local files are
-                temporary and are discarded when you close the reader. Recording and streaming
-                integrations are not enabled.
-              </p>
-            </div>
+                {view === 'discover' && (
+                  <div className="catalogue-scopes" aria-label="Catalogue collection">
+                    {[
+                      ['all', 'All entries'],
+                      ['sourced', 'Sources first'],
+                      ['readable', 'Read freely'],
+                      ['demo', 'Original demos'],
+                    ].map(([id, label]) => (
+                      <button
+                        key={id}
+                        aria-pressed={scope === id}
+                        className={scope === id ? 'selected' : ''}
+                        onClick={() => {
+                          setScope(id);
+                          setQuery('');
+                          setFilters({});
+                        }}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                <div className="search-row">
+                  <div className="search-box">
+                    <Search size={19} />
+                    <input
+                      ref={search}
+                      aria-label="Search songs, artists, albums and lyrics metadata"
+                      placeholder="A song, an artist, a feeling…"
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                    />
+                    {query ? (
+                      <button
+                        className="icon-button"
+                        aria-label="Clear search"
+                        onClick={() => setQuery('')}
+                      >
+                        <X size={15} />
+                      </button>
+                    ) : (
+                      <kbd>/</kbd>
+                    )}
+                  </div>
+                  <button
+                    className={`filter-button ${activeCount ? 'is-active' : ''}`}
+                    onClick={() => setShowFilters(true)}
+                  >
+                    <ListFilter size={17} />
+                    Filters{activeCount > 0 && <span>{activeCount}</span>}
+                  </button>
+                </div>
+                <div className="filter-row">
+                  <div className="quick-filters">
+                    {['Tamil', 'Hindi', 'Telugu'].map((language) => (
+                      <button
+                        key={language}
+                        className={`chip ${filters.language === language ? 'selected' : ''}`}
+                        onClick={() =>
+                          update('language', filters.language === language ? '' : language)
+                        }
+                      >
+                        <Globe2 size={13} />
+                        {language}
+                      </button>
+                    ))}
+                    <span className="chip-divider" />
+                    <button
+                      className={`chip ${filters.independent ? 'selected' : ''}`}
+                      onClick={() => update('independent', filters.independent ? '' : 'Yes')}
+                    >
+                      Independent
+                    </button>
+                    <button
+                      className={`chip ${filters.mood ? 'selected' : ''}`}
+                      onClick={() => update('mood', filters.mood ? '' : 'Hopeful')}
+                    >
+                      A little hopeful <Sun size={13} />
+                    </button>
+                    <button className="chip more-chip" onClick={() => setShowFilters(true)}>
+                      <Plus size={14} />
+                      More
+                    </button>
+                  </div>
+                  <label className="sort-label">
+                    <ArrowDownUp size={13} />
+                    <select
+                      aria-label="Sort songs"
+                      value={sort}
+                      onChange={(e) => setSort(e.target.value)}
+                    >
+                      <option value="newest">Newest first</option>
+                      <option value="oldest">Oldest first</option>
+                      <option value="title">Title A–Z</option>
+                    </select>
+                    <ChevronDown size={13} />
+                  </label>
+                </div>
+                {(activeCount > 0 || query) && (
+                  <div className="active-filters">
+                    <span>Refining your discovery</span>
+                    {Object.entries(filters)
+                      .filter(([, v]) => v)
+                      .map(([key, value]) => (
+                        <button className="chip" key={key} onClick={() => update(key, '')}>
+                          {FILTER_DIMENSIONS.find((f) => f.key === key)?.label}: {value}
+                          <X size={12} />
+                        </button>
+                      ))}
+                    <button className="text-button" onClick={reset}>
+                      Clear all
+                    </button>
+                  </div>
+                )}
+                {outcome.related && (
+                  <p className="contextual-results" role="status">
+                    {outcome.message}
+                  </p>
+                )}
+                <div className="results-summary" role="status">
+                  <span>
+                    {results.length} {view === 'library' ? 'saved' : 'catalogue'}{' '}
+                    {results.length === 1 ? 'song' : 'songs'}
+                    {query && ` ${outcome.related ? 'related to' : 'matching'} “${query}”`}
+                  </span>
+                  <span>ORIGINAL WORDS. OPEN POSSIBILITIES.</span>
+                </div>
+                {results.length > 0 ? (
+                  <div className="song-grid">
+                    {results.map((song) => (
+                      <article className="song-card" key={song.id}>
+                        <div className="cover-wrap">
+                          <button
+                            className="open-cover"
+                            onClick={() => openSong(song)}
+                            aria-label={`${isReadable(song) ? 'Read' : 'View credits for'} ${song.title}`}
+                          >
+                            <Cover song={song} />
+                            <span className="cover-open">
+                              <BookOpen size={17} />
+                              {isReadable(song) ? 'Open lyrics' : 'View credits'}
+                              <ArrowRight size={15} />
+                            </span>
+                          </button>
+                          <button
+                            className={`save-button ${favorites.includes(song.id) ? 'is-saved' : ''}`}
+                            aria-label={`${favorites.includes(song.id) ? 'Unsave' : 'Save'} ${song.title}`}
+                            aria-pressed={favorites.includes(song.id)}
+                            onClick={() => toggleSave(song.id)}
+                          >
+                            <Heart
+                              size={16}
+                              fill={favorites.includes(song.id) ? 'currentColor' : 'none'}
+                            />
+                          </button>
+                          <span className="demo-pill">
+                            {CATALOGUE.some((item) => item.id === song.id)
+                              ? recordLabel(song)
+                              : 'IMPORT · UNVERIFIED'}
+                          </span>
+                        </div>
+                        <div className="song-title-row">
+                          {CATALOGUE.some((s) => s.id === song.id) ? (
+                            <a
+                              className="song-title"
+                              href={songPath(song)}
+                              onClick={(e) => follow(e, songPath(song), navigatePath)}
+                            >
+                              {song.title}
+                            </a>
+                          ) : (
+                            <button className="song-title" onClick={() => openSong(song)}>
+                              {song.title}
+                            </button>
+                          )}
+                          <ArrowRight size={16} />
+                        </div>
+                        {CATALOGUE.some((s) => s.id === song.id) ? (
+                          <a
+                            className="artist-link"
+                            href={artistPath(
+                              song.credits?.find((c) => c.role === 'singer')?.name ??
+                                song.credits?.[0]?.name ??
+                                song.artist,
+                            )}
+                            onClick={(e) =>
+                              follow(
+                                e,
+                                artistPath(
+                                  song.credits?.find((c) => c.role === 'singer')?.name ??
+                                    song.credits?.[0]?.name ??
+                                    song.artist,
+                                ),
+                                navigatePath,
+                              )
+                            }
+                          >
+                            {song.artist}
+                          </a>
+                        ) : (
+                          <span className="artist-link">{song.artist}</span>
+                        )}
+                        <div className="song-meta">
+                          <span>{song.language}</span>
+                          <span>·</span>
+                          <span>{song.year ?? 'Ancient verse'}</span>
+                          <span className="song-album">{song.album}</span>
+                        </div>
+                        {view === 'library' && activeCollection !== 'all' && (
+                          <button
+                            className="text-button"
+                            onClick={() => {
+                              persistCollections(
+                                collections.map((c) =>
+                                  c.name === activeCollection
+                                    ? { ...c, ids: c.ids.filter((id) => id !== song.id) }
+                                    : c,
+                                ),
+                              );
+                              setStatus('Removed from collection. Saved songs are unchanged.');
+                            }}
+                          >
+                            Remove from collection
+                          </button>
+                        )}
+                      </article>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="empty-state">
+                    <Search size={34} />
+                    <h3>
+                      {view === 'library' && !favorites.length
+                        ? 'Your next favourite belongs here.'
+                        : 'No words found. Yet.'}
+                    </h3>
+                    <p>
+                      {view === 'library' && !favorites.length
+                        ? 'Tap the heart on any song to start your personal collection.'
+                        : 'Try fewer filters or a different search. This is a small sourced-and-demo catalogue, not a complete Indian music index.'}
+                    </p>
+                    {query.toLowerCase().includes('rahman') && (
+                      <p>
+                        A small sourced A. R. Rahman selection is available. Try clearing other
+                        filters; a complete discography is not claimed.
+                      </p>
+                    )}
+                    <button
+                      className="button primary"
+                      onClick={() => {
+                        reset();
+                        if (view === 'library' && !favorites.length) navigate('discover');
+                      }}
+                    >
+                      {' '}
+                      {view === 'library' && !favorites.length
+                        ? 'Explore demo songs'
+                        : 'Reset discovery'}
+                      <ArrowRight size={16} />
+                    </button>
+                  </div>
+                )}
+              </section>
+              {view === 'discover' && (
+                <section className="discovery-bottom">
+                  <div className="editorial-card">
+                    <div className="editorial-illustration" aria-hidden="true">
+                      <span>அ</span>
+                      <i>आ</i>
+                      <b>అ</b>
+                    </div>
+                    <div>
+                      <span className="eyebrow">SAME FEELING. DIFFERENT WORDS.</span>
+                      <h2>
+                        Music doesn’t need borders.
+                        <br />
+                        Neither should its words.
+                      </h2>
+                      <p>
+                        Original script, English translation, and readable transliteration.
+                        <br />
+                        Three ways to get a little closer to a song.
+                      </p>
+                      <button className="text-button" onClick={() => setSelected(DEMO_SONGS[0])}>
+                        Try the multilingual reader
+                        <ArrowRight size={16} />
+                      </button>
+                    </div>
+                  </div>
+                  <AdSpace />
+                </section>
+              )}
+              {view === 'studio' && (
+                <div className="studio-note">
+                  <ShieldCheck size={20} />
+                  <p>
+                    Only import audio and timed lyrics you have permission to use. Local files are
+                    temporary and are discarded when you close the reader. Recording and streaming
+                    integrations are not enabled.
+                  </p>
+                </div>
+              )}
+            </>
           )}
           <footer>
             <div className="footer-brand">
@@ -1401,6 +1543,30 @@ export default function App() {
           </div>
         </Dialog>
       )}
+      {metadataPreview && (
+        <Dialog title="Session metadata preview" onClose={() => setMetadataPreview(null)}>
+          <div className="info-body">
+            <span className="eyebrow">IMPORT · UNVERIFIED · NOT PUBLISHED</span>
+            <h3>{metadataPreview.title}</h3>
+            <p>
+              {metadataPreview.album} · {metadataPreview.year ?? 'Date unknown'} ·{' '}
+              {metadataPreview.language}
+            </p>
+            <p>
+              Performer display: {metadataPreview.artist}
+              <br />
+              Composer: {metadataPreview.composer}
+              <br />
+              Words: {metadataPreview.lyricist}
+            </p>
+            <p>
+              No text was supplied. Credits, sources and rights in imports are uploader assertions,
+              not independently reviewed facts or a lyric licence. This session entry has no public
+              URL.
+            </p>
+          </div>
+        </Dialog>
+      )}
       {info && (
         <Dialog
           title={
@@ -1425,8 +1591,8 @@ export default function App() {
                 </h3>
                 <p>
                   PowerWords is a working, local-first foundation for discovering Indian music.
-                  Browse fictional demos, refine by rich metadata, save a collection, then slow down
-                  in the lyric room.
+                  Browse sourced credits and original demos, refine by metadata, save a collection,
+                  then slow down in the lyric room.
                 </p>
                 <ol>
                   <li>Search titles, artists, albums, languages, and moods.</li>
@@ -1435,8 +1601,9 @@ export default function App() {
                 </ol>
                 <p>
                   <strong>Not a full catalogue:</strong> all demo artists, albums, years, and
-                  musical descriptions are fictional. No real-artist catalogue, streaming service,
-                  account sync, analytics, or advertising network is connected.
+                  musical descriptions on ORIGINAL DEMO entries are fictional. Sourced real credits
+                  have their own citations; no streaming service, account sync, analytics, or
+                  advertising network is connected.
                 </p>
                 <button
                   className="button primary"
@@ -1460,7 +1627,10 @@ export default function App() {
                 <p>
                   Demo lyrics and translations are original project writing, dedicated under
                   CC0-1.0. The same four-line exercise is reused to illustrate the reader across
-                  fictional tracks. Fictional release years are not real release claims.
+                  fictional tracks. Fictional release years are not real release claims. Five
+                  separately sourced real recordings are metadata-only; the Tirukkural room contains
+                  ancient text with new project renderings. Individual citations are visible on
+                  their clean pages.
                 </p>
                 <p>
                   Production songs must carry verified credits, a source record, rights-holder
@@ -1470,7 +1640,7 @@ export default function App() {
                 <p>
                   Real artists including A.R. Rahman are not represented by invented catalogue
                   entries. All languages are supported by the model; only Tamil, Hindi and Telugu
-                  demo text is provided.
+                  demo text is provided alongside the ancient Tamil verse edition.
                 </p>
                 <p>
                   <strong>Advertising:</strong> no ad network scripts run. The optional sponsor area

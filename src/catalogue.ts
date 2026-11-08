@@ -12,14 +12,23 @@ export interface Song {
   artist: string;
   composer: string;
   lyricist: string;
-  year: number;
+  year: number | null;
   language: string;
   color: string;
   artwork: 'sun' | 'wave' | 'moon' | 'petal';
   duration: number;
   lyrics: Partial<Record<Variant, LyricLine[]>>;
   metadata: Record<string, string>;
-  rights: { status: 'original-demo' | 'licensed'; holder: string; evidence: string };
+  rights: {
+    status: 'original-demo' | 'licensed' | 'metadata-only' | 'public-domain';
+    holder: string;
+    evidence: string;
+  };
+  kind?: 'recording' | 'verse';
+  description?: string;
+  credits?: { name: string; role: 'singer' | 'composer' | 'lyricist' }[];
+  sources?: { label: string; url: string; supports: string; checked: string }[];
+  aliases?: string[];
 }
 export interface FilterDimension {
   key: string;
