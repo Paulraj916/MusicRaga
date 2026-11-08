@@ -1,0 +1,40 @@
+[
+  {
+    "id": "your-original-example",
+    "title": "A window of light",
+    "nativeTitle": "A window of light",
+    "album": "Original exercise",
+    "artist": "PowerWords demo contributors",
+    "composer": "PowerWords demo contributors",
+    "lyricist": "PowerWords demo contributors",
+    "year": 2026,
+    "language": "English",
+    "color": "#a9b38d",
+    "artwork": "sun",
+    "duration": 12,
+    "lyrics": {
+      "original": [
+        {
+          "time": 0,
+          "text": "A little light rests by the door"
+        },
+        {
+          "time": 6,
+          "text": "We take one step, then one step more"
+        }
+      ]
+    },
+    "metadata": {
+      "genre": "Original demo",
+      "rightsStatus": "Original demo",
+      "sourceType": "Original writing",
+      "originalAvailable": "Yes",
+      "timedLyrics": "Yes"
+    },
+    "rights": {
+      "status": "original-demo",
+      "holder": "PowerWords demo contributors",
+      "evidence": "Original project exercise dedicated under CC0-1.0; see docs/CONTENT_RIGHTS.md."
+    }
+  }
+]

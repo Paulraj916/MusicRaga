@@ -1,0 +1,12 @@
+# Engineering decisions
+
+1. **Static local-first MVP** rather than a pretend backend: zero operating cost/API secrets to run, portable to another AI/developer, and reversible until the target repo is known. React/TypeScript/Vite chosen for a coherent greenfield prototype, not imposed on an uninspected existing repo.
+2. **Fictional original catalogue** rather than unlicensed scraping or made-up real-artist metadata. All display claims are explicitly synthetic. A tiny well-explained original exercise is safer than a false full catalogue.
+3. **96 schema-driven dimensions**, with enabled controls only when there are values. Same pure filter engine handles all populated dimensions. Unknown stays unknown. Multi-dimensional AND filtering demonstrates composer/singer/album/chronology relationships without claiming a full real catalogue.
+4. **No ad scripts by default**; optional ad area physically outside the primary reading task. Future ads require rights, publisher approval, consent/CSP/privacy work and actual user-value content. An inactive placeholder is not monetisation.
+5. **Local media only**. Use browser audio and revocable object URLs, never silent upload. No OAuth token handling, microphone requests, DRM circumvention or fabricated app integration.
+6. **Native HTML dialog**, progressive accessible controls, reduced motion and original CSS art. No remote font/image dependencies. Warm paper/terracotta/sage aesthetic provides a different identity from dark streaming-service clones; alternate dark palette is available.
+7. **Demo-only indexing policy**. WebSite structured data describes the project, not fictitious published recordings. Hash links work for demos; real per-song URLs/SSR/canonical/hreflang/sitemaps belong after content verification.
+8. **JSON import with bounded validation** to exercise catalogue extension without pretending arbitrary user text is safe/licensed. Imported rights are unverified assertions. React renders plain text, and artwork colours are restricted hex; no arbitrary URLs/HTML are accepted for presentation.
+9. **Security fixes before handoff**: initial test dependency audit exposed vulnerable Vitest/Tinypool versions; upgraded the dev toolchain and lockfile to clean audit. Do not downgrade to old versions based on stale setup snippets.
+10. **Preserve remote repository history**. No GitHub repo existed in the accessible listing matching PowerWords. No unrelated clone, replacement remote, force push or overwrite. Standalone source can be integrated after the owner supplies the exact target.

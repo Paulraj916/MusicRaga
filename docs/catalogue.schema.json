@@ -1,0 +1,180 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PowerWords catalogue import",
+  "description": "Session-only catalogue preview. Sorted timestamps within duration and unique IDs are also enforced by runtime validation. Rights assertions require independent human review.",
+  "type": "array",
+  "minItems": 1,
+  "maxItems": 500,
+  "items": {
+    "type": "object",
+    "required": [
+      "id",
+      "title",
+      "nativeTitle",
+      "album",
+      "artist",
+      "composer",
+      "lyricist",
+      "year",
+      "language",
+      "color",
+      "artwork",
+      "duration",
+      "lyrics",
+      "metadata",
+      "rights"
+    ],
+    "properties": {
+      "title": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 300
+      },
+      "nativeTitle": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 300
+      },
+      "album": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 300
+      },
+      "artist": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 300
+      },
+      "composer": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 300
+      },
+      "lyricist": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 300
+      },
+      "language": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 300
+      },
+      "id": {
+        "type": "string",
+        "pattern": "^[a-z0-9-]{1,80}$"
+      },
+      "year": {
+        "type": "integer",
+        "minimum": 1800,
+        "maximum": 2100
+      },
+      "color": {
+        "type": "string",
+        "pattern": "^#[0-9a-fA-F]{6}$"
+      },
+      "artwork": {
+        "enum": ["sun", "wave", "moon", "petal"]
+      },
+      "duration": {
+        "type": "number",
+        "minimum": 1,
+        "maximum": 14400
+      },
+      "metadata": {
+        "type": "object",
+        "propertyNames": {
+          "maxLength": 80
+        },
+        "additionalProperties": {
+          "type": "string",
+          "maxLength": 300
+        }
+      },
+      "rights": {
+        "type": "object",
+        "required": ["status", "holder", "evidence"],
+        "properties": {
+          "status": {
+            "enum": ["original-demo", "licensed"]
+          },
+          "holder": {
+            "type": "string",
+            "minLength": 1
+          },
+          "evidence": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "lyrics": {
+        "type": "object",
+        "minProperties": 1,
+        "additionalProperties": false,
+        "properties": {
+          "original": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 500,
+            "items": {
+              "type": "object",
+              "required": ["time", "text"],
+              "properties": {
+                "time": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 14400
+                },
+                "text": {
+                  "type": "string",
+                  "maxLength": 2000
+                }
+              }
+            }
+          },
+          "translation": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 500,
+            "items": {
+              "type": "object",
+              "required": ["time", "text"],
+              "properties": {
+                "time": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 14400
+                },
+                "text": {
+                  "type": "string",
+                  "maxLength": 2000
+                }
+              }
+            }
+          },
+          "transliteration": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 500,
+            "items": {
+              "type": "object",
+              "required": ["time", "text"],
+              "properties": {
+                "time": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 14400
+                },
+                "text": {
+                  "type": "string",
+                  "maxLength": 2000
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
