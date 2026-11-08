@@ -30,3 +30,9 @@ Audio, LRC, and imported catalogues live only in memory and are not submitted. E
 - https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/ — modal focus containment, initial focus, Escape and restoration.
 
 Re-read policies at launch; these references are not a promise of compliance or legal advice.
+
+## Current configuration checkpoint
+
+See FREE_HOSTING_SEARCH_ADS.md. Validated actual-publisher ads.txt generation is available; default ads.txt has comments only and config is inactive. Live SDK requests fail closed until approved CMP/privacy/CSP/account/site implementation. No fake publisher ID, live request, form submission or earnings claim.
+
+The optional read API receives entered search queries/filters; same-origin HTTP and static-CDN providers may retain request/IP logs, including expected API probes before static fallback. Configure minimised logs/retention and disclose actual hosting in production privacy terms. Local-first means no personal library/audio upload or third-party advertising by default, not a promise that network search/hosting produces no request data.

@@ -56,6 +56,9 @@ const server = http.createServer(async (req, res) => {
     const data = await readFile(file);
     res.writeHead(code, {
       ...security,
+      ...(path.startsWith('/catalogue/') || path === '/ads-config.json'
+        ? { 'X-Robots-Tag': 'noindex, nofollow' }
+        : {}),
       'Content-Type': mime[extname(file)] ?? 'application/octet-stream',
       'Cache-Control': file.includes('/assets/') ? 'public,max-age=31536000,immutable' : 'no-cache',
     });

@@ -3850,3 +3850,103 @@ footer button {
   line-height: 1.8;
   color: var(--accent);
 }
+
+/* Optional paged server catalogue. No giant client-side import. */
+.index-entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+.index-entry small {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  margin-top: 4px;
+}
+.india-index {
+  padding: 24px;
+  overflow-wrap: anywhere;
+}
+.india-index p {
+  line-height: 1.7;
+}
+.index-controls {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin: 24px 0;
+}
+.index-controls label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13px;
+}
+.index-controls input,
+.index-controls select {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 10px;
+  color: var(--ink);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.index-results {
+  list-style: none;
+  padding: 0;
+}
+.index-results article {
+  border-top: 1px solid var(--line);
+  padding: 24px 0;
+}
+.index-results h3 {
+  font-size: 24px;
+  margin: 10px 0;
+}
+.index-credits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  list-style: none;
+  padding: 0;
+}
+.index-credits button {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  min-height: 44px;
+}
+.index-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 24px 0;
+}
+.index-warning {
+  padding: 16px;
+  border: 2px solid currentColor;
+  font-weight: 700;
+}
+.index-results summary {
+  cursor: pointer;
+  min-height: 44px;
+  padding-top: 12px;
+}
+@media (max-width: 600px) {
+  .india-index {
+    padding: 16px;
+  }
+  .index-controls {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .index-entry {
+    align-items: flex-start;
+  }
+}

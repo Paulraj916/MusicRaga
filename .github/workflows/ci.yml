@@ -14,12 +14,18 @@ jobs:
         with:
           node-version: 24
           cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python3 -m unittest discover -s backend/tests -v
       - run: npm ci
       - run: npm run format:check
       - run: npm run typecheck
       - run: npm test
+      - run: npm run test:ads
       - run: npm run build
       - run: npm run test:seo
+      - run: npm run test:seo:policy
       - run: npm audit --audit-level=moderate
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e

@@ -1,0 +1,542 @@
+{
+  "batch_reports": [
+    {
+      "source": "indian-language-song-works.jsonl.gz",
+      "source_records": 14884,
+      "accepted": 14884,
+      "quarantined": 0,
+      "quarantine_reasons": {},
+      "normalized_sha256": "4ccaa6130668c8d35cbb2786dc6f132e373568d77340917f28ddb3b9d31cb807",
+      "quarantine_file": "3d71a9a64cfe1510d9509814-adapter-v3-quarantine.jsonl"
+    },
+    {
+      "source": "indian-language-song-recordings.jsonl.gz",
+      "source_records": 17130,
+      "accepted": 17130,
+      "quarantined": 0,
+      "quarantine_reasons": {},
+      "normalized_sha256": "a8ba6a2b9b75adf244434aa27a1b6863064aa4b7872f404897143f8f1f4a2574",
+      "quarantine_file": "ebf182f81c549026d1098e6c-adapter-v3-quarantine.jsonl"
+    },
+    {
+      "source": "wikidata-songs.jsonl.gz",
+      "source_records": 213,
+      "accepted": 212,
+      "quarantined": 1,
+      "quarantine_reasons": {
+        "invalid title": 1
+      },
+      "normalized_sha256": "752bb3957a8760f423cd6115f35712f4565f340d89a8f3c814f66b09dccfb568",
+      "quarantine_file": "ca983243319bab7fea7b6511-adapter-v3-quarantine.jsonl"
+    },
+    {
+      "source": "wikidata-artists.jsonl.gz",
+      "source_records": 2446,
+      "accepted": 2446,
+      "quarantined": 0,
+      "quarantine_reasons": {},
+      "normalized_sha256": "1ed583a59dc6acad77cfa00bd1ae0ba822b7b94455c7924f04e3e55295d92c9d",
+      "quarantine_file": "63095a3541f6cb227a85eb88-adapter-v3-quarantine.jsonl",
+      "profiles_changed": 2446
+    }
+  ],
+  "coverage": {
+    "schema_version": 1,
+    "mode": "real",
+    "generation": 35,
+    "tracks": 32226,
+    "entity_kinds": {
+      "recording": 17130,
+      "song_or_single": 212,
+      "work": 14884
+    },
+    "artist_profiles": 2446,
+    "work_recording_links": 17332,
+    "unresolved_work_links": 0,
+    "resolved_artists": 3059,
+    "unresolved_credit_entities": 0,
+    "unknown_year": 32085,
+    "unknown_language": 17154,
+    "sources": {
+      "musicbrainz": 32014,
+      "wikidata": 212
+    },
+    "roles": {
+      "adapter": 10,
+      "arranger": 118,
+      "composer": 13913,
+      "dedication": 3,
+      "instrument arranger": 17,
+      "lyricist": 11961,
+      "orchestrator": 1,
+      "performer": 132,
+      "premiere": 1,
+      "publishing": 16,
+      "reconstructed by": 2,
+      "revised by": 2,
+      "translator": 7,
+      "vocal arranger": 21,
+      "writer": 537
+    },
+    "languages": [
+      {
+        "code": "asm",
+        "name": "Assamese",
+        "tracks": 348,
+        "coverage": "observed"
+      },
+      {
+        "code": "ben",
+        "name": "Bengali",
+        "tracks": 2167,
+        "coverage": "observed"
+      },
+      {
+        "code": "brx",
+        "name": "Bodo",
+        "tracks": 0,
+        "coverage": "not_observed"
+      },
+      {
+        "code": "doi",
+        "name": "Dogri",
+        "tracks": 1,
+        "coverage": "observed"
+      },
+      {
+        "code": "guj",
+        "name": "Gujarati",
+        "tracks": 1625,
+        "coverage": "observed"
+      },
+      {
+        "code": "hin",
+        "name": "Hindi",
+        "tracks": 6871,
+        "coverage": "observed"
+      },
+      {
+        "code": "kan",
+        "name": "Kannada",
+        "tracks": 137,
+        "coverage": "observed"
+      },
+      {
+        "code": "kas",
+        "name": "Kashmiri",
+        "tracks": 3,
+        "coverage": "observed"
+      },
+      {
+        "code": "kok",
+        "name": "Konkani",
+        "tracks": 1,
+        "coverage": "observed"
+      },
+      {
+        "code": "mai",
+        "name": "Maithili",
+        "tracks": 0,
+        "coverage": "not_observed"
+      },
+      {
+        "code": "mal",
+        "name": "Malayalam",
+        "tracks": 134,
+        "coverage": "observed"
+      },
+      {
+        "code": "mni",
+        "name": "Manipuri",
+        "tracks": 0,
+        "coverage": "not_observed"
+      },
+      {
+        "code": "mar",
+        "name": "Marathi",
+        "tracks": 472,
+        "coverage": "observed"
+      },
+      {
+        "code": "nep",
+        "name": "Nepali",
+        "tracks": 24,
+        "coverage": "observed"
+      },
+      {
+        "code": "ori",
+        "name": "Odia",
+        "tracks": 21,
+        "coverage": "observed"
+      },
+      {
+        "code": "pan",
+        "name": "Punjabi",
+        "tracks": 1141,
+        "coverage": "observed"
+      },
+      {
+        "code": "san",
+        "name": "Sanskrit",
+        "tracks": 178,
+        "coverage": "observed"
+      },
+      {
+        "code": "sat",
+        "name": "Santali",
+        "tracks": 0,
+        "coverage": "not_observed"
+      },
+      {
+        "code": "snd",
+        "name": "Sindhi",
+        "tracks": 0,
+        "coverage": "not_observed"
+      },
+      {
+        "code": "tam",
+        "name": "Tamil",
+        "tracks": 783,
+        "coverage": "observed"
+      },
+      {
+        "code": "tel",
+        "name": "Telugu",
+        "tracks": 601,
+        "coverage": "observed"
+      },
+      {
+        "code": "urd",
+        "name": "Urdu",
+        "tracks": 612,
+        "coverage": "observed"
+      },
+      {
+        "code": "eng",
+        "name": "English",
+        "tracks": 62,
+        "coverage": "observed"
+      },
+      {
+        "code": "bho",
+        "name": "Bhojpuri",
+        "tracks": 4,
+        "coverage": "observed"
+      },
+      {
+        "code": "raj",
+        "name": "Rajasthani",
+        "tracks": 6,
+        "coverage": "observed"
+      },
+      {
+        "code": "tcy",
+        "name": "Tulu",
+        "tracks": 0,
+        "coverage": "not_observed"
+      },
+      {
+        "code": "gon",
+        "name": "Gondi",
+        "tracks": 0,
+        "coverage": "not_observed"
+      },
+      {
+        "code": "kha",
+        "name": "Khasi",
+        "tracks": 0,
+        "coverage": "not_observed"
+      },
+      {
+        "code": "lus",
+        "name": "Mizo",
+        "tracks": 0,
+        "coverage": "not_observed"
+      },
+      {
+        "code": "trp",
+        "name": "Kokborok",
+        "tracks": 0,
+        "coverage": "not_observed"
+      },
+      {
+        "code": "lbj",
+        "name": "Ladakhi",
+        "tracks": 0,
+        "coverage": "not_observed"
+      },
+      {
+        "code": "sip",
+        "name": "Sikkimese",
+        "tracks": 0,
+        "coverage": "not_observed"
+      },
+      {
+        "code": "awa",
+        "name": "Awadhi",
+        "tracks": 2,
+        "coverage": "observed"
+      },
+      {
+        "code": "mag",
+        "name": "Magahi",
+        "tracks": 0,
+        "coverage": "not_observed"
+      },
+      {
+        "code": "hne",
+        "name": "Chhattisgarhi",
+        "tracks": 0,
+        "coverage": "not_observed"
+      },
+      {
+        "code": "gbm",
+        "name": "Garhwali",
+        "tracks": 0,
+        "coverage": "not_observed"
+      },
+      {
+        "code": "kfy",
+        "name": "Kumaoni",
+        "tracks": 0,
+        "coverage": "not_observed"
+      },
+      {
+        "code": "bra",
+        "name": "Braj",
+        "tracks": 2,
+        "coverage": "observed"
+      },
+      {
+        "code": "bpy",
+        "name": "Bishnupriya Manipuri",
+        "tracks": 0,
+        "coverage": "not_observed"
+      },
+      {
+        "code": "saz",
+        "name": "Saurashtra",
+        "tracks": 0,
+        "coverage": "not_observed"
+      },
+      {
+        "code": "bgc",
+        "name": "Haryanvi",
+        "tracks": 0,
+        "coverage": "not_observed"
+      },
+      {
+        "code": "bfy",
+        "name": "Bagheli",
+        "tracks": 0,
+        "coverage": "not_observed"
+      },
+      {
+        "code": "lmn",
+        "name": "Lambadi",
+        "tracks": 0,
+        "coverage": "not_observed"
+      },
+      {
+        "code": "mwr",
+        "name": "Marwari",
+        "tracks": 0,
+        "coverage": "not_observed"
+      },
+      {
+        "code": "spv",
+        "name": "Sambalpuri",
+        "tracks": 0,
+        "coverage": "not_observed"
+      },
+      {
+        "code": "hoc",
+        "name": "Ho",
+        "tracks": 0,
+        "coverage": "not_observed"
+      },
+      {
+        "code": "unr",
+        "name": "Mundari",
+        "tracks": 0,
+        "coverage": "not_observed"
+      },
+      {
+        "code": "bhb",
+        "name": "Bhili",
+        "tracks": 0,
+        "coverage": "not_observed"
+      },
+      {
+        "code": "lep",
+        "name": "Lepcha",
+        "tracks": 0,
+        "coverage": "not_observed"
+      },
+      {
+        "code": "kfa",
+        "name": "Kodava",
+        "tracks": 0,
+        "coverage": "not_observed"
+      },
+      {
+        "code": "kfk",
+        "name": "Kinnauri",
+        "tracks": 0,
+        "coverage": "not_observed"
+      },
+      {
+        "code": "kfr",
+        "name": "Kutchi",
+        "tracks": 0,
+        "coverage": "not_observed"
+      },
+      {
+        "code": "skr",
+        "name": "Saraiki",
+        "tracks": 0,
+        "coverage": "not_observed"
+      },
+      {
+        "code": "bal",
+        "name": "Baluchi",
+        "tracks": 0,
+        "coverage": "not_observed"
+      },
+      {
+        "code": "lav",
+        "name": "Latvian",
+        "tracks": 12,
+        "coverage": "observed"
+      },
+      {
+        "code": "deu",
+        "name": "German",
+        "tracks": 4,
+        "coverage": "observed"
+      },
+      {
+        "code": "ara",
+        "name": "Arabic",
+        "tracks": 4,
+        "coverage": "observed"
+      },
+      {
+        "code": "jpn",
+        "name": "Japanese",
+        "tracks": 3,
+        "coverage": "observed"
+      },
+      {
+        "code": "lat",
+        "name": "Latin",
+        "tracks": 2,
+        "coverage": "observed"
+      },
+      {
+        "code": "fas",
+        "name": "Persian",
+        "tracks": 2,
+        "coverage": "observed"
+      },
+      {
+        "code": "rus",
+        "name": "Russian",
+        "tracks": 2,
+        "coverage": "observed"
+      },
+      {
+        "code": "por",
+        "name": "Portuguese",
+        "tracks": 2,
+        "coverage": "observed"
+      },
+      {
+        "code": "liv",
+        "name": "Livonian",
+        "tracks": 1,
+        "coverage": "observed"
+      },
+      {
+        "code": "kor",
+        "name": "Korean",
+        "tracks": 1,
+        "coverage": "observed"
+      },
+      {
+        "code": "spa",
+        "name": "Spanish",
+        "tracks": 1,
+        "coverage": "observed"
+      },
+      {
+        "code": "ita",
+        "name": "Italian",
+        "tracks": 1,
+        "coverage": "observed"
+      },
+      {
+        "code": "zul",
+        "name": "Zulu",
+        "tracks": 1,
+        "coverage": "observed"
+      },
+      {
+        "code": "heb",
+        "name": "Hebrew",
+        "tracks": 1,
+        "coverage": "observed"
+      },
+      {
+        "code": "cmn",
+        "name": "Mandarin Chinese",
+        "tracks": 1,
+        "coverage": "observed"
+      },
+      {
+        "code": "fra",
+        "name": "French",
+        "tracks": 1,
+        "coverage": "observed"
+      },
+      {
+        "code": "egy",
+        "name": "Ancient Egyptian",
+        "tracks": 1,
+        "coverage": "observed"
+      },
+      {
+        "code": "nld",
+        "name": "Dutch",
+        "tracks": 1,
+        "coverage": "observed"
+      },
+      {
+        "code": "mul",
+        "name": "Multiple languages",
+        "tracks": 8,
+        "coverage": "observed"
+      },
+      {
+        "code": "zxx",
+        "name": "No linguistic content",
+        "tracks": 3,
+        "coverage": "observed"
+      },
+      {
+        "code": "und",
+        "name": "Unknown / not supplied",
+        "tracks": 0,
+        "coverage": "not_observed"
+      }
+    ],
+    "staging": {
+      "published": 32226
+    },
+    "lyrics": 0,
+    "audio": 0,
+    "notice": "Metadata candidates, not a census of Indian music. Language counts overlap; unknown is not inferred from an artist or country."
+  },
+  "network_requests": 0,
+  "notice": "Works, linked recordings and Wikidata song/single entities overlap; never sum them as unique songs. No lyric rights granted."
+}

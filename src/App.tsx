@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import IndiaIndex from './IndiaIndex';
 import type { ReactNode } from 'react';
 import {
   ArrowDownUp,
@@ -541,6 +542,7 @@ export default function App({ initialPath }: { initialPath?: string } = {}) {
   const route = resolveRoute(path);
   const [scope, setScope] = useState('all');
   const [view, setView] = useState<View>('discover');
+  const [showIndiaIndex, setShowIndiaIndex] = useState(false);
   const [query, setQuery] = useState('');
   const [filters, setFilters] = useState<Filters>({});
   const [sort, setSort] = useState('newest');
@@ -916,6 +918,14 @@ export default function App({ initialPath }: { initialPath?: string } = {}) {
           </div>
         </header>
         <main id="main" tabIndex={-1}>
+          <section className="index-entry" aria-label="Growing catalogue">
+            <span>
+              Beyond the curated shelf <small>Optional, source-led metadata index</small>
+            </span>
+            <button className="button" onClick={() => setShowIndiaIndex(true)}>
+              Open India index
+            </button>
+          </section>
           {view === 'discover' && route.kind !== 'home' ? (
             <CataloguePage
               key={path}
@@ -1461,6 +1471,11 @@ export default function App({ initialPath }: { initialPath?: string } = {}) {
           collections={collections}
           onAdd={addCollection}
         />
+      )}
+      {showIndiaIndex && (
+        <Dialog title="The growing India index" onClose={() => setShowIndiaIndex(false)} wide>
+          <IndiaIndex />
+        </Dialog>
       )}
       {showFilters && (
         <Dialog

@@ -9,3 +9,18 @@ playwright-report/
 *.tsbuildinfo
 .prerender/
 recordings/
+
+# Local metadata databases, journals, source dumps and Python caches
+var/
+__pycache__/
+*.py[cod]
+*.sqlite
+*.sqlite-*
+
+# Optional source reproduction outputs: do not commit mixed-licence raw dumps
+data/cc0/reproduction/raw/
+data/cc0/reproduction/data/*.jsonl
+*.partial
+
+.catalogue-build/
+.catalogue-build-final/

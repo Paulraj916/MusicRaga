@@ -1,0 +1,33 @@
+# Scalable, low-complexity catalogue architecture
+
+## Storage and API
+
+Python 3.11+ standard library + SQLite FTS5, schema 1. Durable normalized tracks/works, stable typed external IDs, contributors and role edges, language/country edges, work-recording graph, artist profiles, fingerprints/revisions, staging and run checkpoints. B-tree indexes cover chronology, source, languages, roles/artists, albums and graph lookup. FTS uses Unicode letters/numbers/**marks**, NFC casefold and escaped bounded prefix terms; it preserves Tamil/Hindi marks rather than transliterating/stripping them. Search is not fuzzy, semantic, transliteration generation or a universal Indian-language analyzer.
+
+GET-only endpoints: `/api/v1/health`, `/api/v1/coverage`, `/api/v1/tracks`, `/api/v1/artists`. Track parameters: `q`, `source`, `language`, `role`, `artist`, `year`, `album`, `kind`, `country`, `work`, `limit` (1–100), opaque `cursor`. Filters combine with AND; role+artist must refer to the **same credit**. Date sort: newest known year then stable ID; null dates last. Generation/query-bound keyset cursors reject stale/changed queries rather than silently duplicating pages. Artist profile search accepts q/limit/cursor; occupations do not create track credits. Each request opens/closes a read-only DB connection; page/count/generation are a read snapshot. No SQL/user filenames, database path, raw rejected payloads, CORS wildcard or public writes are exposed.
+
+The bundled threaded WSGI server is **local QA/development**, not an internet-facing production hardening claim. Default loopback `127.0.0.1:4180`; to expose externally requires a maintained WSGI server/reverse proxy, HTTPS, rate/concurrency/query limits, monitoring, operator access controls, backups and patching. The app sends no personal library/audio to it. Running on already-owned hardware can avoid hosting charges, not electricity/network/operations costs. No paid host is required or provisioned.
+
+## Free static deployment mode
+
+Standard `npm run build` bootstraps a separate ignored `.catalogue-build-final` database and emits **bounded metadata pages**, token-prefix buckets and hashed facet buckets under versioned `dist/catalogue/`. These are data files, not tens of thousands of thin song HTML pages. The browser first tries the same-origin read API; on missing/unavailable API it uses the public static index. Only requested pages and query-specific postings are fetched, with a 16-entry cache—**not a giant JS catalogue array**. Page size is 100 in storage / 20 in UI. Artist/role intersections share credit semantics. Work-recording links and profiles work without a running backend.
+
+Static search: NFC lowercase Unicode exact words, final-word prefix, up to 8 terms / 128 prefix expansions. Very broad prefixes ask for a longer query instead of pretending partial results are complete. It is not backend fuzzy/full-language search. Snapshot-bound cursors prevent mixing versions; manifest is refreshed, immutable versioned files keep indices/pages aligned. Deploy the entire output atomically. Static mode does not ingest live changes; rebuild after approved source changes. At much greater scale, measure shard payloads, browser memory/network and host asset/bandwidth quotas or use the API. The lakh benchmark measures the SQLite API path, not a million-record static website or concurrent load.
+
+`npm run build:curated` is the smaller Node-only 18-entry reading build; bulk discovery then needs the optional API. All original 68 prerendered routes/404/metadata remain. Bulk JSON is noindex via supported host headers and is not submitted as song HTML in the sitemap. Only independently reviewed substantive curated content is eligible for indexing, using an actual configured production origin. More source rows do not justify SEO spam, lyric claims or ranking guarantees.
+
+## Measurements / growth
+
+See `artifacts/SYNTHETIC-100000-benchmark.json` for the exact final-code **100,000 synthetic records** staging/publication/search/size measurement, and earlier baseline artifacts for query-plan development. No synthetic benchmark records enter the real database or committed source export. Warm-cache 50-query results include full match count plus a 25-item page; not cold storage, network, realistic popularity, concurrent users or production certification. The real accepted coverage is independently recorded in `artifacts/catalogue-real-coverage.json`.
+
+A starting development machine: Node 24, Python 3.11+ with FTS5, approximately 2 GB RAM and 1 GB free disk for the included batch/build/cache (allow several GB when retaining old cache versions). A 100k synthetic DB was around 0.3 GB; provision additional temporary space, WAL, inputs and backups. These are measured planning hints, not hard universal requirements. No 23 GB archive is fetched by normal setup. Monitor query p95, active readers, WAL growth, write-lock waits, unknown/missing fields, quarantines, graph integrity and source age.
+
+## Migration to PostgreSQL (when justified)
+
+1. Preserve stable source/entity IDs, provenance, nullable facts, contributor roles and graph edges. Export validated canonical records/profiles plus checkpoints and revision history; never reconstruct identity from titles.
+2. Map TEXT JSON to JSONB, normalize relationship tables with foreign keys, retain unique `(source, kind, source_id)`. Add chronological composite indexes, GIN simple-text search and optional trigram indices after testing Indic marks/aliases. Do not assume English stemming handles India.
+3. Load bounded transactions; verify every type/source/language/unknown/quarantine/credit/graph count, source hashes and sampler checks. Compare Tamil/Hindi/Urdu/native-prefix, contributor role, no-lyrics and pagination behavior against SQLite.
+4. Shadow read traffic on a separately approved host, measure concurrent workload and backup/restore, then cut over the read API. Do not enable untested dual writes or discard SQLite history. Separate connection pools/background queues only when actual contention justifies them.
+5. Use official core mirrors/dumps under reviewed rights/terms; release/album/performer/date coverage needs more sources. Obtain approval before any paid capacity, account creation or infrastructure change. Free-tier quotas are not unlimited production capacity.
+
+SQLite online backup (`Connection.backup`) or a fully stopped writer is required for consistent snapshots; do not copy only a live main file while ignoring WAL. Keep private evidence/operator credentials out of the public repository. No runtime or subscription-independent scheduler is created by this code.

@@ -1,4 +1,12 @@
-# Next steps: turn the foundation into a real service
+# Next steps — scalable catalogue checkpoint
+
+Current expansion is documented in SOURCE_PIPELINE / SCALABLE_ARCHITECTURE. Review its feature PR before merging; source dataset/caches/test evidence must remain separate. Immediate work: resolve the one missing-title source row from a real revision; independently review source occupations/citizenship, native labels and duplicate work/recording identities; extend permissioned feeds and underrepresented languages; load release/album/actual performer/date facts through licensed sources, not inferred credits. Measure real concurrency and static shard budgets before increasing catalogue scale. See 24_HOUR_CHECKPOINT_PLAN for finite resumable checkpoints, not an always-running promise.
+
+The full static build needs no paid runtime/API and supports real metadata discovery. Deploy only on an explicitly selected free root-hosted static service, with an actual origin and indexing disabled until substantive-content/operator/rights review. GitHub Pages project-subpath support is a remaining adaptation. Search Console ownership/submission and AdSense publisher ID/approval/CMP are not completed; never promise ranking or revenue. Live ad requests remain intentionally blocked.
+
+## Retained product backlog
+
+# Earlier product backlog: turn the foundation into a real service
 
 ## P0 — exact repository and preservation
 

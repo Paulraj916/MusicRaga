@@ -1,6 +1,7 @@
 import { CATALOGUE, isDemo } from './realCatalogue';
 import {
   artistPath,
+  ALL_ROUTES,
   contributors,
   indexableRoute,
   resolveRoute,
@@ -12,8 +13,13 @@ import { lyricLanguage } from './lib';
 export interface SeoConfig {
   baseUrl: string;
   allowIndexing: boolean;
+  reviewedPaths: string[];
 }
-export function siteConfig(baseUrl = 'http://localhost:4173', allowIndexing = false): SeoConfig {
+export function siteConfig(
+  baseUrl = 'http://localhost:4173',
+  allowIndexing = false,
+  reviewedPaths: string[] = [],
+): SeoConfig {
   const u = new URL(baseUrl);
   if (
     !['http:', 'https:'].includes(u.protocol) ||
@@ -31,7 +37,9 @@ export function siteConfig(baseUrl = 'http://localhost:4173', allowIndexing = fa
     (u.protocol !== 'https:' || ['localhost', '127.0.0.1', '[::1]'].includes(u.hostname))
   )
     throw new Error('ALLOW_INDEXING requires an explicit real HTTPS origin, not localhost.');
-  return { baseUrl: u.origin, allowIndexing };
+  if (reviewedPaths.some((path) => !ALL_ROUTES.includes(path)))
+    throw new Error('Reviewed indexing paths must be actual curated routes.');
+  return { baseUrl: u.origin, allowIndexing, reviewedPaths: [...new Set(reviewedPaths)] };
 }
 export function pageSeo(path: string, config: SeoConfig) {
   const route = resolveRoute(path);
@@ -88,7 +96,10 @@ export function pageSeo(path: string, config: SeoConfig) {
     description,
     lang,
     canonical,
-    robots: config.allowIndexing && indexableRoute(route) ? 'index,follow' : 'noindex,follow',
+    robots:
+      config.allowIndexing && config.reviewedPaths.includes(path) && indexableRoute(route)
+        ? 'index,follow'
+        : 'noindex,follow',
     alternates,
     structured: structuredData(route, canonical, config),
   };

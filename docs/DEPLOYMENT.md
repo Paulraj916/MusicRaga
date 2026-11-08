@@ -40,3 +40,7 @@ Self-hosted scripts/fonts/images only; data images for original art; blob local 
 - [ ] Backups, monitoring without silent tracking, rollback and ongoing source/dependency review.
 
 Passing automated checks does not guarantee legal compliance, security, accessibility conformance, search rankings or zero bugs.
+
+## Full free static catalogue build
+
+Standard build now also needs Python 3.11+/SQLite FTS5 and emits versioned query shards/pages from bundled compressed CC0 metadata, so optional Python runtime/API is not required for static discovery. No raw dump/database should be deployed. Follow FREE_HOSTING_SEARCH_ADS.md for root-host/free-tier limitations, real SITE_URL, indexing review and intentionally blocked live ads. GitHub Pages project subpaths require separate adaptation. No paid service or live deployment is created by this upgrade.

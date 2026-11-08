@@ -110,7 +110,10 @@ describe('real prerender route SEO', () => {
     expect(siteConfig('https://site.test', true).allowIndexing).toBe(true);
   });
   it('demos and fictional-only artists never become indexable', () => {
-    const cfg = siteConfig('https://site.test', true);
+    const cfg = siteConfig('https://site.test', true, [
+      '/songs/munbe-vaa/',
+      songPath(DEMO_SONGS[0]),
+    ]);
     expect(pageSeo(songPath(DEMO_SONGS[0]), cfg).robots).toBe('noindex,follow');
     expect(indexableRoute(resolveRoute(artistPath(DEMO_SONGS[0].composer)))).toBe(false);
     expect(pageSeo('/songs/munbe-vaa/', cfg).robots).toBe('index,follow');
@@ -156,4 +159,13 @@ it('rejects blank text and invalid kind while preserving bounded citations', () 
   const other = structuredClone(PUBLIC_VERSE);
   (other as { kind: string }).kind = 'invented';
   expect(() => validateCatalogue([other])).toThrow();
+});
+
+it('production indexing needs an explicit page review list, never just a real-metadata count', () => {
+  const blocked = siteConfig('https://site.test', true);
+  expect(pageSeo('/songs/munbe-vaa/', blocked).robots).toBe('noindex,follow');
+  const reviewed = siteConfig('https://site.test', true, ['/songs/tirukkural-invocation/']);
+  expect(pageSeo('/songs/tirukkural-invocation/', reviewed).robots).toBe('index,follow');
+  expect(pageSeo('/songs/munbe-vaa/', reviewed).robots).toBe('noindex,follow');
+  expect(() => siteConfig('https://site.test', true, ['/invented-bulk-page/'])).toThrow();
 });

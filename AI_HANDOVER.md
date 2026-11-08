@@ -4,17 +4,27 @@
 
 Read `README.md`, `NEXT_STEPS.md`, `docs/PROGRESS.md`, `docs/REAL_CATALOGUE.md`, `docs/SEO.md`, `docs/CONTENT_RIGHTS.md`, `docs/ADS_AND_PRIVACY.md`, then `docs/CATALOGUE.md` and `docs/PUBLICATION.md`. Repository research files are historical.
 
+## New scalable catalogue checkpoint
+
+Read SOURCE_PIPELINE, SCALABLE_ARCHITECTURE, FREE_HOSTING_SEARCH_ADS and 24_HOUR_CHECKPOINT_PLAN first for the current expansion. Backend code: `backend/` (stdlib Python/SQLite FTS5), optional paged API and CLI; `IndiaIndex.tsx`/`staticCatalogue.ts` provide both API and free-static sharded discovery. `data/cc0` contains hash-pinned compressed normalized CC0 exports plus source scripts/rights, NOT a raw mixed-licence dump. Standard build requires Python and makes complete static shards in dist; curated-only build remains Node-only. Bootstrap caches/checkpoints live in ignored directories, never Git.
+
+Accepted bulk entities: 14,884 works + 17,130 linked recordings + 212 Wikidata song/single entities = 32,226 source entities, not unique songs; 2,446 separate source profiles, 3,059 credit identities with possible source overlaps. One missing-title source row quarantined. Never infer nationality from language, singer from writer/occupation, recording language from its work, or unique people from source counts. Namespaced MusicBrainz work/recording identity and explicit graph edges must be preserved. No commercial lyrics or audio are added. The following 18-entry/96-filter description is the retained **curated reader**, not the bulk-index size.
+
+Use the existing feature branch/PR for this substantial upgrade, preserve published main. Run frontend + backend + ads + build/SEO + browser checks. See exact benchmark and coverage artifacts; synthetic data is isolated, not added to real data. No continuous 24h job exists. Live ads stay blocked; no guaranteed ranking or ad approval. Existing demo video describes the prior reader checkpoint, not a demonstration of these new bulk features.
+
 ## Intent and current state
 
 The owner wants a premium multilingual Indian lyrics/music discovery service: composer → singer/collaborator → album → present-to-oldest, mainstream + independent coverage, Tamil/native + English/Thanglish, local personalisation/karaoke and non-obstructive advertising. They favour autonomous implementation and excellent continuation documentation. Do not promise complete coverage, zero bugs, licences, rankings, AdSense approval or paid resources.
 
-This is working **frontend + static-prerender foundation**, not a complete licensed business. React/TS/Vite. 18 entries: 5 individually cited factual recordings (3 Rahman, 2 Vada Chennai/Santhosh Narayanan), 1 ancient Tirukkural verse edition with new project English/Latin renderings, 12 fictional CC0 demos. 96 filter dimensions with truthful availability. Source-led clean pages and static SEO; local library, themes and practice; import/export. No backend, account/OAuth, live provider sync, ad SDK, analytics or commercial lyrics/audio.
+This is working **frontend + static-prerender foundation**, not a complete licensed business. React/TS/Vite. 18 entries: 5 individually cited factual recordings (3 Rahman, 2 Vada Chennai/Santhosh Narayanan), 1 ancient Tirukkural verse edition with new project English/Latin renderings, 12 fictional CC0 demos. 96 filter dimensions with truthful availability. Source-led clean pages and static SEO; local library, themes and practice; import/export. No account/OAuth, live provider sync, ad SDK, analytics or commercial lyrics/audio.
 
 ## Reproduce
 
 ```sh
 npm ci
 npm test
+npm run test:backend
+npm run test:ads
 npm run typecheck
 npm run build
 npm run test:seo
@@ -32,7 +42,7 @@ Node 24 recommended. Browser suite uses **production files**, not a dev-only SPA
 - `catalogue.ts`: typed model + registry + explicitly fictional demos. `realCatalogue.ts`: per-item reviewed facts/permissions/citations. Keep them separate. No factual claim is inferred from an artwork or user query.
 - `routes.ts`: route manifest for static song/available text versions/artist/language pages. `CataloguePage.tsx`: shared semantic route content. Current artist slugs are name-based; use stable IDs before production-scale identity merging.
 - `seo.ts`: pure shared metadata. `entry-prerender.tsx` + `prerender.mjs`: one shared React tree into every route HTML, per-page head, configured sitemap/robots. `seoBrowser.ts`: update head during enhanced client navigation. Client re-renders rather than hydrates, so browser-local preferences do not mismatch static HTML. Keep server-visible content and no-JS reading tests.
-- Default actual preview origin is localhost; build environment `SITE_URL` / `ALLOW_INDEXING` control reviewed launch pages. No fake production domain. Demo-only routes always noindex and excluded from sitemap. Keep static directory files and true 404s; never blanket SPA-rewrite to root.
+- Default actual preview origin is localhost; build environment `SITE_URL` / `ALLOW_INDEXING` / mandatory explicit `REVIEWED_INDEX_PATHS` control individually reviewed substantive launch pages. No fake production domain. Demo-only routes always noindex and excluded from sitemap. Keep static directory files and true 404s; never blanket SPA-rewrite to root.
 - Unicode search preserves Indic marks and searches known titles/aliases/credits/permitted text. `discoverMatches` may return explicitly labelled related album entries when a full quote is unknown. Never mark the user's unverified phrase as a verified lyric or add it to SEO aliases.
 - `valuesFor` resolves individual contributor roles; filters combine exact values with AND. Unknowns remain absent. Ancient verse `year: null` sorts last; never invent a modern release.
 - Metadata-only entries **must have no lyric variants** and expose no practice button. The Tirukkural is ancient verse, not a modern recorded adaptation; its new English/Latin text is project-created CC0. Edition/India-US caveats are in REAL_CATALOGUE.
@@ -43,11 +53,11 @@ Node 24 recommended. Browser suite uses **production files**, not a dev-only SPA
 
 ## Known trade-offs / unfinished production work
 
-App.tsx is still large; extract tested feature modules gradually. Filters are single values, not multi-select/ranges; many demo fields have one synthetic value. Search is not a scalable index or semantic engine. Metadata-only pages are intentionally small; they do not prove launch/ranking/monetisation readiness. Native/classical-language text quality needs human editorial review. Silent rehearsal is approximate, not sample-accurate; media codecs vary. Automated Chromium/axe checks are not manual screen-reader or physical-device certification. There is no editorial backend, trusted publication/territory/expiry enforcement, verified business/takedown contact, privacy-law implementation for tracking, account sync or operator support system.
+App.tsx is still large; extract tested feature modules gradually. Filters are single values, not multi-select/ranges; many demo fields have one synthetic value. The retained curated quick search is simple; scalable bulk discovery uses the separately tested SQLite/static-shard index, not a semantic engine. Metadata-only pages are intentionally small; they do not prove launch/ranking/monetisation readiness. Native/classical-language text quality needs human editorial review. Silent rehearsal is approximate, not sample-accurate; media codecs vary. Automated Chromium/axe checks are not manual screen-reader or physical-device certification. There is no editorial backend, trusted publication/territory/expiry enforcement, verified business/takedown contact, privacy-law implementation for tracking, account sync or operator support system.
 
 ## GitHub / preservation
 
-Canonical public source: **https://github.com/Paulraj916/PowerWords**, branch **`main`**. Local working source remains `/workspace/powerwords-20261108-standalone`. The owner explicitly approved public creation and code publication; CLI identity was verified as Paulraj916, then the absent exact repository was created. `origin` is the HTTPS URL of that repository. Initial foundation `4785f04cdd11e18a656224def290f96df6291ade`, sourced upgrade `08a475c35964689a621f38f6d31e601beb59678c`, and mobile correction `06d0014af3e05e089f22e01ed478f56a66cd24b3` are retained unchanged. Use `git log` / `git rev-parse HEAD` for the latest publication documentation commit.
+Canonical public source: **https://github.com/Paulraj916/PowerWords**, branch **`main`**. Local working source remains `/workspace/powerwords-20261108-standalone`; current expansion branch is `feat/scalable-india-catalogue`, pending PR review/merge into main. The owner explicitly approved public creation and code publication; CLI identity was verified as Paulraj916, then the absent exact repository was created. `origin` is the HTTPS URL of that repository. Initial foundation `4785f04cdd11e18a656224def290f96df6291ade`, sourced upgrade `08a475c35964689a621f38f6d31e601beb59678c`, and mobile correction `06d0014af3e05e089f22e01ed478f56a66cd24b3` are retained unchanged. Use `git log` / `git rev-parse HEAD` for the latest publication documentation commit.
 
 Commit attribution uses a command-scoped Grok Bot / non-deliverable localhost build identity, not verified owner authorship; global identity was not changed. All reachable historical blobs and tracked publication files were audited for accidental secrets/private data before publication; see PUBLICATION.md for scope/limitations. Do not add `.env`, credential stores, local imported files, raw recordings or delivery ZIPs. Existing UI screenshots are deterministic local test artifacts, not personal sessions.
 

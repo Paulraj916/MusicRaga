@@ -1,0 +1,23 @@
+{
+  "source": "synthetic",
+  "source_id": "synthetic-0",
+  "source_url": "https://example.invalid/synthetic-0",
+  "license": "CC0-1.0",
+  "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "retrieved_at": "2026-01-01T00:00:00+00:00",
+  "title": "SYNTHETIC தமிழ் வானம் 0",
+  "aliases": ["SYNTHETIC Hindi गीत 0"],
+  "languages": ["hin"],
+  "countries": [],
+  "year": 1950,
+  "album": "SYNTHETIC ALBUM 0",
+  "kind": "recording",
+  "scope_basis": "Explicitly fictional performance fixture, not Indian music facts",
+  "credits": [
+    {
+      "source_id": "synthetic-0",
+      "name": "SYNTHETIC ARTIST 0",
+      "role": "singer"
+    }
+  ]
+}

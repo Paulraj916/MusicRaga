@@ -4,7 +4,7 @@ A distinctive, local-first Indian music discovery and multilingual reading found
 
 ## Run the finished production version
 
-Node **22.12+** (Node 24 recommended), npm. No paid service, account, API key or database required.
+Node **22.12+** (Node 24 recommended), npm, and **Python 3.11+ with SQLite FTS5** for the full catalogue build. No paid service/account/API key is required. `npm run build:curated` remains the smaller Node-only reading build.
 
 ```sh
 npm ci
@@ -40,7 +40,7 @@ Playwright starts the production preview on 4173 if needed; build first. An alre
 
 Every listed route is an actual prebuilt HTML file. Titles, descriptions, OG, canonical, reciprocal text-version hreflang and factual JSON-LD are present **before JavaScript**. Real links/text work with JavaScript disabled. Interactive filters, saved library and practice require JavaScript. Unknown paths return 404 in the supplied preview; static hosts must preserve that behaviour.
 
-## What actually works
+## Retained curated reader — what works
 
 - **18 entries:** 5 individually sourced real recording metadata pages, 1 ancient public-domain verse edition, 12 clearly fictional original demos. No commercial lyric, audio, translation, transliteration or album artwork is bundled. [Per-item facts and rights](docs/REAL_CATALOGUE.md).
 - Native-script/title/alias/credit and permitted-text search. Tamil query `முன்பே வா lyrics` finds Munbe Vaa. A query containing `Vadachennai` plus an unverified quote returns **explicitly related album entries**, never a fabricated lyric identification. No ranking guarantee or keyword stuffing.
@@ -56,13 +56,13 @@ Every listed route is an actual prebuilt HTML file. Titles, descriptions, OG, ca
 
 ## SEO launch configuration
 
-Default builds use the honest preview origin `http://localhost:4173`, `noindex,follow` and robots `Disallow: /`. No fictional production domain is shipped. Copy `.env.example` to `.env`, set **your actual HTTPS root origin** as `SITE_URL`, review rights/content/operator readiness, and only then explicitly set `ALLOW_INDEXING=true` and rebuild.
+Default builds use the honest preview origin `http://localhost:4173`, `noindex,follow` and robots `Disallow: /`. No fictional production domain is shipped. Copy `.env.example` to `.env`, set **your actual HTTPS root origin** as `SITE_URL`, review rights/content/operator readiness, and only then explicitly set `ALLOW_INDEXING=true` **and `REVIEWED_INDEX_PATHS` to an individually reviewed list of substantive eligible routes** and rebuild. An enabled indexing build without that list fails closed.
 
 `dist/sitemap.xml`, `dist/robots.txt`, canonical/OG/hreflang and `dist/build-manifest.json` derive from the configured origin. Fictional-only routes **always stay noindex and outside the sitemap**, even when indexing is enabled. See [SEO](docs/SEO.md) and [deployment](docs/DEPLOYMENT.md). These mechanisms do not promise rankings, rich results, AdSense approval or revenue.
 
 ## Architecture and project map
 
-React 19 + strict TypeScript + Vite; no application backend. One shared component tree is rendered to static HTML at build time, then client-rendered for personalised preferences without hydration mismatch. Local font assets (Inter and Noto Tamil/Devanagari/Telugu; OFL notices in `docs/licenses/`) and generated art make no runtime CDN calls. Catalogue operations run in memory. Only `pw:` preferences/IDs persist; imported catalogue/media stay in session memory.
+React 19 + strict TypeScript + Vite, complemented by a stdlib Python/SQLite catalogue backend and free-static shard exporter. No runtime backend is required for the full static build. One shared component tree is rendered to static HTML at build time, then client-rendered for personalised preferences without hydration mismatch. Local font assets (Inter and Noto Tamil/Devanagari/Telugu; OFL notices in `docs/licenses/`) and generated art make no runtime CDN calls. The retained 18-entry reader operates in memory; the bulk index fetches only query-specific shards or paged API responses. Only `pw:` preferences/IDs persist; imported catalogue/media stay in session memory.
 
 | Location                                                       | Responsibility                                                                 |
 | -------------------------------------------------------------- | ------------------------------------------------------------------------------ |
@@ -85,7 +85,25 @@ React 19 + strict TypeScript + Vite; no application backend. One shared componen
 
 ## Honest boundaries / continuation
 
-No complete discography, commercial lyric licence, broad independent catalogue, backend/editorial admin, cross-device account sync, provider integration, full fuzzy/semantic search or live ads. Search is Unicode-normalised terms and known aliases; related-album recovery is labelled. Filters are single exact selections, not ranges/multiselect. Native-language writing/renderings need human editorial review. Automated axe/Chromium tests are not screen-reader certification, real-device QA or a zero-bug guarantee. Static metadata-only pages and a small text edition do not make the business launch-ready.
+No complete discography, commercial lyric licence, broad independent catalogue, production editorial/admin system, cross-device account sync, provider integration, full fuzzy/semantic search or live ads. Search is Unicode-normalised terms and known aliases; related-album recovery is labelled. Filters are single exact selections, not ranges/multiselect. Native-language writing/renderings need human editorial review. Automated axe/Chromium tests are not screen-reader certification, real-device QA or a zero-bug guarantee. Static metadata-only pages and a small text edition do not make the business launch-ready.
+
+## Growing India catalogue — new scalable checkpoint
+
+The curated 18-entry reader is now complemented by **14,884 sourced compositions**, **17,130 linked recordings**, **212 accepted Wikidata song/single entities**, and **2,446 source artist profiles**. These are **not additive unique-song/unique-person counts or all Indian music**. One missing-title source row is quarantined. Preferred works have explicit source Song + Indian-language evidence across 19 selection languages; cross-border/overseas versions remain possible. No commercial lyrics/audio/art is imported.
+
+**Open India index** searches actual metadata/native aliases, contributor roles, languages and typed entities; artist profiles and composition→recording exploration work on free static hosting via query-specific shards. No giant catalogue array is added to the client bundle. The optional SQLite/FTS5 API supports durable staging/upsert, keyset pagination, Unicode marks, provenance, unknowns and local publication. Default bulk setup is offline and hash-verified; no paid API required.
+
+```sh
+npm run catalogue:bootstrap           # optional mutable local SQLite database
+npm run build                        # full static shards + original clean SEO pages
+npm run catalogue:serve              # optional local API + frontend, port 4180
+npm run test:backend                  # Python integration/rights/import/search tests
+npm run test:ads                      # ads default-off/config validation
+```
+
+Read [SOURCE_PIPELINE](docs/SOURCE_PIPELINE.md), [SCALABLE_ARCHITECTURE](docs/SCALABLE_ARCHITECTURE.md), [24-hour checkpoints](docs/24_HOUR_CHECKPOINT_PLAN.md) and [free hosting/search/ads](docs/FREE_HOSTING_SEARCH_ADS.md). Exact real counts/unknowns: `artifacts/catalogue-real-coverage.json`. A separate **100,000-row SYNTHETIC benchmark** measures storage/import/search capacity, never real song coverage. No 24-hour subscription-independent execution, all-India completeness, #1 ranking, instant indexing, AdSense approval or earnings is promised.
+
+Ad configuration and ads.txt generation are validated but **live ad requests are hard-blocked**, with empty publisher settings by default. A real own publisher ID, approval, certified CMP/privacy, CSP and production review are still needed. Free root-hosted static deployment is supported; GitHub Pages project-subpath routing still needs adaptation. This upgrade creates code/PR, not accounts, deployment or Search Console/AdSense submissions.
 
 ## Public source repository
 
@@ -104,3 +122,5 @@ GitHub is the **source** URL, not a deployed website or production canonical ori
 Continue with: **“Read AI_HANDOVER.md and NEXT_STEPS.md, run the checks, preserve existing work, and implement the next unblocked item without inventing facts or licences.”**
 
 Code: [MIT](LICENSE). Original project demo text and new project renderings: CC0-1.0; ancient underlying Tamil text and edition caveats: [rights](docs/REAL_CATALOGUE.md). No third-party music/recording/trademark rights are granted.
+
+Production indexing now also requires explicit `REVIEWED_INDEX_PATHS` (comma-separated real curated routes). `ALLOW_INDEXING=true` alone is insufficient: builds fail without a reviewed list; client navigation and sitemap enforce the same per-page list. Defaults remain noindex. Do not put bulk JSON or fabricated metadata pages in this list.

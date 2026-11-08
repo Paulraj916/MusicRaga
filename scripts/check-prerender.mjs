@@ -23,7 +23,11 @@ for (const path of ALL_ROUTES) {
   const json = html.match(/<script type="application\/ld\+json">(.*?)<\/script>/s)?.[1];
   assert(json);
   assert(JSON.parse(json)['@context'] === 'https://schema.org');
-  if (!manifest.indexingEnabled || !indexableRoute(resolveRoute(path)))
+  if (
+    !manifest.indexingEnabled ||
+    !indexableRoute(resolveRoute(path)) ||
+    !manifest.reviewedIndexPaths.includes(path)
+  )
     assert(html.includes('content="noindex,follow"'));
   count++;
 }
@@ -36,7 +40,8 @@ assert(verse.includes('அகர முதல'));
 assert(verse.includes('hreflang="ta-Latn"'));
 const xml = await readFile('dist/sitemap.xml', 'utf8');
 assert(!xml.includes('a-little-light'));
-assert(xml.includes(`${manifest.baseUrl}/songs/munbe-vaa/`));
+if (!manifest.indexingEnabled) assert(xml.includes(`${manifest.baseUrl}/songs/munbe-vaa/`));
+else for (const path of manifest.reviewedIndexPaths) assert(xml.includes(manifest.baseUrl + path));
 const robots = await readFile('dist/robots.txt', 'utf8');
 assert(robots.includes(manifest.indexingEnabled ? 'Allow: /' : 'Disallow: /'));
 assert(robots.includes(`${manifest.baseUrl}/sitemap.xml`));

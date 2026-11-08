@@ -6,7 +6,17 @@ export function applySeo(path: string) {
     window.location.origin;
   const allow =
     document.querySelector<HTMLMetaElement>('meta[name="powerwords-indexing"]')?.content === 'true';
-  const data = pageSeo(path, siteConfig(base, allow));
+  let reviewed: string[] = [];
+  try {
+    const value = JSON.parse(
+      document.querySelector<HTMLMetaElement>('meta[name="powerwords-reviewed-paths"]')?.content ??
+        '[]',
+    );
+    if (Array.isArray(value) && value.every((p) => typeof p === 'string')) reviewed = value;
+  } catch {
+    /* Fail closed. */
+  }
+  const data = pageSeo(path, siteConfig(base, allow, reviewed));
   document.title = data.title;
   const meta = (attribute: string, key: string, value: string) => {
     let node = document.head.querySelector<HTMLMetaElement>(`meta[${attribute}="${key}"]`);

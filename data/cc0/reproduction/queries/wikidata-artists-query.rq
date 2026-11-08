@@ -1,0 +1,1 @@
+SELECT ?artist ?artistLabel ?occupation ?occupationLabel ?musicbrainz WHERE { { SELECT ?artist ?occupation WHERE { VALUES ?occupation {wd:Q177220 wd:Q639669 wd:Q36834 wd:Q753110 wd:Q488205} ?artist wdt:P27 wd:Q668; wdt:P106 ?occupation. } LIMIT 3000 } OPTIONAL {?artist wdt:P434 ?musicbrainz} SERVICE wikibase:label {bd:serviceParam wikibase:language "en".} }
